@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Build
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+*.o
+*.obj
+*.a
+*.so
+*.dll
+
+# Datasets and runtime outputs
+datasets/
+data/raw/
+data/cache/
+outputs/
+runs/
+logs/
+cache/
+tmp/
+temp/
+
+# Model artifacts
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+*.plan
+*.trt
+*.weights
+
+# TensorRT and quantization cache
+calibration_cache/
+timing_cache/
+*.cache
+
+# Media
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.h264
+*.h265
+*.hevc
+
+# Profiling
+*.nsys-rep
+*.ncu-rep
+*.qdrep
+*.sqlite
+
+# Temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# System
+.DS_Store
+Thumbs.db
