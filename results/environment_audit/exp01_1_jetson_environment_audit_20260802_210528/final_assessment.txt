@@ -1,0 +1,31 @@
+========== Exp01.1 Final Assessment ==========
+
+final_result            : PASS
+board                   : NVIDIA Jetson Orin Nano Super
+l4t                     : R36.4.3
+jetpack_release         : JetPack 6.2
+cuda                    : 12.6.68
+cudnn                   : 9.3.0.75
+tensorrt                : 10.3.0.30
+gcc                     : 11.4.0
+g++                     : 11.4.0
+cmake                   : 3.22.1
+opencv                  : 4.10.0
+gstreamer               : 1.20.x
+power_mode              : 25W
+
+nvarguscamerasrc        : PASS
+nvvidconv               : PASS
+nvv4l2decoder           : PASS
+nvv4l2h264enc           : NOT_APPLICABLE_NO_NVENC
+nvv4l2h265enc           : NOT_APPLICABLE_NO_NVENC
+
+Notes:
+1. Jetson Orin Nano has no NVENC hardware encoder.
+2. Missing nvv4l2h264enc/nvv4l2h265enc does not block this project.
+3. The nvidia-jetpack metapackage is absent, but required CUDA,
+   cuDNN and TensorRT components are installed independently.
+4. trtexec --version is not used as a pass/fail test because this
+   TensorRT build exits with an error when no model is supplied.
+
+[RESULT] EXP01_1_JETSON_AUDIT=PASS

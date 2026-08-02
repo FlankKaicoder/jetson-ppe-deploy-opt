@@ -1,0 +1,16 @@
+========== video devices ==========
+crw-rw----+ 1 root video 81, 0  1月  1  1970 /dev/video0
+
+========== media devices ==========
+crw-rw----+ 1 root video 503, 0  6月  4  2025 /dev/media0
+
+========== v4l2 devices ==========
+NVIDIA Tegra Video Input Device (platform:tegra-camrtc-ca):
+	/dev/media0
+
+vi-output, imx219 10-0010 (platform:tegra-capture-vi:1):
+	/dev/video0
+
+
+========== Argus daemon ==========
+active

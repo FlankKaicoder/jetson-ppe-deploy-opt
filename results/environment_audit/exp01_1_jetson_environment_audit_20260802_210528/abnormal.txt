@@ -1,0 +1,8 @@
+No blocking abnormal messages detected.
+
+nvv4l2h264enc: NOT_APPLICABLE_NO_NVENC
+nvv4l2h265enc: NOT_APPLICABLE_NO_NVENC
+
+Reason:
+Jetson Orin Nano does not provide the NVENC hardware encoder.
+These plugins are not required by the TensorRT/CUDA inference project.

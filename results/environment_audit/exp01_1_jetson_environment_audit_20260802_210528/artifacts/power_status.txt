@@ -1,0 +1,11 @@
+========== nvpmodel ==========
+NV Power Mode: 25W
+1
+
+========== jetson_clocks ==========
+SOC family:tegra234  Machine:NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super
+Error: Run this script(/usr/bin/jetson_clocks) as a root user
+
+========== tegrastats sample ==========
+08-02-2026 21:05:38 RAM 2853/7620MB (lfb 7x2MB) SWAP 5/3810MB (cached 0MB) CPU [1%@729,1%@729,0%@729,0%@729,0%@729,0%@729] GR3D_FREQ 0% cpu@46.968C soc2@46.437C soc0@47.125C gpu@48C tj@48C soc1@47C VDD_IN 4792mW/4792mW VDD_CPU_GPU_CV 518mW/518mW VDD_SOC 1594mW/1594mW
+08-02-2026 21:05:39 RAM 2853/7620MB (lfb 7x2MB) SWAP 5/3810MB (cached 0MB) CPU [1%@729,0%@729,1%@729,1%@729,0%@729,0%@729] GR3D_FREQ 0% cpu@47.093C soc2@46.375C soc0@47.156C gpu@47.75C tj@47.75C soc1@47.062C VDD_IN 4792mW/4792mW VDD_CPU_GPU_CV 518mW/518mW VDD_SOC 1637mW/1616mW

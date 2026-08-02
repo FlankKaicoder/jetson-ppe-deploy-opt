@@ -1,0 +1,6 @@
+experiment: exp01_2_compile_smoke
+run_id: exp01_2_compile_smoke_20260802_211917
+git_branch: exp/01-environment-audit
+git_commit: 863bc0f3a90bbd4825a16ff26cf5ffc415430b04
+build_type: Release
+cuda_architecture: 87

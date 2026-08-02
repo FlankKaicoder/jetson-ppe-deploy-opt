@@ -1,0 +1,10 @@
+experiment: exp01_1_jetson_environment_audit
+run_id: exp01_1_jetson_environment_audit_20260802_210528
+machine_role: jetson_deployment
+repository: /home/nvidia/projects/jetson-ppe-deploy-opt
+baseline_tag: exp00-complete
+baseline_commit: 863bc0f3a90bbd4825a16ff26cf5ffc415430b04
+git_branch: exp/01-environment-audit
+operation: read_only_environment_audit
+install_packages: false
+modify_system_configuration: false

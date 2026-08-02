@@ -1,0 +1,11 @@
+repository=/home/nvidia/projects/jetson-ppe-deploy-opt
+branch=exp/01-environment-audit
+commit=863bc0f3a90bbd4825a16ff26cf5ffc415430b04
+tags=exp00-complete 
+
+?? results/environment_audit/
+?? tools/exp01_1_jetson_environment_audit.sh
+
+863bc0f (HEAD -> exp/01-environment-audit, tag: exp00-complete, origin/main, main) docs(exp00): mark repository initialization passed
+ed0b9b0 docs(exp00): record repository initialization
+60b05ad chore: initialize Jetson PPE deployment project

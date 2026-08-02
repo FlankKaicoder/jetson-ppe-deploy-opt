@@ -1,0 +1,578 @@
+
+========== date ==========
+$ date --iso-8601=seconds 
+2026-08-02T21:05:29+08:00
+
+========== hostname ==========
+$ hostname 
+nvidia-desktop
+
+========== architecture ==========
+$ uname -m 
+aarch64
+
+========== kernel ==========
+$ uname -a 
+Linux nvidia-desktop 5.15.148-tegra #1 SMP PREEMPT Tue Jan 7 17:14:38 PST 2025 aarch64 aarch64 aarch64 GNU/Linux
+
+========== operating system ==========
+$ cat /etc/os-release 
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+VERSION="22.04.5 LTS (Jammy Jellyfish)"
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=jammy
+
+========== Jetson model ==========
+$ bash -c tr\ -d\ \'\\0\'\ \<\ /proc/device-tree/model\ 2\>/dev/null\ \|\|\ true 
+NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super
+========== L4T release ==========
+$ bash -c cat\ /etc/nv_tegra_release\ 2\>/dev/null\ \|\|\ true 
+# R36 (release), REVISION: 4.3, GCID: 38968081, BOARD: generic, EABI: aarch64, DATE: Wed Jan  8 01:49:37 UTC 2025
+# KERNEL_VARIANT: oot
+TARGET_USERSPACE_LIB_DIR=nvidia
+TARGET_USERSPACE_LIB_DIR_PATH=usr/lib/aarch64-linux-gnu/nvidia
+
+========== CPU information ==========
+$ lscpu 
+Architecture:                       aarch64
+CPU op-mode(s):                     32-bit, 64-bit
+Byte Order:                         Little Endian
+CPU(s):                             6
+On-line CPU(s) list:                0-5
+Vendor ID:                          ARM
+Model name:                         Cortex-A78AE
+Model:                              1
+Thread(s) per core:                 1
+Core(s) per cluster:                3
+Socket(s):                          -
+Cluster(s):                         2
+Stepping:                           r0p1
+CPU max MHz:                        1728.0000
+CPU min MHz:                        115.2000
+BogoMIPS:                           62.50
+Flags:                              fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp uscat ilrcpc flagm paca pacg
+L1d cache:                          384 KiB (6 instances)
+L1i cache:                          384 KiB (6 instances)
+L2 cache:                           1.5 MiB (6 instances)
+L3 cache:                           4 MiB (2 instances)
+NUMA node(s):                       1
+NUMA node0 CPU(s):                  0-5
+Vulnerability Gather data sampling: Not affected
+Vulnerability Itlb multihit:        Not affected
+Vulnerability L1tf:                 Not affected
+Vulnerability Mds:                  Not affected
+Vulnerability Meltdown:             Not affected
+Vulnerability Mmio stale data:      Not affected
+Vulnerability Retbleed:             Not affected
+Vulnerability Spec rstack overflow: Not affected
+Vulnerability Spec store bypass:    Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:           Mitigation; __user pointer sanitization
+Vulnerability Spectre v2:           Mitigation; CSV2, but not BHB
+Vulnerability Srbds:                Not affected
+Vulnerability Tsx async abort:      Not affected
+
+========== memory ==========
+$ free -h 
+               total        used        free      shared  buff/cache   available
+Mem:           7.4Gi       2.7Gi       279Mi        27Mi       4.5Gi       4.5Gi
+Swap:          3.7Gi       4.0Mi       3.7Gi
+
+========== disk ==========
+$ df -h / 
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p1  233G   39G  185G  18% /
+
+========== NVMe devices ==========
+$ lsblk -o NAME\,MODEL\,SIZE\,TYPE\,FSTYPE\,MOUNTPOINTS 
+NAME         MODEL                        SIZE TYPE FSTYPE   MOUNTPOINTS
+loop0                                       4K loop          /snap/bare/5
+loop1                                   181.5M loop          /snap/chromium/3175
+loop2                                    68.9M loop          /snap/core22/2012
+loop3                                    68.9M loop          /snap/core22/2134
+loop4                                    66.6M loop          /snap/cups/1102
+loop5                                   493.5M loop          /snap/gnome-42-2204/201
+loop6                                    91.7M loop          /snap/gtk-common-themes/1535
+loop7                                    44.3M loop          /snap/snapd/24724
+loop8                                    44.2M loop squashfs /snap/snapd/25205
+loop9                                      16M loop          
+zram0                                     635M disk          [SWAP]
+zram1                                     635M disk          [SWAP]
+zram2                                     635M disk          [SWAP]
+zram3                                     635M disk          [SWAP]
+zram4                                     635M disk          [SWAP]
+zram5                                     635M disk          [SWAP]
+nvme0n1      SAMSUNG MZALQ256HAJD-000L1 238.5G disk          
+├─nvme0n1p1                               237G part ext4     /
+├─nvme0n1p2                               128M part          
+├─nvme0n1p3                               768K part          
+├─nvme0n1p4                              31.6M part          
+├─nvme0n1p5                               128M part          
+├─nvme0n1p6                               768K part          
+├─nvme0n1p7                              31.6M part          
+├─nvme0n1p8                                80M part          
+├─nvme0n1p9                               512K part          
+├─nvme0n1p10                               64M part vfat     /boot/efi
+├─nvme0n1p11                               80M part          
+├─nvme0n1p12                              512K part          
+├─nvme0n1p13                               64M part          
+├─nvme0n1p14                              400M part          
+└─nvme0n1p15                            479.5M part          
+
+========== CUDA compiler ==========
+$ bash -c command\ -v\ nvcc\ \&\&\ nvcc\ --version\ \|\|\ true 
+/usr/local/cuda-12.6/bin/nvcc
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Wed_Aug_14_10:14:07_PDT_2024
+Cuda compilation tools, release 12.6, V12.6.68
+Build cuda_12.6.r12.6/compiler.34714021_0
+
+========== CUDA runtime library ==========
+$ bash -c ldconfig\ -p\ 2\>/dev/null\ \|\ grep\ -E\ \'libcudart\\.so\'\ \|\|\ true 
+	libcudart.so.12 (libc6,AArch64) => /usr/local/cuda/targets/aarch64-linux/lib/libcudart.so.12
+	libcudart.so (libc6,AArch64) => /usr/local/cuda/targets/aarch64-linux/lib/libcudart.so
+
+========== selected NVIDIA packages ==========
+$ cat results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/artifacts/packages.txt 
+========== NVIDIA packages ==========
+cuda-cccl-12-6	12.6.37-1
+cuda-command-line-tools-12-6	12.6.11-1
+cuda-compiler-12-6	12.6.11-1
+cuda-crt-12-6	12.6.68-1
+cuda-cub-12-6	
+cuda-cudart-11-2	
+cuda-cudart-12-2	
+cuda-cudart-12-6	12.6.68-1
+cuda-cudart-cross-aarch64-12-0	
+cuda-cudart-cross-aarch64-12-1	
+cuda-cudart-cross-aarch64-12-2	
+cuda-cudart-cross-aarch64-12-3	
+cuda-cudart-cross-aarch64-12-4	
+cuda-cudart-cross-aarch64-12-5	
+cuda-cudart-cross-aarch64-12-6	
+cuda-cudart-cross-aarch64-12-7	
+cuda-cudart-cross-aarch64-12-8	
+cuda-cudart-cross-aarch64-12-9	
+cuda-cudart-dev-12-2	
+cuda-cudart-dev-12-6	12.6.68-1
+cuda-cuobjdump-12-6	12.6.68-1
+cuda-cupti-12-6	12.6.68-1
+cuda-cupti-dev-12-6	12.6.68-1
+cuda-cuxxfilt-12-6	12.6.68-1
+cuda-documentation-12-6	12.6.68-1
+cuda-driver-dev-12-6	12.6.68-1
+cuda-gdb-12-6	12.6.68-1
+cuda-keyring	1.1-1
+cuda-libraries-12-6	12.6.11-1
+cuda-libraries-dev-12-6	12.6.11-1
+cuda-nsight-compute-12-6	12.6.11-1
+cuda-nvcc-12-0	
+cuda-nvcc-12-1	
+cuda-nvcc-12-2	
+cuda-nvcc-12-3	
+cuda-nvcc-12-4	
+cuda-nvcc-12-5	
+cuda-nvcc-12-6	12.6.68-1
+cuda-nvcc-12-7	
+cuda-nvcc-12-8	
+cuda-nvcc-12-9	
+cuda-nvdisasm-12-6	12.6.68-1
+cuda-nvml-dev-12-6	12.6.68-1
+cuda-nvprof-12-6	
+cuda-nvprune-12-6	12.6.68-1
+cuda-nvrtc-12-6	12.6.68-1
+cuda-nvrtc-dev-12-6	12.6.68-1
+cuda-nvtx-12-6	12.6.68-1
+cuda-nvvm-12-6	12.6.68-1
+cuda-profiler-api-12-6	12.6.68-1
+cuda-runtime-12-6	12.6.11-1
+cuda-sanitizer-12-6	12.6.68-1
+cuda-thrust-12-6	
+cuda-toolkit-12-6	12.6.11-1
+cuda-toolkit-12-6-config-common	12.6.68-1
+cuda-toolkit-12-config-common	12.6.68-1
+cuda-toolkit-config-common	12.6.68-1
+cuda-tools-12-6	12.6.11-1
+cuda-visual-tools-12-6	12.6.11-1
+libcudnn9	
+libcudnn9-cuda-12	9.3.0.75-1
+libcudnn9-dev	
+libcudnn9-dev-cuda-12	9.3.0.75-1
+libcudnn9-samples	9.3.0.75-1
+libnvinfer10	10.3.0.30-1+cuda12.5
+libnvinfer-bin	10.3.0.30-1+cuda12.5
+libnvinfer-dev	10.3.0.30-1+cuda12.5
+libnvinfer-dev-cross-aarch64	
+libnvinfer-dispatch10	10.3.0.30-1+cuda12.5
+libnvinfer-dispatch-dev	10.3.0.30-1+cuda12.5
+libnvinfer-dispatch-dev-cross-aarch64	
+libnvinfer-doc	
+libnvinfer-headers-dev	10.3.0.30-1+cuda12.5
+libnvinfer-headers-plugin-dev	10.3.0.30-1+cuda12.5
+libnvinfer-lean10	10.3.0.30-1+cuda12.5
+libnvinfer-lean-dev	10.3.0.30-1+cuda12.5
+libnvinfer-lean-dev-cross-aarch64	
+libnvinfer-plugin10	10.3.0.30-1+cuda12.5
+libnvinfer-plugin-dev	10.3.0.30-1+cuda12.5
+libnvinfer-plugin-dev-cross-aarch64	
+libnvinfer-samples	10.3.0.30-1+cuda12.5
+libnvinfer-vc-plugin10	10.3.0.30-1+cuda12.5
+libnvinfer-vc-plugin-dev	10.3.0.30-1+cuda12.5
+libnvinfer-vc-plugin-dev-cross-aarch64	
+python3-libnvinfer	10.3.0.30-1+cuda12.5
+python3-libnvinfer-dev	10.3.0.30-1+cuda12.5
+python3-libnvinfer-dispatch	10.3.0.30-1+cuda12.5
+python3-libnvinfer-lean	10.3.0.30-1+cuda12.5
+
+========== TensorRT trtexec ==========
+$ /usr/src/tensorrt/bin/trtexec --version 
+&&&& RUNNING TensorRT.trtexec [TensorRT v100300] # /usr/src/tensorrt/bin/trtexec --version
+=== Model Options ===
+  --onnx=<file>               ONNX model
+
+=== Build Options ===
+  --minShapes=spec                   Build with dynamic shapes using a profile with the min shapes provided
+  --optShapes=spec                   Build with dynamic shapes using a profile with the opt shapes provided
+  --maxShapes=spec                   Build with dynamic shapes using a profile with the max shapes provided
+  --minShapesCalib=spec              Calibrate with dynamic shapes using a profile with the min shapes provided
+  --optShapesCalib=spec              Calibrate with dynamic shapes using a profile with the opt shapes provided
+  --maxShapesCalib=spec              Calibrate with dynamic shapes using a profile with the max shapes provided
+                                     Note: All three of min, opt and max shapes must be supplied.
+                                           However, if only opt shapes is supplied then it will be expanded so
+                                           that min shapes and max shapes are set to the same values as opt shapes.
+                                           Input names can be wrapped with escaped single quotes (ex: 'Input:0').
+                                     Example input shapes spec: input0:1x3x256x256,input1:1x3x128x128
+                                     For scalars (0-D shapes), use input0:scalar or simply input0: with nothing after the colon.
+                                     Each input shape is supplied as a key-value pair where key is the input name and
+                                     value is the dimensions (including the batch dimension) to be used for that input.
+                                     Each key-value pair has the key and value separated using a colon (:).
+                                     Multiple input shapes can be provided via comma-separated key-value pairs, and each input name can
+                                     contain at most one wildcard ('*') character.
+  --inputIOFormats=spec              Type and format of each of the input tensors (default = all inputs in fp32:chw)
+                                     See --outputIOFormats help for the grammar of type and format list.
+                                     Note: If this option is specified, please set comma-separated types and formats for all
+                                           inputs following the same order as network inputs ID (even if only one input
+                                           needs specifying IO format) or set the type and format once for broadcasting.
+  --outputIOFormats=spec             Type and format of each of the output tensors (default = all outputs in fp32:chw)
+                                     Note: If this option is specified, please set comma-separated types and formats for all
+                                           outputs following the same order as network outputs ID (even if only one output
+                                           needs specifying IO format) or set the type and format once for broadcasting.
+                                     IO Formats: spec  ::= IOfmt[","spec]
+                                                 IOfmt ::= type:fmt
+                                               type  ::= "fp32"|"fp16"|"bf16"|"int32"|"int64"|"int8"|"uint8"|"bool"
+                                               fmt   ::= ("chw"|"chw2"|"chw4"|"hwc8"|"chw16"|"chw32"|"dhwc8"|
+                                                          "cdhw32"|"hwc"|"dla_linear"|"dla_hwc4")["+"fmt]
+  --memPoolSize=poolspec             Specify the size constraints of the designated memory pool(s)
+                                     Supports the following base-2 suffixes: B (Bytes), G (Gibibytes), K (Kibibytes), M (Mebibytes).
+                                     If none of suffixes is appended, the defualt unit is in MiB.
+                                     Note: Also accepts decimal sizes, e.g. 0.25M. Will be rounded down to the nearest integer bytes.
+                                     In particular, for dlaSRAM the bytes will be rounded down to the nearest power of 2.
+                                   Pool constraint: poolspec ::= poolfmt[","poolspec]
+                                                      poolfmt ::= pool:size
+                                                    pool ::= "workspace"|"dlaSRAM"|"dlaLocalDRAM"|"dlaGlobalDRAM"|"tacticSharedMem"
+  --profilingVerbosity=mode          Specify profiling verbosity. mode ::= layer_names_only|detailed|none (default = layer_names_only).
+                                     Please only assign once.
+  --avgTiming=M                      Set the number of times averaged in each iteration for kernel selection (default = 8)
+  --refit                            Mark the engine as refittable. This will allow the inspection of refittable layers 
+                                     and weights within the engine.
+  --stripWeights                     Strip weights from plan. This flag works with either refit or refit with identical weights. Default
+                                     to latter, but you can switch to the former by enabling both --stripWeights and --refit at the same
+                                     time.
+  --stripAllWeights                  Alias for combining the --refit and --stripWeights options. It marks all weights as refittable,
+                                     disregarding any performance impact. Additionally, it strips all refittable weights after the 
+                                     engine is built.
+  --weightless                       [Deprecated] this knob has been deprecated. Please use --stripWeights
+  --versionCompatible, --vc          Mark the engine as version compatible. This allows the engine to be used with newer versions
+                                     of TensorRT on the same host OS, as well as TensorRT's dispatch and lean runtimes.
+  --pluginInstanceNorm, --pi         Set `kNATIVE_INSTANCENORM` to false in the ONNX parser. This will cause the ONNX parser to use
+                                     a plugin InstanceNorm implementation over the native implementation when parsing.
+  --useRuntime=runtime               TensorRT runtime to execute engine. "lean" and "dispatch" require loading VC engine and do
+                                     not support building an engine.
+                                           runtime::= "full"|"lean"|"dispatch"
+  --leanDLLPath=<file>               External lean runtime DLL to use in version compatiable mode.
+  --excludeLeanRuntime               When --versionCompatible is enabled, this flag indicates that the generated engine should
+                                     not include an embedded lean runtime. If this is set, the user must explicitly specify a
+                                     valid lean runtime to use when loading the engine.
+  --sparsity=spec                    Control sparsity (default = disabled). 
+                                   Sparsity: spec ::= "disable", "enable", "force"
+                                     Note: Description about each of these options is as below
+                                           disable = do not enable sparse tactics in the builder (this is the default)
+                                           enable  = enable sparse tactics in the builder (but these tactics will only be
+                                                     considered if the weights have the right sparsity pattern)
+                                           force   = enable sparse tactics in the builder and force-overwrite the weights to have
+                                                     a sparsity pattern (even if you loaded a model yourself)
+                                                     [Deprecated] this knob has been deprecated.
+                                                     Please use <polygraphy surgeon prune> to rewrite the weights.
+  --noTF32                           Disable tf32 precision (default is to enable tf32, in addition to fp32)
+  --fp16                             Enable fp16 precision, in addition to fp32 (default = disabled)
+  --bf16                             Enable bf16 precision, in addition to fp32 (default = disabled)
+  --int8                             Enable int8 precision, in addition to fp32 (default = disabled)
+  --fp8                              Enable fp8 precision, in addition to fp32 (default = disabled)
+  --int4                             Enable int4 precision, in addition to fp32 (default = disabled)
+  --best                             Enable all precisions to achieve the best performance (default = disabled)
+  --stronglyTyped                    Create a strongly typed network. (default = disabled)
+  --directIO                         Avoid reformatting at network boundaries. (default = disabled)
+  --precisionConstraints=spec        Control precision constraint setting. (default = none)
+                                       Precision Constraints: spec ::= "none" | "obey" | "prefer"
+                                         none = no constraints
+                                         prefer = meet precision constraints set by --layerPrecisions/--layerOutputTypes if possible
+                                         obey = meet precision constraints set by --layerPrecisions/--layerOutputTypes or fail
+                                                otherwise
+  --layerPrecisions=spec             Control per-layer precision constraints. Effective only when precisionConstraints is set to
+                                   "obey" or "prefer". (default = none)
+                                   The specs are read left-to-right, and later ones override earlier ones. Each layer name can
+                                     contain at most one wildcard ('*') character.
+                                   Per-layer precision spec ::= layerPrecision[","spec]
+                                                       layerPrecision ::= layerName":"precision
+                                                       precision ::= "fp32"|"fp16"|"bf16"|"int32"|"int8"
+  --layerOutputTypes=spec            Control per-layer output type constraints. Effective only when precisionConstraints is set to
+                                   "obey" or "prefer". (default = none
+                                   The specs are read left-to-right, and later ones override earlier ones. Each layer name can
+                                     contain at most one wildcard ('*') character. If a layer has more than
+                                   one output, then multiple types separated by "+" can be provided for this layer.
+                                   Per-layer output type spec ::= layerOutputTypes[","spec]
+                                                         layerOutputTypes ::= layerName":"type
+                                                         type ::= "fp32"|"fp16"|"bf16"|"int32"|"int8"["+"type]
+  --layerDeviceTypes=spec            Specify layer-specific device type.
+                                     The specs are read left-to-right, and later ones override earlier ones. If a layer does not have
+                                     a device type specified, the layer will opt for the default device type.
+                                   Per-layer device type spec ::= layerDeviceTypePair[","spec]
+                                                         layerDeviceTypePair ::= layerName":"deviceType
+                                                           deviceType ::= "GPU"|"DLA"
+  --calib=<file>                     Read INT8 calibration cache file
+  --safe                             Enable build safety certified engine, if DLA is enable, --buildDLAStandalone will be specified
+                                     automatically (default = disabled)
+  --buildDLAStandalone               Enable build DLA standalone loadable which can be loaded by cuDLA, when this option is enabled, 
+                                     --allowGPUFallback is disallowed and --skipInference is enabled by default. Additionally, 
+                                     specifying --inputIOFormats and --outputIOFormats restricts I/O data type and memory layout
+                                     (default = disabled)
+  --allowGPUFallback                 When DLA is enabled, allow GPU fallback for unsupported layers (default = disabled)
+  --consistency                      Perform consistency checking on safety certified engine
+  --restricted                       Enable safety scope checking with kSAFETY_SCOPE build flag
+  --saveEngine=<file>                Save the serialized engine
+  --loadEngine=<file>                Load a serialized engine
+  --getPlanVersionOnly               Print TensorRT version when loaded plan was created. Works without deserialization of the plan.
+                                     Use together with --loadEngine. Supported only for engines created with 8.6 and forward.
+  --tacticSources=tactics            Specify the tactics to be used by adding (+) or removing (-) tactics from the default 
+                                     tactic sources (default = all available tactics).
+                                     Note: Currently only cuDNN, cuBLAS, cuBLAS-LT, and edge mask convolutions are listed as optional
+                                           tactics.
+                                   Tactic Sources: tactics ::= [","tactic]
+                                                     tactic  ::= (+|-)lib
+                                                   lib     ::= "CUBLAS"|"CUBLAS_LT"|"CUDNN"|"EDGE_MASK_CONVOLUTIONS"
+                                                               |"JIT_CONVOLUTIONS"
+                                     For example, to disable cudnn and enable cublas: --tacticSources=-CUDNN,+CUBLAS
+  --noBuilderCache                   Disable timing cache in builder (default is to enable timing cache)
+  --noCompilationCache               Disable Compilation cache in builder, and the cache is part of timing cache (default is to enable compilation cache)
+  --errorOnTimingCacheMiss           Emit error when a tactic being timed is not present in the timing cache (default = false)
+  --timingCacheFile=<file>           Save/load the serialized global timing cache
+  --preview=features                 Specify preview feature to be used by adding (+) or removing (-) preview features from the default
+                                   Preview Features: features ::= [","feature]
+                                                       feature  ::= (+|-)flag
+                                                     flag     ::= "aliasedPluginIO1003"
+                                                                  |"profileSharing0806"
+  --builderOptimizationLevel         Set the builder optimization level. (default is 3)
+                                     Higher level allows TensorRT to spend more building time for more optimization options.
+                                     Valid values include integers from 0 to the maximum optimization level, which is currently 5.
+  --hardwareCompatibilityLevel=mode  Make the engine file compatible with other GPU architectures. (default = none)
+                                   Hardware Compatibility Level: mode ::= "none" | "ampere+"
+                                         none = no compatibility
+                                         ampere+ = compatible with Ampere and newer GPUs
+  --runtimePlatform=platform         Set the target platform for runtime execution. (default = SameAsBuild)
+                                     When this option is enabled, --skipInference is enabled by default.
+                                   RuntimePlatfrom: platform ::= "SameAsBuild" | "WindowsAMD64"
+                                         SameAsBuild = no requirement for cross-platform compatibility.
+                                         WindowsAMD64 = set the target platform for engine execution as Windows AMD64 system
+  --tempdir=<dir>                    Overrides the default temporary directory TensorRT will use when creating temporary files.
+                                     See IRuntime::setTemporaryDirectory API documentation for more information.
+  --tempfileControls=controls        Controls what TensorRT is allowed to use when creating temporary executable files.
+                                     Should be a comma-separated list with entries in the format (in_memory|temporary):(allow|deny).
+                                     in_memory: Controls whether TensorRT is allowed to create temporary in-memory executable files.
+                                     temporary: Controls whether TensorRT is allowed to create temporary executable files in the
+                                                filesystem (in the directory given by --tempdir).
+                                     For example, to allow in-memory files and disallow temporary files:
+                                         --tempfileControls=in_memory:allow,temporary:deny
+                                     If a flag is unspecified, the default behavior is "allow".
+  --maxAuxStreams=N                  Set maximum number of auxiliary streams per inference stream that TRT is allowed to use to run 
+                                     kernels in parallel if the network contains ops that can run in parallel, with the cost of more 
+                                     memory usage. Set this to 0 for optimal memory usage. (default = using heuristics)
+  --profile                          Build with dynamic shapes using a profile with the min/max/opt shapes provided. Can be specified
+                                         multiple times to create multiple profiles with contiguous index.
+                                     (ex: --profile=0 --minShapes=<spec> --optShapes=<spec> --maxShapes=<spec> --profile=1 ...)
+  --calibProfile                     Select the optimization profile to calibrate by index. (default = 0)
+  --allowWeightStreaming             Enable a weight streaming engine. Must be specified with --stronglyTyped. TensorRT will disable
+                                     weight streaming at runtime unless --weightStreamingBudget is specified.
+  --markDebug                        Specify list of names of tensors to be marked as debug tensors. Separate names with a comma
+
+=== Inference Options ===
+  --shapes=spec               Set input shapes for dynamic shapes inference inputs.
+                              Note: Input names can be wrapped with escaped single quotes (ex: 'Input:0').
+                              Example input shapes spec: input0:1x3x256x256, input1:1x3x128x128
+                              For scalars (0-D shapes), use input0:scalar or simply input0: with nothing after the colon.
+                              Each input shape is supplied as a key-value pair where key is the input name and
+                              value is the dimensions (including the batch dimension) to be used for that input.
+                              Each key-value pair has the key and value separated using a colon (:).
+                              Multiple input shapes can be provided via comma-separated key-value pairs, and each input 
+                              name can contain at most one wildcard ('*') character.
+  --loadInputs=spec           Load input values from files (default = generate random inputs). Input names can be wrapped with single quotes (ex: 'Input:0')
+                            Input values spec ::= Ival[","spec]
+                                         Ival ::= name":"file
+                              Consult the README for more information on generating files for custom inputs.
+  --iterations=N              Run at least N inference iterations (default = 10)
+  --warmUp=N                  Run for N milliseconds to warmup before measuring performance (default = 200)
+  --duration=N                Run performance measurements for at least N seconds wallclock time (default = 3)
+                              If -1 is specified, inference will keep running unless stopped manually
+  --sleepTime=N               Delay inference start with a gap of N milliseconds between launch and compute (default = 0)
+  --idleTime=N                Sleep N milliseconds between two continuous iterations(default = 0)
+  --infStreams=N              Instantiate N execution contexts to run inference concurrently (default = 1)
+  --exposeDMA                 Serialize DMA transfers to and from device (default = disabled).
+  --noDataTransfers           Disable DMA transfers to and from device (default = enabled).
+  --useManagedMemory          Use managed memory instead of separate host and device allocations (default = disabled).
+  --useSpinWait               Actively synchronize on GPU events. This option may decrease synchronization time but increase CPU usage and power (default = disabled)
+  --threads                   Enable multithreading to drive engines with independent threads or speed up refitting (default = disabled) 
+  --useCudaGraph              Use CUDA graph to capture engine execution and then launch inference (default = disabled).
+                              This flag may be ignored if the graph capture fails.
+  --timeDeserialize           Time the amount of time it takes to deserialize the network and exit.
+  --timeRefit                 Time the amount of time it takes to refit the engine before inference.
+  --separateProfileRun        Do not attach the profiler in the benchmark run; if profiling is enabled, a second profile run will be executed (default = disabled)
+  --skipInference             Exit after the engine has been built and skip inference perf measurement (default = disabled)
+  --persistentCacheRatio      Set the persistentCacheLimit in ratio, 0.5 represent half of max persistent L2 size (default = 0)
+  --useProfile                Set the optimization profile for the inference context (default = 0 ).
+  --allocationStrategy=spec   Specify how the internal device memory for inference is allocated.
+                            Strategy: spec ::= "static", "profile", "runtime"
+                                  static = Allocate device memory based on max size across all profiles.
+                                  profile = Allocate device memory based on max size of the current profile.
+                                  runtime = Allocate device memory based on the actual input shapes.
+  --saveDebugTensors          Specify list of names of tensors to turn on the debug state
+                              and filename to save raw outputs to.
+                              These tensors must be specified as debug tensors during build time.
+                            Input values spec ::= Ival[","spec]
+                                         Ival ::= name":"file
+  --weightStreamingBudget     Set the maximum amount of GPU memory TensorRT is allowed to use for weights.
+                              It can take on the following values:
+                                -2: (default) Disable weight streaming at runtime.
+                                -1: TensorRT will automatically decide the budget.
+                                 0-100%: Percentage of streamable weights that reside on the GPU.
+                                         0% saves the most memory but will have the worst performance.
+                                         Requires the % character.
+                                >=0B: The exact amount of streamable weights that reside on the GPU. Supports the 
+                                     following base-2 suffixes: B (Bytes), G (Gibibytes), K (Kibibytes), M (Mebibytes).
+
+=== Reporting Options ===
+  --verbose                   Use verbose logging (default = false)
+  --avgRuns=N                 Report performance measurements averaged over N consecutive iterations (default = 10)
+  --percentile=P1,P2,P3,...   Report performance for the P1,P2,P3,... percentages (0<=P_i<=100, 0 representing max perf, and 100 representing min perf; (default = 90,95,99%)
+  --dumpRefit                 Print the refittable layers and weights from a refittable engine
+  --dumpOutput                Print the output tensor(s) of the last inference iteration (default = disabled)
+  --dumpRawBindingsToFile     Print the input/output tensor(s) of the last inference iteration to file(default = disabled)
+  --dumpProfile               Print profile information per layer (default = disabled)
+  --dumpLayerInfo             Print layer information of the engine to console (default = disabled)
+  --dumpOptimizationProfile   Print the optimization profile(s) information (default = disabled)
+  --exportTimes=<file>        Write the timing results in a json file (default = disabled)
+  --exportOutput=<file>       Write the output tensors to a json file (default = disabled)
+  --exportProfile=<file>      Write the profile information per layer in a json file (default = disabled)
+  --exportLayerInfo=<file>    Write the layer information of the engine in a json file (default = disabled)
+
+=== System Options ===
+  --device=N                  Select cuda device N (default = 0)
+  --useDLACore=N              Select DLA core N for layers that support DLA (default = none)
+  --staticPlugins             Plugin library (.so) to load statically (can be specified multiple times)
+  --dynamicPlugins            Plugin library (.so) to load dynamically and may be serialized with the engine if they are included in --setPluginsToSerialize (can be specified multiple times)
+  --setPluginsToSerialize     Plugin library (.so) to be serialized with the engine (can be specified multiple times)
+  --ignoreParsedPluginLibs    By default, when building a version-compatible engine, plugin libraries specified by the ONNX parser 
+                              are implicitly serialized with the engine (unless --excludeLeanRuntime is specified) and loaded dynamically. 
+                              Enable this flag to ignore these plugin libraries instead.
+
+=== Help ===
+  --help, -h                  Print this message
+[08/02/2026-21:05:29] [E] Model missing or format not recognized
+&&&& FAILED TensorRT.trtexec [TensorRT v100300] # /usr/src/tensorrt/bin/trtexec --version
+
+========== Python version ==========
+$ python3 --version 
+Python 3.10.12
+
+========== Python package versions ==========
+numpy           : 1.23.5
+cv2             : 4.10.0
+torch           : 2.5.0a0+872d972e41.nv24.08
+torchvision     : 0.20.0a0+afc54f7
+ultralytics     : 8.3.159
+onnx            : NOT_IMPORTABLE (ModuleNotFoundError: No module named 'onnx')
+onnxruntime     : 1.20.0
+tensorrt        : 10.3.0
+pycuda          : NOT_IMPORTABLE (ModuleNotFoundError: No module named 'pycuda')
+
+========== GStreamer core and NVIDIA plugins ==========
+$ cat results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/artifacts/gstreamer_plugins.txt 
+========== GStreamer version ==========
+gst-launch-1.0 version 1.20.3
+GStreamer 1.20.3
+https://launchpad.net/distros/ubuntu/+source/gstreamer1.0
+
+========== nvarguscamerasrc ==========
+Factory Details:
+  Long-name                NvArgusCameraSrc
+  Description              nVidia ARGUS Camera Source
+  Description              nVidia ARGUS Source Component
+  Filename                 /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstnvarguscamerasrc.so
+  Version                  1.0.0
+
+========== nvv4l2h264enc ==========
+
+========== nvv4l2h265enc ==========
+
+========== power and clock status ==========
+$ cat results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/artifacts/power_status.txt 
+========== nvpmodel ==========
+NV Power Mode: 25W
+1
+
+========== jetson_clocks ==========
+SOC family:tegra234  Machine:NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super
+Error: Run this script(/usr/bin/jetson_clocks) as a root user
+
+========== tegrastats sample ==========
+08-02-2026 21:05:38 RAM 2853/7620MB (lfb 7x2MB) SWAP 5/3810MB (cached 0MB) CPU [1%@729,1%@729,0%@729,0%@729,0%@729,0%@729] GR3D_FREQ 0% cpu@46.968C soc2@46.437C soc0@47.125C gpu@48C tj@48C soc1@47C VDD_IN 4792mW/4792mW VDD_CPU_GPU_CV 518mW/518mW VDD_SOC 1594mW/1594mW
+08-02-2026 21:05:39 RAM 2853/7620MB (lfb 7x2MB) SWAP 5/3810MB (cached 0MB) CPU [1%@729,0%@729,1%@729,1%@729,0%@729,0%@729] GR3D_FREQ 0% cpu@47.093C soc2@46.375C soc0@47.156C gpu@47.75C tj@47.75C soc1@47.062C VDD_IN 4792mW/4792mW VDD_CPU_GPU_CV 518mW/518mW VDD_SOC 1637mW/1616mW
+
+========== camera status ==========
+$ cat results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/artifacts/camera_status.txt 
+========== video devices ==========
+crw-rw----+ 1 root video 81, 0  1月  1  1970 /dev/video0
+
+========== media devices ==========
+crw-rw----+ 1 root video 503, 0  6月  4  2025 /dev/media0
+
+========== v4l2 devices ==========
+NVIDIA Tegra Video Input Device (platform:tegra-camrtc-ca):
+	/dev/media0
+
+vi-output, imx219 10-0010 (platform:tegra-capture-vi:1):
+	/dev/video0
+
+
+========== Argus daemon ==========
+active
+
+========== Git snapshot ==========
+$ cat results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/artifacts/git_snapshot.txt 
+repository=/home/nvidia/projects/jetson-ppe-deploy-opt
+branch=exp/01-environment-audit
+commit=863bc0f3a90bbd4825a16ff26cf5ffc415430b04
+tags=exp00-complete 
+
+?? results/environment_audit/
+?? tools/exp01_1_jetson_environment_audit.sh
+
+863bc0f (HEAD -> exp/01-environment-audit, tag: exp00-complete, origin/main, main) docs(exp00): mark repository initialization passed
+ed0b9b0 docs(exp00): record repository initialization
+60b05ad chore: initialize Jetson PPE deployment project

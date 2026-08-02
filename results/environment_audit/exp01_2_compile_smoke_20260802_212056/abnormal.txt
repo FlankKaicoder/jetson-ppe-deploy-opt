@@ -1,0 +1,6 @@
+results/environment_audit/exp01_2_compile_smoke_20260802_212056/build.log:3:/home/nvidia/projects/jetson-ppe-deploy-opt/experiments/exp01_compile_smoke/src/cuda_smoke.cu(186): error: expected a "]"
+results/environment_audit/exp01_2_compile_smoke_20260802_212056/build.log:7:1 error detected in the compilation of "/home/nvidia/projects/jetson-ppe-deploy-opt/experiments/exp01_compile_smoke/src/cuda_smoke.cu".
+results/environment_audit/exp01_2_compile_smoke_20260802_212056/build.log:8:gmake[2]: *** [CMakeFiles/exp01_compile_smoke.dir/build.make:90: CMakeFiles/exp01_compile_smoke.dir/src/cuda_smoke.cu.o] Error 2
+results/environment_audit/exp01_2_compile_smoke_20260802_212056/build.log:10:gmake[1]: *** [CMakeFiles/Makefile2:83: CMakeFiles/exp01_compile_smoke.dir/all] Error 2
+results/environment_audit/exp01_2_compile_smoke_20260802_212056/build.log:11:gmake: *** [Makefile:91: all] Error 2
+results/environment_audit/exp01_2_compile_smoke_20260802_212056/run.log:1:Run skipped because build failed.

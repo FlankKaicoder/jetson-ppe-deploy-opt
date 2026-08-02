@@ -1,0 +1,5 @@
+results/environment_audit/exp01_2_compile_smoke_20260802_212454/build.log:52:   13 |     float max_abs_error = 0.0F;
+results/environment_audit/exp01_2_compile_smoke_20260802_212454/build.log:80:   30 |     cudaError_t status,
+results/environment_audit/exp01_2_compile_smoke_20260802_212454/build.log:140:   62 |         std::fprintf(stderr, "CUDA_ERROR no CUDA device found\n");
+results/environment_audit/exp01_2_compile_smoke_20260802_212454/build.log:290:  189 |                 result.max_abs_error,
+results/environment_audit/exp01_2_compile_smoke_20260802_212454/run.log:6:cuda_kernel_max_abs_error=0

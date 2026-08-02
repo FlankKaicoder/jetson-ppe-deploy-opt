@@ -1,0 +1,16 @@
+========== GStreamer version ==========
+gst-launch-1.0 version 1.20.3
+GStreamer 1.20.3
+https://launchpad.net/distros/ubuntu/+source/gstreamer1.0
+
+========== nvarguscamerasrc ==========
+Factory Details:
+  Long-name                NvArgusCameraSrc
+  Description              nVidia ARGUS Camera Source
+  Description              nVidia ARGUS Source Component
+  Filename                 /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstnvarguscamerasrc.so
+  Version                  1.0.0
+
+========== nvv4l2h264enc ==========
+
+========== nvv4l2h265enc ==========

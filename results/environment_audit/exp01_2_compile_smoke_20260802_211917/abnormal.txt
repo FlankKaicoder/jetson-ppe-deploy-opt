@@ -1,0 +1,6 @@
+results/environment_audit/exp01_2_compile_smoke_20260802_211917/build.log:8:/usr/include/glib-2.0/glib/gmacros.h:249:28: error: missing ')' after "__has_attribute"
+results/environment_audit/exp01_2_compile_smoke_20260802_211917/build.log:15:/usr/include/glib-2.0/glib/gmacros.h:249:28: error: missing binary operator before token "("
+results/environment_audit/exp01_2_compile_smoke_20260802_211917/build.log:18:gmake[2]: *** [CMakeFiles/exp01_compile_smoke.dir/build.make:76: CMakeFiles/exp01_compile_smoke.dir/src/main.cu.o] Error 1
+results/environment_audit/exp01_2_compile_smoke_20260802_211917/build.log:19:gmake[1]: *** [CMakeFiles/Makefile2:83: CMakeFiles/exp01_compile_smoke.dir/all] Error 2
+results/environment_audit/exp01_2_compile_smoke_20260802_211917/build.log:20:gmake: *** [Makefile:91: all] Error 2
+results/environment_audit/exp01_2_compile_smoke_20260802_211917/run.log:1:Run skipped because build failed.

@@ -82,3 +82,4 @@ timing_cache/
 # System
 .DS_Store
 Thumbs.db
+**/build/

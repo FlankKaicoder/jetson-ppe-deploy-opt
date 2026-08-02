@@ -1,0 +1,22 @@
+========== Exp01.1 Jetson Environment Audit ==========
+result                  : PASS
+timestamp               : 2026-08-02T21:05:41+08:00
+repository              : /home/nvidia/projects/jetson-ppe-deploy-opt
+branch                  : exp/01-environment-audit
+commit                  : 863bc0f3a90bbd4825a16ff26cf5ffc415430b04
+tags                    : exp00-complete 
+jetson_model            : NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super
+l4t                     : # R36 (release), REVISION: 4.3, GCID: 38968081, BOARD: generic, EABI: aarch64, DATE: Wed Jan  8 01:49:37 UTC 2025
+jetpack_metapackage     : metapackage-not-installed
+cuda_nvcc               : PASS
+tensorrt_trtexec        : PASS
+trtexec_path            : /usr/src/tensorrt/bin/trtexec
+python3                 : PASS
+gstreamer               : PASS
+nvarguscamerasrc        : PASS
+nvv4l2h264enc           : NOT_APPLICABLE_NO_NVENC
+nvv4l2h265enc           : NOT_APPLICABLE_NO_NVENC
+environment_file        : results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/environment.txt
+abnormal_file           : results/environment_audit/exp01_1_jetson_environment_audit_20260802_210528/abnormal.txt
+
+[RESULT] EXP01_1_JETSON_AUDIT=PASS
