@@ -1,0 +1,33 @@
+============================================================
+ Exp02.8 Baseline Error and Size Audit
+============================================================
+result=PASS
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556/weights/best.pt
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+image_count=219
+confidence_threshold=0.25
+matching_iou=0.5
+
+========== overall ==========
+gt=840
+tp=718
+fp=187
+fn=122
+precision_at_conf_0_25=0.79337017
+recall_at_conf_0_25=0.85476190
+
+========== per class ==========
+person: gt=337 tp=284 fp=87 fn=53 P=0.76549865 R=0.84272997
+helmet: gt=259 tp=220 fp=40 fn=39 P=0.84615385 R=0.84942085
+safety_vest: gt=244 tp=214 fp=60 fn=30 P=0.78102190 R=0.87704918
+
+========== per size ==========
+tiny: gt=29 tp=18 fn=11 R=0.62068966
+small: gt=114 tp=86 fn=28 R=0.75438596
+medium: gt=222 tp=192 fn=30 R=0.86486486
+large: gt=475 tp=422 fn=53 R=0.88842105
+
+NOTE: These precision/recall values use a fixed confidence threshold of 0.25 and class-aware IoU matching at 0.50. They are an error audit, not a replacement for Ultralytics mAP metrics.
+
+worst_visual_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp03_4_yolo11n_p2_error_size_audit_batch4_20260804_201348/worst_visuals
+exp02_8_baseline_error_size_audit=PASS
