@@ -1,0 +1,27 @@
+{
+  "experiment": "Exp02.5 YOLO11n one-epoch training smoke",
+  "result": "PASS",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "model_path": "/root/autodl-tmp/models/ultralytics/yolo11n.pt",
+  "save_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp02_5_smoke_20260804_184432",
+  "best_weight": "/root/autodl-tmp/jetson-ppe-outputs/exp02_5_smoke_20260804_184432/weights/best.pt",
+  "last_weight": "/root/autodl-tmp/jetson-ppe-outputs/exp02_5_smoke_20260804_184432/weights/last.pt",
+  "results_csv": "/root/autodl-tmp/jetson-ppe-outputs/exp02_5_smoke_20260804_184432/results.csv",
+  "python_executable": "/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python",
+  "torch_version": "2.8.0+cu128",
+  "torch_cuda_version": "12.8",
+  "ultralytics_version": "8.4.95",
+  "cuda_device": "NVIDIA GeForce RTX 3080 Ti",
+  "epochs": 1,
+  "imgsz": 640,
+  "batch": 8,
+  "workers": 0,
+  "seed": 42,
+  "train_elapsed_seconds": 287.35806196997873,
+  "metrics": {
+    "metrics/precision(B)": 0.6947397930132885,
+    "metrics/recall(B)": 0.5165015281311199,
+    "metrics/mAP50(B)": 0.6269691440935412,
+    "metrics/mAP50-95(B)": 0.29115857368507264
+  }
+}

@@ -1,0 +1,9 @@
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/test
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/val
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/test
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/val

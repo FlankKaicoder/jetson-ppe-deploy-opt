@@ -1,0 +1,16 @@
+kind,split,image_key,image_path,label_path,line_number,detail
+image_without_label,train,.ipynb_checkpoints/image13-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image13-checkpoint.jpeg,,,No matching TXT label file.
+image_without_label,train,.ipynb_checkpoints/image19-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image19-checkpoint.jpeg,,,No matching TXT label file.
+image_without_label,train,.ipynb_checkpoints/image26-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image26-checkpoint.jpeg,,,No matching TXT label file.
+image_without_label,train,.ipynb_checkpoints/image4-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image4-checkpoint.jpg,,,No matching TXT label file.
+label_without_image,train,image940(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image940(1).txt,,No matching image file.
+label_without_image,train,image941(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image941(1).txt,,No matching image file.
+label_without_image,train,image944(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image944(1).txt,,No matching image file.
+label_without_image,train,image945(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image945(1).txt,,No matching image file.
+label_without_image,train,image946(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image946(1).txt,,No matching image file.
+label_without_image,train,image947(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image947(1).txt,,No matching image file.
+label_without_image,train,image948(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image948(1).txt,,No matching image file.
+label_without_image,train,image949(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image949(1).txt,,No matching image file.
+label_without_image,train,image95(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image95(1).txt,,No matching image file.
+label_without_image,train,image950(1),,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image950(1).txt,,No matching image file.
+duplicate_annotation,train,image187,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image187.jpg,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image187.txt,6,6 0.500117 0.517266 0.642766 0.965469

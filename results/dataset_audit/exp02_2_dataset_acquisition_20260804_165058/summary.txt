@@ -1,0 +1,18 @@
+============================================================
+ Exp02.2 Summary
+============================================================
+result=PASS
+dataset_id=construction-ppe
+dataset_version=ultralytics_2025_v1
+dataset_root=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1
+archive=/root/autodl-tmp/datasets/downloads/construction-ppe.zip
+archive_bytes=178415813
+archive_sha256=bef8dcb599aa4e9d9f5e602cb6fa7143d3c84d7f6a0ff40463d7f2a4c2632ccc
+train_images=1132
+val_images=143
+test_images=141
+total_images=1416
+source_record=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_2_dataset_acquisition_20260804_165058/dataset_source.txt
+inventory_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_2_dataset_acquisition_20260804_165058/raw_dataset_inventory.json
+yaml_inventory=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_2_dataset_acquisition_20260804_165058/yaml_inventory.txt
+run_log=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_2_dataset_acquisition_20260804_165058/run.log

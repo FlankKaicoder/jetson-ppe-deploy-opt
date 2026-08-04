@@ -82,3 +82,11 @@ timing_cache/
 # System
 .DS_Store
 Thumbs.db
+# Python and notebook cache
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+# Temporary backup files
+*.bak_*
+# Large generated model artifacts
+# Failed or superseded Exp02 smoke runs
+results/training/exp02_5_yolo11n_smoke_*/

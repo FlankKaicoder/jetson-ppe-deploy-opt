@@ -1,0 +1,5 @@
+label=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/labels/train/train__image187.txt
+before=5
+after=4
+removed=1
+train_cache_removed=YES
