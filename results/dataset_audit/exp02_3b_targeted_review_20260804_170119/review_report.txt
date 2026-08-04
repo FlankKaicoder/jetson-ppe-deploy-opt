@@ -1,0 +1,157 @@
+Exp02.3b Targeted Dataset Review
+================================================================================
+source_audit=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_3_raw_dataset_deep_audit_20260804_170119
+review_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_3b_targeted_review_20260804_170119
+
+[Images without labels]
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image13-checkpoint.jpeg
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image19-checkpoint.jpeg
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image26-checkpoint.jpeg
+/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image4-checkpoint.jpg
+
+[Labels without images]
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image940(1).txt
+6 0.648867 0.598852 0.093141 0.226734
+0 0.731992 0.525602 0.047547 0.038359
+0 0.647383 0.527328 0.047547 0.038375
+0 0.561055 0.541141 0.047547 0.038375
+0 0.397023 0.542867 0.047547 0.038359
+0 0.317602 0.568766 0.047547 0.038375
+2 0.738891 0.606750 0.081187 0.101187
+2 0.649109 0.611938 0.081188 0.101187
+2 0.557594 0.620562 0.081187 0.101188
+2 0.397016 0.625750 0.081187 0.101187
+2 0.317594 0.639563 0.081188 0.101187
+2 0.227375 0.620594 0.081187 0.101187
+0 0.234820 0.544812 0.047547 0.038375
+6 0.734203 0.582727 0.093156 0.226734
+6 0.838797 0.635109 0.093156 0.226750
+6 0.569438 0.604031 0.093156 0.226750
+6 0.472750 0.605758 0.093156 0.226734
+6 0.393328 0.616117 0.093156 0.226734
+6 0.324266 0.626477 0.093156 0.226734
+6 0.229297 0.612664 0.093156 0.226734
+6 0.104984 0.661008 0.093156 0.226734
+6 0.040383 0.662734 0.080766 0.226750
+5 0.469313 0.594492 0.079437 0.143297
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image941(1).txt
+0 0.586148 0.211602 0.135516 0.065953
+2 0.595984 0.416016 0.259000 0.241000
+1 0.447641 0.557883 0.062344 0.058766
+3 0.630406 0.763234 0.126750 0.168344
+1 0.723969 0.541172 0.072000 0.067344
+3 0.476531 0.716453 0.084000 0.109781
+6 0.582320 0.496078 0.361047 0.726906
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image944(1).txt
+6 0.530625 0.548797 0.455937 0.827094
+0 0.531781 0.198633 0.223625 0.091797
+3 0.509344 0.846813 0.187563 0.191063
+1 0.711055 0.584398 0.087578 0.088078
+1 0.366461 0.625242 0.086453 0.079516
+4 0.559086 0.237352 0.173859 0.037172
+3 0.430133 0.763227 0.088734 0.151078
+2 0.516500 0.441906 0.303906 0.289375
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image945(1).txt
+1 0.365656 0.635578 0.105563 0.079469
+0 0.546484 0.194305 0.239219 0.110766
+2 0.500156 0.432422 0.291875 0.291094
+1 0.663547 0.578305 0.072000 0.075891
+3 0.478266 0.852859 0.180656 0.182406
+3 0.503547 0.770156 0.135406 0.130313
+4 0.561703 0.235633 0.206594 0.037172
+6 0.511633 0.541883 0.421391 0.847797
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image946(1).txt
+3 0.535258 0.710344 0.153016 0.108188
+0 0.585344 0.151141 0.223687 0.072906
+6 0.569438 0.481438 0.361031 0.726906
+3 0.577797 0.753703 0.204344 0.118344
+4 0.560805 0.199367 0.173859 0.037172
+2 0.575266 0.388422 0.259000 0.285969
+1 0.441625 0.544898 0.102000 0.081141
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image947(1).txt
+2 0.586461 0.399625 0.250422 0.277312
+3 0.422984 0.721602 0.232531 0.127109
+3 0.650289 0.733883 0.200984 0.151078
+4 0.562539 0.197648 0.173859 0.037172
+6 0.531484 0.460719 0.519844 0.726906
+0 0.582711 0.153750 0.228859 0.091875
+1 0.553937 0.581734 0.118687 0.089656
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image948(1).txt
+2 0.568398 0.399617 0.272734 0.287641
+3 0.411773 0.732852 0.220422 0.149609
+3 0.669266 0.749414 0.211344 0.151078
+4 0.565992 0.204555 0.173859 0.037172
+0 0.575797 0.163219 0.208156 0.086750
+6 0.543578 0.458992 0.485281 0.726922
+1 0.607437 0.575727 0.128937 0.070734
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image949(1).txt
+3 0.450680 0.722453 0.211672 0.153031
+1 0.602258 0.568820 0.118578 0.070734
+4 0.534914 0.197648 0.173859 0.037172
+3 0.694320 0.746852 0.181953 0.170109
+2 0.564008 0.388414 0.271141 0.289422
+6 0.563375 0.481438 0.473312 0.726906
+0 0.556789 0.151164 0.228891 0.093578
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image95(1).txt
+3 0.445469 0.679273 0.173750 0.166766
+6 0.498656 0.403742 0.361031 0.726922
+1 0.647141 0.485938 0.087531 0.070750
+1 0.382906 0.494859 0.084812 0.088094
+2 0.517437 0.334875 0.284875 0.272125
+0 0.494641 0.108016 0.176969 0.090094
+4 0.493477 0.152758 0.173859 0.037172
+3 0.619211 0.681203 0.125016 0.180406
+
+label=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image950(1).txt
+4 0.610898 0.454914 0.091016 0.037172
+0 0.455789 0.380836 0.123422 0.093641
+1 0.700906 0.643016 0.073688 0.046531
+0 0.618031 0.413375 0.123438 0.093625
+6 0.655156 0.601406 0.266563 0.493750
+6 0.386641 0.581969 0.266562 0.493750
+5 0.386711 0.533406 0.228734 0.236187
+5 0.625328 0.562086 0.228750 0.236203
+1 0.549516 0.552711 0.062344 0.017297
+1 0.529719 0.580922 0.073688 0.046531
+1 0.524797 0.636109 0.073687 0.046531
+
+[Exact duplicate groups]
+exact_0001 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image4-checkpoint.jpg
+exact_0001 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image4.jpg
+exact_0002 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image26-checkpoint.jpeg
+exact_0002 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image26.jpeg
+exact_0003 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image19-checkpoint.jpeg
+exact_0003 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image19.jpeg
+exact_0004 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image13-checkpoint.jpeg
+exact_0004 | cross_split=False | train | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image13.jpeg
+
+[Cross-split near-duplicate candidates]
+01 | distance=2 | train:image1002 | test:image1003
+02 | distance=0 | train:image1011 | val:image1010
+03 | distance=2 | train:image102 | test:image40
+04 | distance=2 | train:image1025 | test:image160
+05 | distance=1 | train:image1038 | test:image160
+06 | distance=2 | train:image1038 | test:image63
+07 | distance=1 | train:image1050 | val:image1049
+08 | distance=2 | train:image1075 | test:image1074
+09 | distance=1 | train:image1087 | test:image1088
+10 | distance=1 | train:image24 | test:image63
+11 | distance=2 | train:image279 | test:image40
+12 | distance=2 | train:image290 | test:image63
+13 | distance=1 | train:image33 | val:image31
+14 | distance=1 | train:image376 | test:image40
+15 | distance=2 | train:image42 | test:image40
+16 | distance=1 | train:image73 | test:image63
+17 | distance=2 | train:image76 | test:image63
+18 | distance=0 | train:image833 | test:image834
+19 | distance=2 | train:image911 | test:image910
+20 | distance=2 | train:image926 | test:image927

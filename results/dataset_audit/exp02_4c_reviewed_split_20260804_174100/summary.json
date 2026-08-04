@@ -1,0 +1,82 @@
+{
+  "split_execution": "REVIEW_REQUIRED",
+  "v2_manifest": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_4b_group_split_v2_20260804_173549/group_split_manifest.csv",
+  "reviewed_pairs": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_3_raw_dataset_deep_audit_20260804_170119/cross_split_near_duplicates.csv",
+  "dataset_out": "/root/autodl-tmp/datasets/derived/construction_ppe3_reviewed_split_v1_20260804_174100",
+  "random_seed": 42,
+  "greedy_restarts": 800,
+  "local_search_steps": 30000,
+  "optimization_score": 0.022161396789790233,
+  "base_group_count": 71,
+  "reviewed_edges_used": 20,
+  "merged_group_count": 64,
+  "max_group_size": 100,
+  "total_images": 1416,
+  "global_class_counts": {
+    "person": 2245,
+    "helmet": 1734,
+    "safety_vest": 1618
+  },
+  "split_summary": {
+    "train": {
+      "images": 979,
+      "labels": 979,
+      "image_ratio": 0.6913841807909604,
+      "group_count": 45,
+      "negative_images": 6,
+      "class_counts": {
+        "person": 1576,
+        "helmet": 1218,
+        "safety_vest": 1128
+      },
+      "class_ratios": {
+        "person": 0.7020044543429844,
+        "helmet": 0.7024221453287197,
+        "safety_vest": 0.6971569839307787
+      }
+    },
+    "val": {
+      "images": 217,
+      "labels": 217,
+      "image_ratio": 0.15324858757062146,
+      "group_count": 11,
+      "negative_images": 1,
+      "class_counts": {
+        "person": 334,
+        "helmet": 260,
+        "safety_vest": 244
+      },
+      "class_ratios": {
+        "person": 0.1487750556792873,
+        "helmet": 0.14994232987312572,
+        "safety_vest": 0.1508034610630408
+      }
+    },
+    "test": {
+      "images": 220,
+      "labels": 220,
+      "image_ratio": 0.1553672316384181,
+      "group_count": 8,
+      "negative_images": 1,
+      "class_counts": {
+        "person": 335,
+        "helmet": 256,
+        "safety_vest": 246
+      },
+      "class_ratios": {
+        "person": 0.1492204899777283,
+        "helmet": 0.14763552479815456,
+        "safety_vest": 0.15203955500618047
+      }
+    }
+  },
+  "reviewed_cross_split_edges": 0,
+  "cross_split_dhash_pairs": 19,
+  "validation_errors": [
+    "Cross-split dHash<=2 pairs remain: 19"
+  ],
+  "transfer_counts": {
+    "image_hardlink": 1416,
+    "label_hardlink": 1416
+  }
+}

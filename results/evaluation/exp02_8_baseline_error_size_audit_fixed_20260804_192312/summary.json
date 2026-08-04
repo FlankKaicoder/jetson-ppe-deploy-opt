@@ -1,0 +1,87 @@
+{
+  "experiment": "Exp02.8 baseline error and object-size audit",
+  "result": "PASS",
+  "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "image_count": 219,
+  "confidence_threshold": 0.25,
+  "nms_iou": 0.7,
+  "matching_iou": 0.5,
+  "size_definition": {
+    "tiny": "area_ratio < 0.0025",
+    "small": "0.0025 <= area_ratio < 0.01",
+    "medium": "0.01 <= area_ratio < 0.04",
+    "large": "area_ratio >= 0.04"
+  },
+  "overall": {
+    "gt": 840,
+    "tp": 731,
+    "fp": 169,
+    "fn": 109,
+    "precision_at_conf_0_25": 0.8122222222222222,
+    "recall_at_conf_0_25": 0.8702380952380953
+  },
+  "per_class": [
+    {
+      "class_id": 0,
+      "class_name": "person",
+      "gt": 337,
+      "tp": 288,
+      "fp": 86,
+      "fn": 49,
+      "precision_at_conf_0_25": 0.7700534759358288,
+      "recall_at_conf_0_25": 0.8545994065281899
+    },
+    {
+      "class_id": 1,
+      "class_name": "helmet",
+      "gt": 259,
+      "tp": 232,
+      "fp": 26,
+      "fn": 27,
+      "precision_at_conf_0_25": 0.8992248062015504,
+      "recall_at_conf_0_25": 0.8957528957528957
+    },
+    {
+      "class_id": 2,
+      "class_name": "safety_vest",
+      "gt": 244,
+      "tp": 211,
+      "fp": 57,
+      "fn": 33,
+      "precision_at_conf_0_25": 0.7873134328358209,
+      "recall_at_conf_0_25": 0.8647540983606558
+    }
+  ],
+  "per_size": [
+    {
+      "size_group": "tiny",
+      "gt": 29,
+      "tp": 24,
+      "fn": 5,
+      "recall_at_conf_0_25": 0.8275862068965517
+    },
+    {
+      "size_group": "small",
+      "gt": 114,
+      "tp": 89,
+      "fn": 25,
+      "recall_at_conf_0_25": 0.7807017543859649
+    },
+    {
+      "size_group": "medium",
+      "gt": 222,
+      "tp": 194,
+      "fn": 28,
+      "recall_at_conf_0_25": 0.8738738738738738
+    },
+    {
+      "size_group": "large",
+      "gt": 475,
+      "tp": 424,
+      "fn": 51,
+      "recall_at_conf_0_25": 0.8926315789473684
+    }
+  ],
+  "worst_visual_count": 30
+}

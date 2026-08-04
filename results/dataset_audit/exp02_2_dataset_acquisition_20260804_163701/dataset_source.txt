@@ -1,0 +1,14 @@
+dataset_id=construction-ppe
+dataset_version=ultralytics_2025_v1
+source_url=https://github.com/ultralytics/assets/releases/download/v0.0.0/construction-ppe.zip
+archive=/root/autodl-tmp/datasets/downloads/construction-ppe.zip
+archive_bytes=178415813
+archive_sha256=bef8dcb599aa4e9d9f5e602cb6fa7143d3c84d7f6a0ff40463d7f2a4c2632ccc
+dataset_root=/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1
+download_date=2026-08-04T16:37:03+08:00
+declared_license=AGPL-3.0
+declared_image_count=1416
+declared_train_count=1132
+declared_val_count=143
+declared_test_count=141
+declared_classes=helmet,gloves,vest,boots,goggles,none,Person,no_helmet,no_goggle,no_gloves,no_boots

@@ -1,0 +1,81 @@
+Exp02.4d Cross-Split dHash Candidate Review
+====================================================================================================
+source_report=/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_4c_reviewed_split_20260804_174100
+candidate_count=19
+
+[Pair 01] dHash=1 numeric_distance=902 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image1025.jpg
+B: val | reviewed_group_0012 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image123.jpg
+
+[Pair 02] dHash=2 numeric_distance=915 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image1038.jpg
+B: val | reviewed_group_0012 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image123.jpg
+
+[Pair 03] dHash=2 numeric_distance=87 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image33.jpg
+B: val | reviewed_group_0012 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image120.jpg
+
+[Pair 04] dHash=1 numeric_distance=2 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image61.jpg
+B: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image59.jpg
+
+[Pair 05] dHash=2 numeric_distance=297 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image68.jpg
+B: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image365.jpg
+
+[Pair 06] dHash=2 numeric_distance=49 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image71.jpg
+B: val | reviewed_group_0012 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image120.jpg
+
+[Pair 07] dHash=1 numeric_distance=201 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image78.jpg
+B: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image279.jpg
+
+[Pair 08] dHash=2 numeric_distance=298 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image78.jpg
+B: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image376.jpg
+
+[Pair 09] dHash=1 numeric_distance=24 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image78.jpg
+B: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image54.jpg
+
+[Pair 10] dHash=1 numeric_distance=22 exact_duplicate=False
+A: train | reviewed_group_0001 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image78.jpg
+B: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image56.jpg
+
+[Pair 11] dHash=1 numeric_distance=86 exact_duplicate=False
+A: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image279.jpg
+B: train | reviewed_group_0024 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image193.jpg
+
+[Pair 12] dHash=1 numeric_distance=285 exact_duplicate=False
+A: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image365.jpg
+B: val | reviewed_group_0052 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image80.jpg
+
+[Pair 13] dHash=2 numeric_distance=183 exact_duplicate=False
+A: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image376.jpg
+B: train | reviewed_group_0024 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image193.jpg
+
+[Pair 14] dHash=1 numeric_distance=139 exact_duplicate=False
+A: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image54.jpg
+B: train | reviewed_group_0024 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image193.jpg
+
+[Pair 15] dHash=1 numeric_distance=137 exact_duplicate=False
+A: test | reviewed_group_0002 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image56.jpg
+B: train | reviewed_group_0024 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image193.jpg
+
+[Pair 16] dHash=2 numeric_distance=181 exact_duplicate=False
+A: val | reviewed_group_0012 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image120.jpg
+B: train | reviewed_group_0028 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image301.jpg
+
+[Pair 17] dHash=2 numeric_distance=277 exact_duplicate=False
+A: val | reviewed_group_0012 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image120.jpg
+B: train | reviewed_group_0031 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image397.jpg
+
+[Pair 18] dHash=2 numeric_distance=111 exact_duplicate=False
+A: train | reviewed_group_0024 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image193.jpg
+B: val | reviewed_group_0052 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image82.jpg
+
+[Pair 19] dHash=2 numeric_distance=3 exact_duplicate=False
+A: train | reviewed_group_0054 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image839.jpg
+B: val | reviewed_group_0055 | /root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image842.jpg
+

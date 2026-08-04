@@ -1,0 +1,41 @@
+============================================================
+ Exp02.6 YOLO11n Formal Baseline Summary
+============================================================
+result=PASS
+train_return_code=0
+run_name=exp02_6_yolo11n_baseline_e100_20260804_185444
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp02_6_yolo11n_baseline_e100_20260804_185444
+train_dir=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+model_source=/root/autodl-tmp/models/ultralytics/yolo11n.pt
+best_weight=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+last_weight=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/last.pt
+results_csv=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/results.csv
+epochs=100
+imgsz=640
+batch=16
+workers=8
+seed=42
+optimizer=AdamW
+lr0=0.0015
+lrf=0.01
+momentum=0.9
+weight_decay=0.0005
+elapsed_seconds=717
+duplicate_label_action=ALREADY_CLEAN
+
+========== results header ==========
+epoch,time,train/box_loss,train/cls_loss,train/dfl_loss,metrics/precision(B),metrics/recall(B),metrics/mAP50(B),metrics/mAP50-95(B),val/box_loss,val/cls_loss,val/dfl_loss,lr/pg0,lr/pg1,lr/pg2
+
+========== final epoch ==========
+100,695.793,1.00583,0.50029,1.29727,0.86362,0.81863,0.84633,0.47626,1.53715,0.75246,1.83124,2.985e-05,2.985e-05,2.985e-05
+
+========== best weight ==========
+-rw-r--r-- 1 root root 5.3M Aug  4 19:06 /root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6  /root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+
+========== last weight ==========
+-rw-r--r-- 1 root root 5.3M Aug  4 19:06 /root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/last.pt
+6efc109aed0e1aa10ceb1d90580fe3d872cc56d500ac8ddabc5953096b2ab651  /root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/last.pt
+
+exp02_6_yolo11n_baseline=PASS

@@ -1,0 +1,84 @@
+{
+  "experiment": "Exp02.7 YOLO11n independent test-set evaluation",
+  "result": "PASS",
+  "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "train_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444",
+  "eval_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp02_7_yolo11n_baseline_test_20260804_191439",
+  "report_dir": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp02_7_yolo11n_baseline_test_20260804_191439",
+  "split": "test",
+  "imgsz": 640,
+  "batch": 16,
+  "workers": 8,
+  "python_executable": "/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python",
+  "torch_version": "2.8.0+cu128",
+  "torch_cuda_version": "12.8",
+  "ultralytics_version": "8.4.95",
+  "cuda_device": "NVIDIA GeForce RTX 3080 Ti",
+  "elapsed_seconds": 6.250794447027147,
+  "training_extrema": {
+    "results_csv": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/results.csv",
+    "row_count": 100,
+    "max_map50": {
+      "epoch": 60,
+      "value": 0.85247,
+      "precision": 0.85414,
+      "recall": 0.80293,
+      "map50": 0.85247,
+      "map50_95": 0.47731
+    },
+    "max_map50_95": {
+      "epoch": 92,
+      "value": 0.47949,
+      "precision": 0.89216,
+      "recall": 0.7967,
+      "map50": 0.8514,
+      "map50_95": 0.47949
+    }
+  },
+  "test_metrics": {
+    "metrics/precision(B)": 0.9216176695526199,
+    "metrics/recall(B)": 0.820407433844184,
+    "metrics/mAP50(B)": 0.8927010388917406,
+    "metrics/mAP50-95(B)": 0.5204785591817578,
+    "fitness": 0.5204785591817578
+  },
+  "test_speed_ms_per_image": {
+    "preprocess": 1.397367333461739,
+    "inference": 3.080344400113474,
+    "loss": 0.006000876009940557,
+    "postprocess": 1.5499325799777015
+  },
+  "test_class_summary": [
+    {
+      "Class": "person",
+      "Images": 215,
+      "Instances": 337,
+      "Box-P": 0.90684,
+      "Box-R": 0.79525,
+      "Box-F1": 0.84739,
+      "mAP50": 0.88411,
+      "mAP50-95": 0.5172
+    },
+    {
+      "Class": "helmet",
+      "Images": 165,
+      "Instances": 259,
+      "Box-P": 0.9562,
+      "Box-R": 0.83784,
+      "Box-F1": 0.89311,
+      "mAP50": 0.90335,
+      "mAP50-95": 0.48805
+    },
+    {
+      "Class": "safety_vest",
+      "Images": 169,
+      "Instances": 244,
+      "Box-P": 0.90181,
+      "Box-R": 0.82813,
+      "Box-F1": 0.8634,
+      "mAP50": 0.89064,
+      "mAP50-95": 0.55619
+    }
+  ]
+}

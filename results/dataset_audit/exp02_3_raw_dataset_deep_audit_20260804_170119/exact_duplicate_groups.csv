@@ -1,0 +1,9 @@
+group_id,sha256,group_size,cross_split,split,image_key,image_path
+exact_0001,1a9c7c8484602e63aaca92aeae34349fe454fd32cbe2619c7923b7e64708dab0,2,False,train,.ipynb_checkpoints/image4-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image4-checkpoint.jpg
+exact_0001,1a9c7c8484602e63aaca92aeae34349fe454fd32cbe2619c7923b7e64708dab0,2,False,train,image4,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image4.jpg
+exact_0002,35ea1d6375a25396d1c56f268112f356af58adb7f78f00ef4b2435e50bb09dc2,2,False,train,.ipynb_checkpoints/image26-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image26-checkpoint.jpeg
+exact_0002,35ea1d6375a25396d1c56f268112f356af58adb7f78f00ef4b2435e50bb09dc2,2,False,train,image26,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image26.jpeg
+exact_0003,672b6e1d92d48649d4613672adac3c72c94e50004b413c0381be9898136a4ba3,2,False,train,.ipynb_checkpoints/image19-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image19-checkpoint.jpeg
+exact_0003,672b6e1d92d48649d4613672adac3c72c94e50004b413c0381be9898136a4ba3,2,False,train,image19,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image19.jpeg
+exact_0004,9459c36ca17fadd3e93078833c3cd230a3903231c4ff8d418e52b2d45dac6f55,2,False,train,.ipynb_checkpoints/image13-checkpoint,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/.ipynb_checkpoints/image13-checkpoint.jpeg
+exact_0004,9459c36ca17fadd3e93078833c3cd230a3903231c4ff8d418e52b2d45dac6f55,2,False,train,image13,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train/image13.jpeg

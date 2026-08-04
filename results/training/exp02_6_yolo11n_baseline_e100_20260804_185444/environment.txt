@@ -1,0 +1,88 @@
+time=2026-08-04 18:54:44
+repo_dir=/root/autodl-tmp/jetson-ppe-deploy-opt
+run_name=exp02_6_yolo11n_baseline_e100_20260804_185444
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+model=/root/autodl-tmp/models/ultralytics/yolo11n.pt
+epochs=100
+imgsz=640
+batch=16
+workers=8
+seed=42
+duplicate_label_action=ALREADY_CLEAN
+
+========== git ==========
+exp/02-dataset-baseline
+c8be505e81bbaa099f55bdf17b868da76b5f2da0
+?? results/dataset_audit/
+?? results/training/exp02_5_smoke_20260804_184432/
+?? results/training/exp02_5_yolo11n_smoke_20260804_175804/
+?? results/training/exp02_5_yolo11n_smoke_20260804_181232/
+?? results/training/exp02_5_yolo11n_smoke_20260804_182259/
+?? results/training/exp02_6_yolo11n_baseline_e100_20260804_185444/
+?? tools/exp02_2_acquire_construction_ppe.sh
+?? tools/exp02_2_acquire_construction_ppe.sh.bak_20260804_165046
+?? tools/exp02_3_raw_dataset_deep_audit.py
+?? tools/exp02_3_raw_dataset_deep_audit.sh
+?? tools/exp02_3b_targeted_dataset_review.py
+?? tools/exp02_4a_build_ppe3_canonical.py
+?? tools/exp02_4a_build_ppe3_canonical.sh
+?? tools/exp02_4b_group_aware_split.py
+?? tools/exp02_4b_group_aware_split.sh
+?? tools/exp02_4b_group_aware_split_v2.py
+?? tools/exp02_4b_group_aware_split_v2.sh
+?? tools/exp02_4c_reviewed_balanced_split.py
+?? tools/exp02_4c_reviewed_balanced_split.sh
+?? tools/exp02_4d_review_dhash_candidates.py
+?? tools/exp02_4e_final_conservative_split.py
+?? tools/exp02_4e_final_conservative_split.sh
+?? tools/exp02_5_yolo11n_train_smoke.py
+?? tools/exp02_5_yolo11n_train_smoke.sh
+?? tools/exp02_5_yolo11n_train_smoke.sh.bak_20260804_181736
+?? tools/exp02_5_yolo11n_train_smoke.sh.bak_20260804_182237
+?? tools/exp02_6_yolo11n_baseline_train.sh
+
+========== python packages ==========
+python_executable = /root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python
+python_version    = 3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]
+torch_version     = 2.8.0+cu128
+torch_cuda        = 12.8
+ultralytics       = 8.4.95
+cuda_available    = True
+cuda_device       = NVIDIA GeForce RTX 3080 Ti
+cuda_capability   = (8, 6)
+
+========== GPU ==========
+Tue Aug  4 18:54:47 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 595.71.05              Driver Version: 595.71.05      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3080 Ti     On  |   00000000:40:00.0 Off |                  N/A |
+| 30%   28C    P8             20W /  350W |       1MiB /  12288MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+========== file hashes ==========
+0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1  /root/autodl-tmp/models/ultralytics/yolo11n.pt
+56a0d26aa09b8c592ad3002af29172b33dc3a960acd01c9a69e2bd0be667b742  /root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+
+========== dataset yaml ==========
+path: /root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: person
+  1: helmet
+  2: safety_vest
