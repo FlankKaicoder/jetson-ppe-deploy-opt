@@ -1,0 +1,65 @@
+{
+  "dataset_root": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1",
+  "splits": {
+    "train": {
+      "image_dir": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/train",
+      "label_dir": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train",
+      "image_count": 1132,
+      "label_count": 1142,
+      "images_without_labels": [],
+      "labels_without_images": [
+        "image940(1)",
+        "image941(1)",
+        "image944(1)",
+        "image945(1)",
+        "image946(1)",
+        "image947(1)",
+        "image948(1)",
+        "image949(1)",
+        "image95(1)",
+        "image950(1)"
+      ]
+    },
+    "val": {
+      "image_dir": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/val",
+      "label_dir": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/val",
+      "image_count": 143,
+      "label_count": 143,
+      "images_without_labels": [],
+      "labels_without_images": []
+    },
+    "test": {
+      "image_dir": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/images/test",
+      "label_dir": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/test",
+      "image_count": 141,
+      "label_count": 141,
+      "images_without_labels": [],
+      "labels_without_images": []
+    }
+  },
+  "yaml_files": [
+    {
+      "path": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/data.yaml",
+      "content": {
+        "path": "construction-ppe",
+        "train": "images/train",
+        "val": "images/val",
+        "test": "images/test",
+        "names": {
+          "0": "helmet",
+          "1": "gloves",
+          "2": "vest",
+          "3": "boots",
+          "4": "goggles",
+          "5": "none",
+          "6": "Person",
+          "7": "no_helmet",
+          "8": "no_goggle",
+          "9": "no_gloves",
+          "10": "no_boots"
+        },
+        "download": "https://github.com/ultralytics/assets/releases/download/v0.0.0/construction-ppe.zip"
+      }
+    }
+  ]
+}

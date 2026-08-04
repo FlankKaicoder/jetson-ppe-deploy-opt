@@ -1,0 +1,64 @@
+{
+  "source_root": "/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1",
+  "dataset_out": "/root/autodl-tmp/datasets/derived/construction_ppe3_canonical_v1_20260804_172437",
+  "source_images": 1416,
+  "hidden_images_ignored": 4,
+  "orphan_labels_ignored": 10,
+  "canonical_images": 1416,
+  "canonical_labels": 1416,
+  "zero_target_images": 8,
+  "source_class_counts": {
+    "helmet": 1734,
+    "gloves": 1445,
+    "vest": 1618,
+    "boots": 1597,
+    "goggles": 518,
+    "none": 797,
+    "Person": 2245,
+    "no_helmet": 485,
+    "no_goggle": 411,
+    "no_gloves": 556,
+    "no_boots": 115
+  },
+  "mapped_class_counts": {
+    "person": 2245,
+    "helmet": 1734,
+    "safety_vest": 1618
+  },
+  "dropped_class_counts": {
+    "gloves": 1445,
+    "boots": 1597,
+    "goggles": 518,
+    "none": 797,
+    "no_helmet": 485,
+    "no_goggle": 411,
+    "no_gloves": 556,
+    "no_boots": 115
+  },
+  "containment_audit": {
+    "helmet": {
+      "total": 1734,
+      "center_inside_person": 1566,
+      "ratio": 0.903114186851211
+    },
+    "vest": {
+      "total": 1618,
+      "center_inside_person": 1501,
+      "ratio": 0.9276885043263288
+    },
+    "none": {
+      "total": 797,
+      "center_inside_person": 761,
+      "ratio": 0.9548306148055207
+    },
+    "no_helmet": {
+      "total": 485,
+      "center_inside_person": 469,
+      "ratio": 0.9670103092783505
+    }
+  },
+  "exact_duplicate_groups_after_cleanup": 0,
+  "transfer_counts": {
+    "hardlink": 1416
+  }
+}

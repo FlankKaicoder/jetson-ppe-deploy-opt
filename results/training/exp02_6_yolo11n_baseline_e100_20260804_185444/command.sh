@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+"/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/yolo" detect train     model="/root/autodl-tmp/models/ultralytics/yolo11n.pt"     data="/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml"     epochs=100     imgsz=640     batch=16     device=0     workers=8     seed=42     deterministic=True     optimizer=AdamW     lr0=0.0015     lrf=0.01     momentum=0.9     weight_decay=0.0005     warmup_epochs=3.0     amp=True     cache=False     patience=100     project="/root/autodl-tmp/jetson-ppe-outputs"     name="exp02_6_yolo11n_baseline_e100_20260804_185444"     exist_ok=False     pretrained=True     val=True     plots=True     save=True     save_period=10     verbose=True

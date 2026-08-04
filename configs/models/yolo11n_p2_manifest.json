@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "ultralytics_version": "8.4.95",
+  "source_yaml": "/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/lib/python3.12/site-packages/ultralytics/cfg/models/11/yolo11.yaml",
+  "source_sha256": "43d8a7c86acc77282ddf4966d6526e091e5b064c140ed4a6e4c0b68ecbc3784c",
+  "frozen_source": "/root/autodl-tmp/jetson-ppe-deploy-opt/configs/models/upstream_yolo11_ultralytics_8.4.95.yaml",
+  "frozen_source_sha256": "43d8a7c86acc77282ddf4966d6526e091e5b064c140ed4a6e4c0b68ecbc3784c",
+  "custom_yaml": "/root/autodl-tmp/jetson-ppe-deploy-opt/configs/models/yolo11n_p2.yaml",
+  "custom_sha256": "89160613ee686bba1d2cecaefda8e48b86b6b315ea5c001612876b5461764fd6",
+  "scale": "n",
+  "detection_levels": [
+    "P2/4",
+    "P3/8",
+    "P4/16",
+    "P5/32"
+  ],
+  "detect_from": [
+    19,
+    22,
+    25,
+    28
+  ],
+  "custom_head_layers": 19
+}

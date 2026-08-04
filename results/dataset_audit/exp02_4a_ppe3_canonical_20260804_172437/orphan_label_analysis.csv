@@ -1,0 +1,11 @@
+split,orphan_label,base_label,base_exists,identical_to_base
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image940(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image940.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image941(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image941.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image944(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image944.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image945(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image945.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image946(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image946.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image947(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image947.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image948(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image948.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image949(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image949.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image95(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image95.txt,True,True
+train,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image950(1).txt,/root/autodl-tmp/datasets/sources/construction-ppe_ultralytics_2025_v1/labels/train/image950.txt,True,True

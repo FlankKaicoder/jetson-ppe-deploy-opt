@@ -1,0 +1,69 @@
+{
+  "split_execution": "PASS",
+  "canonical_root": "/root/autodl-tmp/datasets/derived/construction_ppe3_canonical_v1_20260804_172437",
+  "canonical_manifest": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/dataset_audit/exp02_4a_ppe3_canonical_20260804_172437/canonical_manifest.csv",
+  "dataset_out": "/root/autodl-tmp/datasets/derived/construction_ppe3_group_split_v2_20260804_173549",
+  "seed": 42,
+  "target_ratios": {
+    "train": 0.7,
+    "val": 0.15,
+    "test": 0.15
+  },
+  "numeric_block_size": 20,
+  "global_dhash_threshold": -1,
+  "boundary_dhash_threshold": -1,
+  "boundary_numeric_distance": 0,
+  "total_images": 1416,
+  "group_count": 71,
+  "max_group_size": 20,
+  "numeric_block_union_count": 1345,
+  "global_visual_edges": 0,
+  "boundary_visual_edges": 0,
+  "global_class_counts": {
+    "person": 2245,
+    "helmet": 1734,
+    "safety_vest": 1618
+  },
+  "total_negative_images": 8,
+  "split_summary": {
+    "train": {
+      "images": 1056,
+      "labels": 1056,
+      "ratio": 0.7457627118644068,
+      "negative_images": 6,
+      "class_counts": {
+        "person": 1412,
+        "helmet": 1081,
+        "safety_vest": 1048
+      }
+    },
+    "val": {
+      "images": 180,
+      "labels": 180,
+      "ratio": 0.1271186440677966,
+      "negative_images": 1,
+      "class_counts": {
+        "person": 425,
+        "helmet": 327,
+        "safety_vest": 275
+      }
+    },
+    "test": {
+      "images": 180,
+      "labels": 180,
+      "ratio": 0.1271186440677966,
+      "negative_images": 1,
+      "class_counts": {
+        "person": 408,
+        "helmet": 326,
+        "safety_vest": 295
+      }
+    }
+  },
+  "audit_dhash_threshold": 2,
+  "cross_split_dhash_pairs": 20,
+  "transfer_counts": {
+    "image_hardlink": 1416,
+    "label_hardlink": 1416
+  }
+}

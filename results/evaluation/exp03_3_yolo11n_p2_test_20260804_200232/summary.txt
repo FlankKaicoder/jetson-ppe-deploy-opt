@@ -1,0 +1,80 @@
+============================================================
+ Exp02.7 YOLO11n Independent Test Summary
+============================================================
+result=PASS
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556/weights/best.pt
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+train_dir=/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556
+eval_dir=/root/autodl-tmp/jetson-ppe-outputs/exp03_3_yolo11n_p2_test_20260804_200232
+split=test
+imgsz=640
+batch=16
+workers=8
+torch_version=2.8.0+cu128
+torch_cuda_version=12.8
+ultralytics_version=8.4.95
+cuda_device=NVIDIA GeForce RTX 3080 Ti
+elapsed_seconds=6.244
+
+========== training maximum val mAP50 ==========
+epoch=77
+precision=0.84922000
+recall=0.81026000
+map50=0.85348000
+map50_95=0.47547000
+
+========== training maximum val mAP50-95 ==========
+epoch=56
+precision=0.83330000
+recall=0.78538000
+map50=0.83762000
+map50_95=0.47953000
+
+========== test overall metrics ==========
+fitness=0.51273409
+metrics/mAP50(B)=0.88405588
+metrics/mAP50-95(B)=0.51273409
+metrics/precision(B)=0.89402613
+metrics/recall(B)=0.80662734
+
+========== test speed ms/image ==========
+inference=4.01637917
+loss=0.00053195
+postprocess=1.39553687
+preprocess=1.13698832
+
+========== test class summary ==========
+[
+  {
+    "Class": "person",
+    "Images": 215,
+    "Instances": 337,
+    "Box-P": 0.88709,
+    "Box-R": 0.78338,
+    "Box-F1": 0.83202,
+    "mAP50": 0.87484,
+    "mAP50-95": 0.50611
+  },
+  {
+    "Class": "helmet",
+    "Images": 165,
+    "Instances": 259,
+    "Box-P": 0.92592,
+    "Box-R": 0.82038,
+    "Box-F1": 0.86996,
+    "mAP50": 0.885,
+    "mAP50-95": 0.47676
+  },
+  {
+    "Class": "safety_vest",
+    "Images": 169,
+    "Instances": 244,
+    "Box-P": 0.86907,
+    "Box-R": 0.81612,
+    "Box-F1": 0.84176,
+    "mAP50": 0.89232,
+    "mAP50-95": 0.55533
+  }
+]
+
+exp02_7_baseline_test=PASS
