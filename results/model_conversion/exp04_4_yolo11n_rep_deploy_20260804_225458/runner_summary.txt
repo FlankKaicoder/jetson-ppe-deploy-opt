@@ -1,0 +1,12 @@
+============================================================
+ Exp04.4 Runner Summary
+============================================================
+result=PASS
+python_return_code=0
+run_name=exp04_4_yolo11n_rep_deploy_20260804_225458
+artifact_dir=/root/autodl-tmp/jetson-ppe-outputs/exp04_4_yolo11n_rep_deploy_20260804_225458
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_conversion/exp04_4_yolo11n_rep_deploy_20260804_225458
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_conversion/exp04_4_yolo11n_rep_deploy_20260804_225458/summary.txt
+summary_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_conversion/exp04_4_yolo11n_rep_deploy_20260804_225458/summary.json
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_conversion/exp04_4_yolo11n_rep_deploy_20260804_225458/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_conversion/exp04_4_yolo11n_rep_deploy_20260804_225458/abnormal.txt

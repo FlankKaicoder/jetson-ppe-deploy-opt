@@ -1,0 +1,48 @@
+====================================================================
+ Exp04.1c Reparameterization Integration Final Acceptance
+====================================================================
+result=PASS
+cuda_source=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1b_strict_numerical_replay_20260804_220217/cuda_fp32_tf32_off/summary.json
+cpu_source=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1b_strict_numerical_replay_20260804_220217/cpu_fp32/summary.json
+
+========== thresholds ==========
+initial_max_abs_error_threshold=1e-05
+deploy_max_abs_error_threshold=0.0005
+deploy_mean_abs_error_threshold=1e-06
+deploy_relative_l2_error_threshold=1e-06
+
+========== CUDA FP32 TF32 OFF ==========
+initial_max_abs_error=0
+deploy_max_abs_error=0.000274658203125
+deploy_mean_abs_error=2.30718801523e-07
+deploy_relative_l2_error=4.63498849939e-08
+
+========== CPU FP32 ==========
+initial_max_abs_error=0
+deploy_max_abs_error=0.0001220703125
+deploy_mean_abs_error=1.31281348278e-07
+deploy_relative_l2_error=3.05781442564e-08
+
+========== checks ==========
+cuda_fp32_tf32_off_target_indices=PASS
+cuda_fp32_tf32_off_rep_training_block_count=PASS
+cuda_fp32_tf32_off_converted_block_count=PASS
+cuda_fp32_tf32_off_all_blocks_deployed=PASS
+cuda_fp32_tf32_off_initial_max_abs_error=PASS
+cuda_fp32_tf32_off_deploy_max_abs_error=PASS
+cuda_fp32_tf32_off_deploy_mean_abs_error=PASS
+cuda_fp32_tf32_off_deploy_relative_l2_error=PASS
+cuda_fp32_tf32_off_baseline_deploy_max_abs_error=PASS
+cuda_fp32_tf32_off_baseline_deploy_relative_l2=PASS
+cpu_fp32_target_indices=PASS
+cpu_fp32_rep_training_block_count=PASS
+cpu_fp32_converted_block_count=PASS
+cpu_fp32_all_blocks_deployed=PASS
+cpu_fp32_initial_max_abs_error=PASS
+cpu_fp32_deploy_max_abs_error=PASS
+cpu_fp32_deploy_mean_abs_error=PASS
+cpu_fp32_deploy_relative_l2_error=PASS
+cpu_fp32_baseline_deploy_max_abs_error=PASS
+cpu_fp32_baseline_deploy_relative_l2=PASS
+
+overall=PASS

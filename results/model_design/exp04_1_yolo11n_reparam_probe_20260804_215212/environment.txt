@@ -1,0 +1,14 @@
+experiment=Exp04.1
+timestamp=20260804_215212
+repo_dir=/root/autodl-tmp/jetson-ppe-deploy-opt
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+python=/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python
+git_branch=exp/04-reparameterization
+git_commit=66ade25a0b6197886be3688d5a076ed08c10a151
+
+Python 3.12.3
+torch_version=2.8.0+cu128
+ultralytics_version=8.4.95
+cuda_available=True
+gpu_name=NVIDIA GeForce RTX 3080 Ti

@@ -1,0 +1,923 @@
+{
+  "experiment": "Exp04.5c Validation-Calibrated Confidence Threshold Analysis",
+  "result": "PASS",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "thresholds": [
+    0.001,
+    0.01,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.06,
+    0.07,
+    0.08,
+    0.09,
+    0.1,
+    0.11,
+    0.12,
+    0.13,
+    0.14,
+    0.15,
+    0.16,
+    0.17,
+    0.18,
+    0.19,
+    0.2,
+    0.21,
+    0.22,
+    0.23,
+    0.24,
+    0.25,
+    0.26,
+    0.27,
+    0.28,
+    0.29,
+    0.3,
+    0.31,
+    0.32,
+    0.33,
+    0.34,
+    0.35,
+    0.36,
+    0.37,
+    0.38,
+    0.39,
+    0.4,
+    0.41,
+    0.42,
+    0.43,
+    0.44,
+    0.45,
+    0.46,
+    0.47,
+    0.48,
+    0.49,
+    0.5
+  ],
+  "baseline_val_fixed": {
+    "threshold": 0.25,
+    "overall": {
+      "gt": 834,
+      "predictions": 863,
+      "tp": 699,
+      "fp": 164,
+      "fn": 135,
+      "precision": 0.8099652375434531,
+      "recall": 0.8381294964028777,
+      "f1": 0.8238067177371833
+    },
+    "per_class": {
+      "person": {
+        "gt": 341,
+        "tp": 284,
+        "fp": 63,
+        "fn": 57,
+        "precision": 0.8184438040345822,
+        "recall": 0.8328445747800587,
+        "f1": 0.8255813953488372
+      },
+      "helmet": {
+        "gt": 261,
+        "tp": 223,
+        "fp": 43,
+        "fn": 38,
+        "precision": 0.8383458646616542,
+        "recall": 0.8544061302681992,
+        "f1": 0.8462998102466793
+      },
+      "safety_vest": {
+        "gt": 232,
+        "tp": 192,
+        "fp": 58,
+        "fn": 40,
+        "precision": 0.768,
+        "recall": 0.8275862068965517,
+        "f1": 0.7966804979253111
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 31,
+        "tp": 12,
+        "fn": 19,
+        "recall": 0.3870967741935484
+      },
+      "small": {
+        "gt": 99,
+        "tp": 80,
+        "fn": 19,
+        "recall": 0.8080808080808081
+      },
+      "medium": {
+        "gt": 213,
+        "tp": 185,
+        "fn": 28,
+        "recall": 0.8685446009389671
+      },
+      "large": {
+        "gt": 491,
+        "tp": 422,
+        "fn": 69,
+        "recall": 0.8594704684317719
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 130,
+        "tp": 92,
+        "fn": 38,
+        "recall": 0.7076923076923077
+      },
+      "medium_large": {
+        "gt": 704,
+        "tp": 607,
+        "fn": 97,
+        "recall": 0.8622159090909091
+      }
+    }
+  },
+  "rep_val_fixed": {
+    "threshold": 0.25,
+    "overall": {
+      "gt": 834,
+      "predictions": 865,
+      "tp": 697,
+      "fp": 168,
+      "fn": 137,
+      "precision": 0.8057803468208092,
+      "recall": 0.8357314148681055,
+      "f1": 0.8204826368452031
+    },
+    "per_class": {
+      "person": {
+        "gt": 341,
+        "tp": 287,
+        "fp": 78,
+        "fn": 54,
+        "precision": 0.7863013698630137,
+        "recall": 0.841642228739003,
+        "f1": 0.813031161473088
+      },
+      "helmet": {
+        "gt": 261,
+        "tp": 223,
+        "fp": 27,
+        "fn": 38,
+        "precision": 0.892,
+        "recall": 0.8544061302681992,
+        "f1": 0.87279843444227
+      },
+      "safety_vest": {
+        "gt": 232,
+        "tp": 187,
+        "fp": 63,
+        "fn": 45,
+        "precision": 0.748,
+        "recall": 0.8060344827586207,
+        "f1": 0.7759336099585062
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 31,
+        "tp": 16,
+        "fn": 15,
+        "recall": 0.5161290322580645
+      },
+      "small": {
+        "gt": 99,
+        "tp": 81,
+        "fn": 18,
+        "recall": 0.8181818181818182
+      },
+      "medium": {
+        "gt": 213,
+        "tp": 179,
+        "fn": 34,
+        "recall": 0.8403755868544601
+      },
+      "large": {
+        "gt": 491,
+        "tp": 421,
+        "fn": 70,
+        "recall": 0.8574338085539714
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 130,
+        "tp": 97,
+        "fn": 33,
+        "recall": 0.7461538461538462
+      },
+      "medium_large": {
+        "gt": 704,
+        "tp": 600,
+        "fn": 104,
+        "recall": 0.8522727272727273
+      }
+    }
+  },
+  "baseline_test_fixed": {
+    "threshold": 0.25,
+    "overall": {
+      "gt": 840,
+      "predictions": 900,
+      "tp": 731,
+      "fp": 169,
+      "fn": 109,
+      "precision": 0.8122222222222222,
+      "recall": 0.8702380952380953,
+      "f1": 0.8402298850574712
+    },
+    "per_class": {
+      "person": {
+        "gt": 337,
+        "tp": 288,
+        "fp": 86,
+        "fn": 49,
+        "precision": 0.7700534759358288,
+        "recall": 0.8545994065281899,
+        "f1": 0.810126582278481
+      },
+      "helmet": {
+        "gt": 259,
+        "tp": 232,
+        "fp": 26,
+        "fn": 27,
+        "precision": 0.8992248062015504,
+        "recall": 0.8957528957528957,
+        "f1": 0.8974854932301741
+      },
+      "safety_vest": {
+        "gt": 244,
+        "tp": 211,
+        "fp": 57,
+        "fn": 33,
+        "precision": 0.7873134328358209,
+        "recall": 0.8647540983606558,
+        "f1": 0.8242187499999999
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 29,
+        "tp": 24,
+        "fn": 5,
+        "recall": 0.8275862068965517
+      },
+      "small": {
+        "gt": 114,
+        "tp": 89,
+        "fn": 25,
+        "recall": 0.7807017543859649
+      },
+      "medium": {
+        "gt": 222,
+        "tp": 194,
+        "fn": 28,
+        "recall": 0.8738738738738738
+      },
+      "large": {
+        "gt": 475,
+        "tp": 424,
+        "fn": 51,
+        "recall": 0.8926315789473684
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 143,
+        "tp": 113,
+        "fn": 30,
+        "recall": 0.7902097902097902
+      },
+      "medium_large": {
+        "gt": 697,
+        "tp": 618,
+        "fn": 79,
+        "recall": 0.8866571018651362
+      }
+    }
+  },
+  "rep_test_fixed": {
+    "threshold": 0.25,
+    "overall": {
+      "gt": 840,
+      "predictions": 863,
+      "tp": 721,
+      "fp": 142,
+      "fn": 119,
+      "precision": 0.8354577056778679,
+      "recall": 0.8583333333333333,
+      "f1": 0.8467410452143277
+    },
+    "per_class": {
+      "person": {
+        "gt": 337,
+        "tp": 289,
+        "fp": 63,
+        "fn": 48,
+        "precision": 0.8210227272727273,
+        "recall": 0.857566765578635,
+        "f1": 0.8388969521044993
+      },
+      "helmet": {
+        "gt": 259,
+        "tp": 222,
+        "fp": 32,
+        "fn": 37,
+        "precision": 0.8740157480314961,
+        "recall": 0.8571428571428571,
+        "f1": 0.8654970760233919
+      },
+      "safety_vest": {
+        "gt": 244,
+        "tp": 210,
+        "fp": 47,
+        "fn": 34,
+        "precision": 0.8171206225680934,
+        "recall": 0.860655737704918,
+        "f1": 0.8383233532934131
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 29,
+        "tp": 16,
+        "fn": 13,
+        "recall": 0.5517241379310345
+      },
+      "small": {
+        "gt": 114,
+        "tp": 90,
+        "fn": 24,
+        "recall": 0.7894736842105263
+      },
+      "medium": {
+        "gt": 222,
+        "tp": 193,
+        "fn": 29,
+        "recall": 0.8693693693693694
+      },
+      "large": {
+        "gt": 475,
+        "tp": 422,
+        "fn": 53,
+        "recall": 0.888421052631579
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 143,
+        "tp": 106,
+        "fn": 37,
+        "recall": 0.7412587412587412
+      },
+      "medium_large": {
+        "gt": 697,
+        "tp": 615,
+        "fn": 82,
+        "recall": 0.8823529411764706
+      }
+    }
+  },
+  "baseline_val_best_f1": {
+    "threshold": 0.45,
+    "overall": {
+      "gt": 834,
+      "predictions": 762,
+      "tp": 669,
+      "fp": 93,
+      "fn": 165,
+      "precision": 0.8779527559055118,
+      "recall": 0.802158273381295,
+      "f1": 0.8383458646616541
+    },
+    "per_class": {
+      "person": {
+        "gt": 341,
+        "tp": 272,
+        "fp": 39,
+        "fn": 69,
+        "precision": 0.8745980707395499,
+        "recall": 0.7976539589442815,
+        "f1": 0.8343558282208589
+      },
+      "helmet": {
+        "gt": 261,
+        "tp": 215,
+        "fp": 25,
+        "fn": 46,
+        "precision": 0.8958333333333334,
+        "recall": 0.8237547892720306,
+        "f1": 0.8582834331337325
+      },
+      "safety_vest": {
+        "gt": 232,
+        "tp": 182,
+        "fp": 29,
+        "fn": 50,
+        "precision": 0.8625592417061612,
+        "recall": 0.7844827586206896,
+        "f1": 0.8216704288939051
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 31,
+        "tp": 8,
+        "fn": 23,
+        "recall": 0.25806451612903225
+      },
+      "small": {
+        "gt": 99,
+        "tp": 75,
+        "fn": 24,
+        "recall": 0.7575757575757576
+      },
+      "medium": {
+        "gt": 213,
+        "tp": 178,
+        "fn": 35,
+        "recall": 0.8356807511737089
+      },
+      "large": {
+        "gt": 491,
+        "tp": 408,
+        "fn": 83,
+        "recall": 0.8309572301425662
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 130,
+        "tp": 83,
+        "fn": 47,
+        "recall": 0.6384615384615384
+      },
+      "medium_large": {
+        "gt": 704,
+        "tp": 586,
+        "fn": 118,
+        "recall": 0.8323863636363636
+      }
+    }
+  },
+  "rep_val_best_f1": {
+    "threshold": 0.43,
+    "overall": {
+      "gt": 834,
+      "predictions": 758,
+      "tp": 667,
+      "fp": 91,
+      "fn": 167,
+      "precision": 0.8799472295514512,
+      "recall": 0.7997601918465228,
+      "f1": 0.8379396984924624
+    },
+    "per_class": {
+      "person": {
+        "gt": 341,
+        "tp": 273,
+        "fp": 45,
+        "fn": 68,
+        "precision": 0.8584905660377359,
+        "recall": 0.8005865102639296,
+        "f1": 0.8285280728376329
+      },
+      "helmet": {
+        "gt": 261,
+        "tp": 216,
+        "fp": 13,
+        "fn": 45,
+        "precision": 0.9432314410480349,
+        "recall": 0.8275862068965517,
+        "f1": 0.8816326530612246
+      },
+      "safety_vest": {
+        "gt": 232,
+        "tp": 178,
+        "fp": 33,
+        "fn": 54,
+        "precision": 0.8436018957345972,
+        "recall": 0.7672413793103449,
+        "f1": 0.8036117381489843
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 31,
+        "tp": 16,
+        "fn": 15,
+        "recall": 0.5161290322580645
+      },
+      "small": {
+        "gt": 99,
+        "tp": 73,
+        "fn": 26,
+        "recall": 0.7373737373737373
+      },
+      "medium": {
+        "gt": 213,
+        "tp": 171,
+        "fn": 42,
+        "recall": 0.8028169014084507
+      },
+      "large": {
+        "gt": 491,
+        "tp": 407,
+        "fn": 84,
+        "recall": 0.8289205702647657
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 130,
+        "tp": 89,
+        "fn": 41,
+        "recall": 0.6846153846153846
+      },
+      "medium_large": {
+        "gt": 704,
+        "tp": 578,
+        "fn": 126,
+        "recall": 0.8210227272727273
+      }
+    }
+  },
+  "baseline_test_at_best_f1": {
+    "threshold": 0.45,
+    "overall": {
+      "gt": 840,
+      "predictions": 795,
+      "tp": 701,
+      "fp": 94,
+      "fn": 139,
+      "precision": 0.8817610062893082,
+      "recall": 0.8345238095238096,
+      "f1": 0.8574923547400611
+    },
+    "per_class": {
+      "person": {
+        "gt": 337,
+        "tp": 277,
+        "fp": 45,
+        "fn": 60,
+        "precision": 0.860248447204969,
+        "recall": 0.8219584569732937,
+        "f1": 0.8406676783004552
+      },
+      "helmet": {
+        "gt": 259,
+        "tp": 220,
+        "fp": 16,
+        "fn": 39,
+        "precision": 0.9322033898305084,
+        "recall": 0.8494208494208494,
+        "f1": 0.888888888888889
+      },
+      "safety_vest": {
+        "gt": 244,
+        "tp": 204,
+        "fp": 33,
+        "fn": 40,
+        "precision": 0.8607594936708861,
+        "recall": 0.8360655737704918,
+        "f1": 0.8482328482328484
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 29,
+        "tp": 20,
+        "fn": 9,
+        "recall": 0.6896551724137931
+      },
+      "small": {
+        "gt": 114,
+        "tp": 85,
+        "fn": 29,
+        "recall": 0.7456140350877193
+      },
+      "medium": {
+        "gt": 222,
+        "tp": 186,
+        "fn": 36,
+        "recall": 0.8378378378378378
+      },
+      "large": {
+        "gt": 475,
+        "tp": 410,
+        "fn": 65,
+        "recall": 0.8631578947368421
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 143,
+        "tp": 105,
+        "fn": 38,
+        "recall": 0.7342657342657343
+      },
+      "medium_large": {
+        "gt": 697,
+        "tp": 596,
+        "fn": 101,
+        "recall": 0.8550932568149211
+      }
+    }
+  },
+  "rep_test_at_best_f1": {
+    "threshold": 0.43,
+    "overall": {
+      "gt": 840,
+      "predictions": 775,
+      "tp": 695,
+      "fp": 80,
+      "fn": 145,
+      "precision": 0.896774193548387,
+      "recall": 0.8273809523809523,
+      "f1": 0.8606811145510835
+    },
+    "per_class": {
+      "person": {
+        "gt": 337,
+        "tp": 284,
+        "fp": 33,
+        "fn": 53,
+        "precision": 0.8958990536277602,
+        "recall": 0.8427299703264095,
+        "f1": 0.8685015290519877
+      },
+      "helmet": {
+        "gt": 259,
+        "tp": 215,
+        "fp": 18,
+        "fn": 44,
+        "precision": 0.9227467811158798,
+        "recall": 0.8301158301158301,
+        "f1": 0.8739837398373983
+      },
+      "safety_vest": {
+        "gt": 244,
+        "tp": 196,
+        "fp": 29,
+        "fn": 48,
+        "precision": 0.8711111111111111,
+        "recall": 0.8032786885245902,
+        "f1": 0.835820895522388
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 29,
+        "tp": 16,
+        "fn": 13,
+        "recall": 0.5517241379310345
+      },
+      "small": {
+        "gt": 114,
+        "tp": 84,
+        "fn": 30,
+        "recall": 0.7368421052631579
+      },
+      "medium": {
+        "gt": 222,
+        "tp": 185,
+        "fn": 37,
+        "recall": 0.8333333333333334
+      },
+      "large": {
+        "gt": 475,
+        "tp": 410,
+        "fn": 65,
+        "recall": 0.8631578947368421
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 143,
+        "tp": 100,
+        "fn": 43,
+        "recall": 0.6993006993006993
+      },
+      "medium_large": {
+        "gt": 697,
+        "tp": 595,
+        "fn": 102,
+        "recall": 0.8536585365853658
+      }
+    }
+  },
+  "rep_val_precision_matched": {
+    "threshold": 0.26,
+    "overall": {
+      "gt": 834,
+      "predictions": 857,
+      "tp": 695,
+      "fp": 162,
+      "fn": 139,
+      "precision": 0.8109684947491248,
+      "recall": 0.8333333333333334,
+      "f1": 0.8219988172678888
+    },
+    "per_class": {
+      "person": {
+        "gt": 341,
+        "tp": 286,
+        "fp": 75,
+        "fn": 55,
+        "precision": 0.7922437673130194,
+        "recall": 0.8387096774193549,
+        "f1": 0.8148148148148148
+      },
+      "helmet": {
+        "gt": 261,
+        "tp": 222,
+        "fp": 26,
+        "fn": 39,
+        "precision": 0.8951612903225806,
+        "recall": 0.8505747126436781,
+        "f1": 0.8722986247544203
+      },
+      "safety_vest": {
+        "gt": 232,
+        "tp": 187,
+        "fp": 61,
+        "fn": 45,
+        "precision": 0.7540322580645161,
+        "recall": 0.8060344827586207,
+        "f1": 0.7791666666666666
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 31,
+        "tp": 16,
+        "fn": 15,
+        "recall": 0.5161290322580645
+      },
+      "small": {
+        "gt": 99,
+        "tp": 80,
+        "fn": 19,
+        "recall": 0.8080808080808081
+      },
+      "medium": {
+        "gt": 213,
+        "tp": 178,
+        "fn": 35,
+        "recall": 0.8356807511737089
+      },
+      "large": {
+        "gt": 491,
+        "tp": 421,
+        "fn": 70,
+        "recall": 0.8574338085539714
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 130,
+        "tp": 96,
+        "fn": 34,
+        "recall": 0.7384615384615385
+      },
+      "medium_large": {
+        "gt": 704,
+        "tp": 599,
+        "fn": 105,
+        "recall": 0.8508522727272727
+      }
+    }
+  },
+  "rep_test_precision_matched": {
+    "threshold": 0.26,
+    "overall": {
+      "gt": 840,
+      "predictions": 858,
+      "tp": 720,
+      "fp": 138,
+      "fn": 120,
+      "precision": 0.8391608391608392,
+      "recall": 0.8571428571428571,
+      "f1": 0.8480565371024734
+    },
+    "per_class": {
+      "person": {
+        "gt": 337,
+        "tp": 288,
+        "fp": 60,
+        "fn": 49,
+        "precision": 0.8275862068965517,
+        "recall": 0.8545994065281899,
+        "f1": 0.840875912408759
+      },
+      "helmet": {
+        "gt": 259,
+        "tp": 222,
+        "fp": 31,
+        "fn": 37,
+        "precision": 0.8774703557312253,
+        "recall": 0.8571428571428571,
+        "f1": 0.8671875
+      },
+      "safety_vest": {
+        "gt": 244,
+        "tp": 210,
+        "fp": 47,
+        "fn": 34,
+        "precision": 0.8171206225680934,
+        "recall": 0.860655737704918,
+        "f1": 0.8383233532934131
+      }
+    },
+    "per_size": {
+      "tiny": {
+        "gt": 29,
+        "tp": 16,
+        "fn": 13,
+        "recall": 0.5517241379310345
+      },
+      "small": {
+        "gt": 114,
+        "tp": 90,
+        "fn": 24,
+        "recall": 0.7894736842105263
+      },
+      "medium": {
+        "gt": 222,
+        "tp": 193,
+        "fn": 29,
+        "recall": 0.8693693693693694
+      },
+      "large": {
+        "gt": 475,
+        "tp": 421,
+        "fn": 54,
+        "recall": 0.8863157894736842
+      }
+    },
+    "combined_size": {
+      "tiny_small": {
+        "gt": 143,
+        "tp": 106,
+        "fn": 37,
+        "recall": 0.7412587412587412
+      },
+      "medium_large": {
+        "gt": 697,
+        "tp": 614,
+        "fn": 83,
+        "recall": 0.8809182209469153
+      }
+    }
+  },
+  "fixed_comparison": {
+    "tp_difference": -10,
+    "fp_difference": -27,
+    "fn_difference": 10,
+    "precision_difference": 0.023235483455645745,
+    "recall_difference": -0.011904761904761973,
+    "f1_difference": 0.006511160156856488,
+    "tiny_recall_difference": -0.27586206896551724,
+    "small_recall_difference": 0.00877192982456143,
+    "tiny_small_recall_difference": -0.04895104895104896
+  },
+  "calibrated_f1_comparison": {
+    "tp_difference": -6,
+    "fp_difference": -14,
+    "fn_difference": 6,
+    "precision_difference": 0.015013187259078853,
+    "recall_difference": -0.0071428571428572285,
+    "f1_difference": 0.0031887598110224014,
+    "tiny_recall_difference": -0.13793103448275867,
+    "small_recall_difference": -0.00877192982456143,
+    "tiny_small_recall_difference": -0.034965034965035
+  },
+  "precision_matched_comparison": {
+    "tp_difference": -11,
+    "fp_difference": -31,
+    "fn_difference": 11,
+    "precision_difference": 0.026938616938616988,
+    "recall_difference": -0.01309523809523816,
+    "f1_difference": 0.007826652045002214,
+    "tiny_recall_difference": -0.27586206896551724,
+    "small_recall_difference": 0.00877192982456143,
+    "tiny_small_recall_difference": -0.04895104895104896
+  },
+  "checks": {
+    "val_image_count_217": true,
+    "test_image_count_219": true,
+    "class_names": true,
+    "baseline_fixed_test_reproduced": true,
+    "rep_fixed_test_reproduced": true,
+    "baseline_best_threshold_valid": true,
+    "rep_best_threshold_valid": true,
+    "rep_precision_match_valid": true,
+    "all_selected_metrics_finite": true
+  },
+  "route_decision": "PENDING_CALIBRATION_REVIEW"
+}

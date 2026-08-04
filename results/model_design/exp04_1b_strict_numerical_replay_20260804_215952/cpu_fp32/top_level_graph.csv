@@ -1,0 +1,25 @@
+index,from,class,type,parameter_count
+0,-1,Conv,ultralytics.nn.modules.conv.Conv,464
+1,-1,Conv,ultralytics.nn.modules.conv.Conv,4672
+2,-1,C3k2,ultralytics.nn.modules.block.C3k2,6640
+3,-1,Conv,ultralytics.nn.modules.conv.Conv,36992
+4,-1,C3k2,ultralytics.nn.modules.block.C3k2,26080
+5,-1,Conv,ultralytics.nn.modules.conv.Conv,147712
+6,-1,C3k2,ultralytics.nn.modules.block.C3k2,87040
+7,-1,Conv,ultralytics.nn.modules.conv.Conv,295424
+8,-1,C3k2,ultralytics.nn.modules.block.C3k2,346112
+9,-1,SPPF,ultralytics.nn.modules.block.SPPF,164608
+10,-1,C2PSA,ultralytics.nn.modules.block.C2PSA,249728
+11,-1,Upsample,torch.nn.modules.upsampling.Upsample,0
+12,"[-1, 6]",Concat,ultralytics.nn.modules.conv.Concat,0
+13,-1,C3k2,ultralytics.nn.modules.block.C3k2,111296
+14,-1,Upsample,torch.nn.modules.upsampling.Upsample,0
+15,"[-1, 4]",Concat,ultralytics.nn.modules.conv.Concat,0
+16,-1,C3k2,ultralytics.nn.modules.block.C3k2,32096
+17,-1,Conv,ultralytics.nn.modules.conv.Conv,36992
+18,"[-1, 13]",Concat,ultralytics.nn.modules.conv.Concat,0
+19,-1,C3k2,ultralytics.nn.modules.block.C3k2,86720
+20,-1,Conv,ultralytics.nn.modules.conv.Conv,147712
+21,"[-1, 10]",Concat,ultralytics.nn.modules.conv.Concat,0
+22,-1,C3k2,ultralytics.nn.modules.block.C3k2,378880
+23,"[16, 19, 22]",Detect,ultralytics.nn.modules.head.Detect,431257

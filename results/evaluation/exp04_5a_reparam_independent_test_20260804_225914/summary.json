@@ -1,0 +1,288 @@
+{
+  "experiment": "Exp04.5a Reparameterization Independent Test Evaluation",
+  "result": "PASS",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "models": {
+    "baseline": {
+      "model_name": "baseline",
+      "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt",
+      "weights_sha256": "79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6",
+      "names": {
+        "0": "person",
+        "1": "helmet",
+        "2": "safety_vest"
+      },
+      "structure": {
+        "parameter_count": 2590425,
+        "reparam_count": 0,
+        "all_reparam_deployed": false,
+        "reparam_blocks": []
+      },
+      "overall": {
+        "metrics/precision(B)": 0.9216176695526199,
+        "metrics/recall(B)": 0.820407433844184,
+        "metrics/mAP50(B)": 0.8927010388917406,
+        "metrics/mAP50-95(B)": 0.5204785591817578
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "person",
+          "precision": 0.9068390891539965,
+          "recall": 0.7952522255192879,
+          "mAP50": 0.8841140303845562,
+          "mAP50-95": 0.5171972834111624
+        },
+        {
+          "class_id": 1,
+          "class_name": "helmet",
+          "precision": 0.9562001525489884,
+          "recall": 0.8378378378378378,
+          "mAP50": 0.9033526953620733,
+          "mAP50-95": 0.4880518606975074
+        },
+        {
+          "class_id": 2,
+          "class_name": "safety_vest",
+          "precision": 0.9018137669548748,
+          "recall": 0.8281322381754261,
+          "mAP50": 0.8906363909285921,
+          "mAP50-95": 0.5561865334366034
+        }
+      ],
+      "speed": {
+        "preprocess": 0.5931607894089124,
+        "inference": 1.9141629223443875,
+        "loss": 0.00045772962969595985,
+        "postprocess": 0.547996309126587
+      }
+    },
+    "rep_training": {
+      "model_name": "rep_training",
+      "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/weights/best.pt",
+      "weights_sha256": "5dcc487e122670fb0b2b37a2a7d74ac2c7401bb19638065c1b27c16b1bf75938",
+      "names": {
+        "0": "person",
+        "1": "helmet",
+        "2": "safety_vest"
+      },
+      "structure": {
+        "parameter_count": 2611289,
+        "reparam_count": 2,
+        "all_reparam_deployed": false,
+        "reparam_blocks": [
+          {
+            "index": 17,
+            "deploy": false,
+            "in_channels": 64,
+            "out_channels": 64,
+            "stride": 2
+          },
+          {
+            "index": 20,
+            "deploy": false,
+            "in_channels": 128,
+            "out_channels": 128,
+            "stride": 2
+          }
+        ]
+      },
+      "overall": {
+        "metrics/precision(B)": 0.8976378884307862,
+        "metrics/recall(B)": 0.8373269012575633,
+        "metrics/mAP50(B)": 0.8911354776734358,
+        "metrics/mAP50-95(B)": 0.5232323578177015
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "person",
+          "precision": 0.8906112953586147,
+          "recall": 0.8367952522255193,
+          "mAP50": 0.8892435709333879,
+          "mAP50-95": 0.5162745390764314
+        },
+        {
+          "class_id": 1,
+          "class_name": "helmet",
+          "precision": 0.9325577002221306,
+          "recall": 0.854210820156732,
+          "mAP50": 0.8969009212370465,
+          "mAP50-95": 0.4969840982268116
+        },
+        {
+          "class_id": 2,
+          "class_name": "safety_vest",
+          "precision": 0.8697446697116132,
+          "recall": 0.8209746313904386,
+          "mAP50": 0.887261940849873,
+          "mAP50-95": 0.5564384361498614
+        }
+      ],
+      "speed": {
+        "preprocess": 0.6115384751794749,
+        "inference": 1.1194576583717648,
+        "loss": 0.0005405211234337663,
+        "postprocess": 0.723671543913719
+      }
+    },
+    "rep_deploy": {
+      "model_name": "rep_deploy",
+      "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp04_4_yolo11n_rep_deploy_20260804_225458/weights/best_deploy_fp32.pt",
+      "weights_sha256": "9694391a75cc6127a6452b9d5e28930f76eb38194f67f0dfdbde7e61b30fc7ae",
+      "names": {
+        "0": "person",
+        "1": "helmet",
+        "2": "safety_vest"
+      },
+      "structure": {
+        "parameter_count": 2590233,
+        "reparam_count": 2,
+        "all_reparam_deployed": true,
+        "reparam_blocks": [
+          {
+            "index": 17,
+            "deploy": true,
+            "in_channels": 64,
+            "out_channels": 64,
+            "stride": 2
+          },
+          {
+            "index": 20,
+            "deploy": true,
+            "in_channels": 128,
+            "out_channels": 128,
+            "stride": 2
+          }
+        ]
+      },
+      "overall": {
+        "metrics/precision(B)": 0.8976376486452846,
+        "metrics/recall(B)": 0.8373295205806318,
+        "metrics/mAP50(B)": 0.8911365249976715,
+        "metrics/mAP50-95(B)": 0.5232353905291978
+      },
+      "per_class": [
+        {
+          "class_id": 0,
+          "class_name": "person",
+          "precision": 0.8906094921436402,
+          "recall": 0.8367952522255193,
+          "mAP50": 0.889246712906095,
+          "mAP50-95": 0.5162803236658876
+        },
+        {
+          "class_id": 1,
+          "class_name": "helmet",
+          "precision": 0.9325576988230467,
+          "recall": 0.8542108011131212,
+          "mAP50": 0.8969009212370465,
+          "mAP50-95": 0.49698334030031044
+        },
+        {
+          "class_id": 2,
+          "class_name": "safety_vest",
+          "precision": 0.8697457549691667,
+          "recall": 0.8209825084032552,
+          "mAP50": 0.887261940849873,
+          "mAP50-95": 0.5564425076213955
+        }
+      ],
+      "speed": {
+        "preprocess": 0.6169983271943176,
+        "inference": 1.0689763388422118,
+        "loss": 0.0004627206043837822,
+        "postprocess": 0.5601668771841143
+      }
+    }
+  },
+  "baseline_vs_rep_training": {
+    "metrics/precision(B)": {
+      "reference": 0.9216176695526199,
+      "candidate": 0.8976378884307862,
+      "signed_difference": -0.023979781121833743,
+      "absolute_difference": 0.023979781121833743
+    },
+    "metrics/recall(B)": {
+      "reference": 0.820407433844184,
+      "candidate": 0.8373269012575633,
+      "signed_difference": 0.01691946741337924,
+      "absolute_difference": 0.01691946741337924
+    },
+    "metrics/mAP50(B)": {
+      "reference": 0.8927010388917406,
+      "candidate": 0.8911354776734358,
+      "signed_difference": -0.0015655612183047563,
+      "absolute_difference": 0.0015655612183047563
+    },
+    "metrics/mAP50-95(B)": {
+      "reference": 0.5204785591817578,
+      "candidate": 0.5232323578177015,
+      "signed_difference": 0.002753798635943716,
+      "absolute_difference": 0.002753798635943716
+    }
+  },
+  "baseline_vs_rep_deploy": {
+    "metrics/precision(B)": {
+      "reference": 0.9216176695526199,
+      "candidate": 0.8976376486452846,
+      "signed_difference": -0.02398002090733531,
+      "absolute_difference": 0.02398002090733531
+    },
+    "metrics/recall(B)": {
+      "reference": 0.820407433844184,
+      "candidate": 0.8373295205806318,
+      "signed_difference": 0.016922086736447794,
+      "absolute_difference": 0.016922086736447794
+    },
+    "metrics/mAP50(B)": {
+      "reference": 0.8927010388917406,
+      "candidate": 0.8911365249976715,
+      "signed_difference": -0.0015645138940690861,
+      "absolute_difference": 0.0015645138940690861
+    },
+    "metrics/mAP50-95(B)": {
+      "reference": 0.5204785591817578,
+      "candidate": 0.5232353905291978,
+      "signed_difference": 0.002756831347439981,
+      "absolute_difference": 0.002756831347439981
+    }
+  },
+  "training_vs_deploy": {
+    "metrics/precision(B)": {
+      "reference": 0.8976378884307862,
+      "candidate": 0.8976376486452846,
+      "signed_difference": -2.3978550156567024e-07,
+      "absolute_difference": 2.3978550156567024e-07
+    },
+    "metrics/recall(B)": {
+      "reference": 0.8373269012575633,
+      "candidate": 0.8373295205806318,
+      "signed_difference": 2.619323068553392e-06,
+      "absolute_difference": 2.619323068553392e-06
+    },
+    "metrics/mAP50(B)": {
+      "reference": 0.8911354776734358,
+      "candidate": 0.8911365249976715,
+      "signed_difference": 1.0473242356701107e-06,
+      "absolute_difference": 1.0473242356701107e-06
+    },
+    "metrics/mAP50-95(B)": {
+      "reference": 0.5232323578177015,
+      "candidate": 0.5232353905291978,
+      "signed_difference": 3.0327114962647173e-06,
+      "absolute_difference": 3.0327114962647173e-06
+    }
+  },
+  "training_deploy_max_metric_difference": 3.0327114962647173e-06,
+  "checks": {
+    "baseline_has_no_reparam": true,
+    "rep_training_count": true,
+    "rep_training_form": true,
+    "rep_deploy_count": true,
+    "rep_deploy_form": true,
+    "class_names_consistent": true,
+    "all_metrics_finite": true,
+    "training_deploy_metric_equivalence": true
+  }
+}

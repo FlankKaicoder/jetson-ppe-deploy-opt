@@ -1,0 +1,12 @@
+============================================================
+ Exp04.5c Runner Summary
+============================================================
+result=PASS
+python_return_code=0
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846/summary.txt
+summary_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846/summary.json
+threshold_sweep=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846/threshold_sweep.csv
+selected_points=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846/selected_operating_points.csv
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5c_threshold_calibration_20260804_231846/abnormal.txt

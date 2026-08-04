@@ -1,0 +1,75 @@
+============================================================================
+ Exp04.5a Reparameterization Independent Test Evaluation
+============================================================================
+result=PASS
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+
+========== baseline ==========
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+weights_sha256=79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+parameter_count=2590425
+reparam_count=0
+all_reparam_deployed=False
+metrics/precision(B)=0.921617669553
+metrics/recall(B)=0.820407433844
+metrics/mAP50(B)=0.892701038892
+metrics/mAP50-95(B)=0.520478559182
+speed={"preprocess": 0.5931607894089124, "inference": 1.9141629223443875, "loss": 0.00045772962969595985, "postprocess": 0.547996309126587}
+class=person,precision=0.906839089154,recall=0.795252225519,mAP50=0.884114030385,mAP50-95=0.517197283411
+class=helmet,precision=0.956200152549,recall=0.837837837838,mAP50=0.903352695362,mAP50-95=0.488051860698
+class=safety_vest,precision=0.901813766955,recall=0.828132238175,mAP50=0.890636390929,mAP50-95=0.556186533437
+
+========== rep_training ==========
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/weights/best.pt
+weights_sha256=5dcc487e122670fb0b2b37a2a7d74ac2c7401bb19638065c1b27c16b1bf75938
+parameter_count=2611289
+reparam_count=2
+all_reparam_deployed=False
+metrics/precision(B)=0.897637888431
+metrics/recall(B)=0.837326901258
+metrics/mAP50(B)=0.891135477673
+metrics/mAP50-95(B)=0.523232357818
+speed={"preprocess": 0.6115384751794749, "inference": 1.1194576583717648, "loss": 0.0005405211234337663, "postprocess": 0.723671543913719}
+class=person,precision=0.890611295359,recall=0.836795252226,mAP50=0.889243570933,mAP50-95=0.516274539076
+class=helmet,precision=0.932557700222,recall=0.854210820157,mAP50=0.896900921237,mAP50-95=0.496984098227
+class=safety_vest,precision=0.869744669712,recall=0.82097463139,mAP50=0.88726194085,mAP50-95=0.55643843615
+
+========== rep_deploy ==========
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp04_4_yolo11n_rep_deploy_20260804_225458/weights/best_deploy_fp32.pt
+weights_sha256=9694391a75cc6127a6452b9d5e28930f76eb38194f67f0dfdbde7e61b30fc7ae
+parameter_count=2590233
+reparam_count=2
+all_reparam_deployed=True
+metrics/precision(B)=0.897637648645
+metrics/recall(B)=0.837329520581
+metrics/mAP50(B)=0.891136524998
+metrics/mAP50-95(B)=0.523235390529
+speed={"preprocess": 0.6169983271943176, "inference": 1.0689763388422118, "loss": 0.0004627206043837822, "postprocess": 0.5601668771841143}
+class=person,precision=0.890609492144,recall=0.836795252226,mAP50=0.889246712906,mAP50-95=0.516280323666
+class=helmet,precision=0.932557698823,recall=0.854210801113,mAP50=0.896900921237,mAP50-95=0.4969833403
+class=safety_vest,precision=0.869745754969,recall=0.820982508403,mAP50=0.88726194085,mAP50-95=0.556442507621
+
+========== baseline vs rep deploy ==========
+metrics/precision(B)_difference=-0.0239800209073
+metrics/recall(B)_difference=0.0169220867364
+metrics/mAP50(B)_difference=-0.00156451389407
+metrics/mAP50-95(B)_difference=0.00275683134744
+
+========== rep training vs rep deploy ==========
+metrics/precision(B)_difference=-2.39785501566e-07
+metrics/recall(B)_difference=2.61932306855e-06
+metrics/mAP50(B)_difference=1.04732423567e-06
+metrics/mAP50-95(B)_difference=3.03271149626e-06
+training_deploy_max_metric_difference=3.03271149626e-06
+
+========== checks ==========
+baseline_has_no_reparam=PASS
+rep_training_count=PASS
+rep_training_form=PASS
+rep_deploy_count=PASS
+rep_deploy_form=PASS
+class_names_consistent=PASS
+all_metrics_finite=PASS
+training_deploy_metric_equivalence=PASS
+
+overall=PASS

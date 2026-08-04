@@ -1,0 +1,65 @@
+==========================================================================
+ Exp04.4 Rep Training-to-Deploy Conversion and Validation
+==========================================================================
+result=PASS
+training_weights=/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/weights/best.pt
+training_weights_sha256=5dcc487e122670fb0b2b37a2a7d74ac2c7401bb19638065c1b27c16b1bf75938
+deploy_weights=/root/autodl-tmp/jetson-ppe-outputs/exp04_4_yolo11n_rep_deploy_20260804_225458/weights/best_deploy_fp32.pt
+deploy_weights_sha256=9694391a75cc6127a6452b9d5e28930f76eb38194f67f0dfdbde7e61b30fc7ae
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+
+========== structure ==========
+training_rep_count=2
+training_form=True
+training_parameter_count=2611289
+converted_block_count=2
+deploy_rep_count=2
+deploy_form=True
+deploy_parameter_count=2590233
+reloaded_rep_count=2
+reloaded_deploy_form=True
+reloaded_parameter_count=2590233
+
+========== forward equivalence ==========
+training_vs_deploy_max_abs_error=0.0001220703125
+training_vs_deploy_mean_abs_error=8.12939618137e-08
+training_vs_deploy_relative_l2_error=2.10414404751e-08
+deploy_vs_reloaded_max_abs_error=0
+
+========== validation metrics ==========
+metrics/precision(B)_training=0.890738481864
+metrics/precision(B)_deploy=0.890738479424
+metrics/precision(B)_signed_difference=-2.43997222427e-09
+metrics/recall(B)_training=0.78117331828
+metrics/recall(B)_deploy=0.781173277291
+metrics/recall(B)_signed_difference=-4.09889525654e-08
+metrics/mAP50(B)_training=0.848307134857
+metrics/mAP50(B)_deploy=0.848307134857
+metrics/mAP50(B)_signed_difference=0
+metrics/mAP50-95(B)_training=0.485888493164
+metrics/mAP50-95(B)_deploy=0.485888493164
+metrics/mAP50-95(B)_signed_difference=0
+maximum_metric_abs_difference=4.09889525654e-08
+
+========== validation speed ==========
+training_speed={"preprocess": 0.570328787617248, "inference": 2.4820665028461253, "loss": 0.0004378938189093968, "postprocess": 0.532191377111672}
+deploy_speed={"preprocess": 0.4933939394777135, "inference": 1.01638387101123, "loss": 0.0004568748811285617, "postprocess": 0.5582810593082265}
+
+========== checks ==========
+training_rep_count=PASS
+training_form=PASS
+converted_block_count=PASS
+deploy_rep_count=PASS
+deploy_form=PASS
+parameter_count_reduced=PASS
+forward_max_abs_error=PASS
+forward_mean_abs_error=PASS
+forward_relative_l2_error=PASS
+deploy_checkpoint_generated=PASS
+deploy_checkpoint_reload=PASS
+reloaded_deploy_form=PASS
+reloaded_parameter_count=PASS
+save_reload_max_abs_error=PASS
+validation_metric_equivalence=PASS
+
+overall=PASS

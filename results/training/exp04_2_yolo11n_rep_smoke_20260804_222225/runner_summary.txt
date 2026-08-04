@@ -1,0 +1,12 @@
+============================================================
+ Exp04.2 Runner Summary
+============================================================
+result=PASS
+python_return_code=0
+run_name=exp04_2_yolo11n_rep_smoke_20260804_222225
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_2_yolo11n_rep_smoke_20260804_222225
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_2_yolo11n_rep_smoke_20260804_222225/summary.txt
+summary_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_2_yolo11n_rep_smoke_20260804_222225/summary.json
+train_arguments=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_2_yolo11n_rep_smoke_20260804_222225/train_arguments.json
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_2_yolo11n_rep_smoke_20260804_222225/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_2_yolo11n_rep_smoke_20260804_222225/abnormal.txt

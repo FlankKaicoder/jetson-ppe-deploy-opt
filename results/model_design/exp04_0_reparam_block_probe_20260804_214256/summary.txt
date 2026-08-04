@@ -1,0 +1,46 @@
+============================================================
+ Exp04.0 Reparameterization Block Probe
+============================================================
+torch_version=2.8.0+cu128
+threshold_max_abs_error=1e-5
+
+case=same_channels_identity
+output_shape=[2, 16, 32, 32]
+conv_before=2
+conv_after=1
+bn_before=3
+bn_after=0
+params_before=2656
+params_after=2320
+max_abs_error=3.33786010742e-06
+mean_abs_error=1.35837581183e-07
+relative_l2_error=2.86915621928e-07
+result=PASS
+
+case=channel_projection
+output_shape=[2, 24, 32, 32]
+conv_before=2
+conv_after=1
+bn_before=2
+bn_after=0
+params_before=3936
+params_after=3480
+max_abs_error=2.62260437012e-06
+mean_abs_error=1.02207458497e-07
+relative_l2_error=3.10388458047e-07
+result=PASS
+
+case=stride2_projection
+output_shape=[2, 24, 16, 16]
+conv_before=2
+conv_after=1
+bn_before=2
+bn_after=0
+params_before=3936
+params_after=3480
+max_abs_error=2.14576721191e-06
+mean_abs_error=1.0205372547e-07
+relative_l2_error=3.02908318872e-07
+result=PASS
+
+overall=PASS

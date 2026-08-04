@@ -1,0 +1,12 @@
+============================================================
+ Exp04.1 Runner Summary
+============================================================
+result=FAIL
+python_return_code=1
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212/summary.txt
+summary_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212/summary.json
+graph=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212/top_level_graph.csv
+manifest=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212/replacement_manifest.csv
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_1_yolo11n_reparam_probe_20260804_215212/abnormal.txt

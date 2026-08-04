@@ -1,0 +1,17 @@
+experiment=Exp04.5a
+timestamp=20260804_225914
+repo_dir=/root/autodl-tmp/jetson-ppe-deploy-opt
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914
+baseline_weights=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+rep_training_weights=/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/weights/best.pt
+rep_deploy_weights=/root/autodl-tmp/jetson-ppe-outputs/exp04_4_yolo11n_rep_deploy_20260804_225458/weights/best_deploy_fp32.pt
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+python=/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python
+git_branch=exp/04-reparameterization
+git_commit=66ade25a0b6197886be3688d5a076ed08c10a151
+
+Python 3.12.3
+torch_version=2.8.0+cu128
+ultralytics_version=8.4.95
+cuda_available=True
+gpu_name=NVIDIA GeForce RTX 3080 Ti
