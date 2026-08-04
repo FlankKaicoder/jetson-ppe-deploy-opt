@@ -1,0 +1,26 @@
+============================================================
+ Exp03.1 YOLO11n-P2 Training Smoke Summary
+============================================================
+result=PASS
+config=/root/autodl-tmp/jetson-ppe-deploy-opt/configs/models/yolo11n_p2.yaml
+pretrained=/root/autodl-tmp/models/ultralytics/yolo11n.pt
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+save_dir=/root/autodl-tmp/jetson-ppe-outputs/exp03_1_yolo11n_p2_smoke_20260804_193813
+best_weight=/root/autodl-tmp/jetson-ppe-outputs/exp03_1_yolo11n_p2_smoke_20260804_193813/weights/best.pt
+last_weight=/root/autodl-tmp/jetson-ppe-outputs/exp03_1_yolo11n_p2_smoke_20260804_193813/weights/last.pt
+results_csv=/root/autodl-tmp/jetson-ppe-outputs/exp03_1_yolo11n_p2_smoke_20260804_193813/results.csv
+initial_detect_nc=80
+trained_detect_nc=3
+detect_nl=4
+stride=[4.0, 8.0, 16.0, 32.0]
+epochs=1
+imgsz=640
+batch=8
+workers=0
+seed=42
+elapsed_seconds=87.317
+metric_metrics/mAP50(B)=0.28189219
+metric_metrics/mAP50-95(B)=0.09377955
+metric_metrics/precision(B)=0.09480682
+metric_metrics/recall(B)=0.52421977
+exp03_1_yolo11n_p2_training_smoke=PASS

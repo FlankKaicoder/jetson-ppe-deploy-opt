@@ -1,0 +1,63 @@
+{
+  "experiment": "Exp03.2 custom YOLO11n-P2 formal 100-epoch training",
+  "result": "PASS",
+  "config": "/root/autodl-tmp/jetson-ppe-deploy-opt/configs/models/yolo11n_p2.yaml",
+  "config_sha256": "89160613ee686bba1d2cecaefda8e48b86b6b315ea5c001612876b5461764fd6",
+  "pretrained": "/root/autodl-tmp/models/ultralytics/yolo11n.pt",
+  "pretrained_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "save_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556",
+  "best_weight": "/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556/weights/best.pt",
+  "best_weight_sha256": "bf6e386751ab4aa325307cecb0efbf7cc3788a49e8553e46538316a78a238b8c",
+  "last_weight": "/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556/weights/last.pt",
+  "last_weight_sha256": "117425c49b952fe371db06cd9a20d1d69e2b21c29bb142cd8f9cf013cff7b8ce",
+  "results_csv": "/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556/results.csv",
+  "args_yaml": "/root/autodl-tmp/jetson-ppe-outputs/exp03_2_yolo11n_p2_e100_20260804_194556/args.yaml",
+  "parameters_before_training": 2740032,
+  "trained_nc": 3,
+  "detect_nl": 4,
+  "stride": [
+    4.0,
+    8.0,
+    16.0,
+    32.0
+  ],
+  "epochs": 100,
+  "imgsz": 640,
+  "batch": 16,
+  "workers": 8,
+  "seed": 42,
+  "optimizer": "AdamW",
+  "lr0": 0.0015,
+  "lrf": 0.01,
+  "momentum": 0.9,
+  "weight_decay": 0.0005,
+  "elapsed_seconds": 832.5046396380058,
+  "torch_version": "2.8.0+cu128",
+  "torch_cuda_version": "12.8",
+  "ultralytics_version": "8.4.95",
+  "cuda_device": "NVIDIA GeForce RTX 3080 Ti",
+  "final_metrics": {
+    "metrics/precision(B)": 0.8339392198076601,
+    "metrics/recall(B)": 0.7853097288283369,
+    "metrics/mAP50(B)": 0.8369369909605903,
+    "metrics/mAP50-95(B)": 0.47897207597018704
+  },
+  "training_extrema": {
+    "row_count": 100,
+    "best_map50": {
+      "epoch": 77,
+      "precision": 0.84922,
+      "recall": 0.81026,
+      "map50": 0.85348,
+      "map50_95": 0.47547
+    },
+    "best_map50_95": {
+      "epoch": 56,
+      "precision": 0.8333,
+      "recall": 0.78538,
+      "map50": 0.83762,
+      "map50_95": 0.47953
+    }
+  }
+}
