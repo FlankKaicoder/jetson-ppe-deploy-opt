@@ -1,0 +1,3 @@
+index,source_class,replacement_class,in_channels,out_channels,kernel_size,stride,padding,groups,source_parameter_count,training_parameter_count
+17,Conv,RepConvBlock,64,64,"[3, 3]","[2, 2]","[1, 1]",1,36992,41216
+20,Conv,RepConvBlock,128,128,"[3, 3]","[2, 2]","[1, 1]",1,147712,164352

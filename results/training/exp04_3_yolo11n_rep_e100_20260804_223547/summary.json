@@ -1,0 +1,236 @@
+{
+  "experiment": "Exp04.3 YOLO11n-Rep 100-Epoch Formal Training",
+  "result": "PASS",
+  "pretrained": "/root/autodl-tmp/models/ultralytics/yolo11n.pt",
+  "pretrained_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "train_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547",
+  "report_dir": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/training/exp04_3_yolo11n_rep_e100_20260804_223547",
+  "elapsed_seconds": 711.88161320996,
+  "base_candidate_indices": [
+    17,
+    20
+  ],
+  "pretrained_parameter_count": 2624080,
+  "trainer_reparam_source": "normal_model_after_pretrained_load",
+  "trainer_reparam_manifest": [
+    {
+      "index": 17,
+      "source_class": "Conv",
+      "replacement_class": "RepConvBlock",
+      "in_channels": 64,
+      "out_channels": 64,
+      "kernel_size": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "source_parameter_count": 36992,
+      "training_parameter_count": 41216
+    },
+    {
+      "index": 20,
+      "source_class": "Conv",
+      "replacement_class": "RepConvBlock",
+      "in_channels": 128,
+      "out_channels": 128,
+      "kernel_size": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "padding": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "source_parameter_count": 147712,
+      "training_parameter_count": 164352
+    }
+  ],
+  "trainer_rep_count": 2,
+  "trainer_parameter_count": 2611289,
+  "ema_rep_count": 2,
+  "epoch_count": 100,
+  "final_row": {
+    "epoch": 100.0,
+    "metrics/precision(B)": 0.88445,
+    "metrics/recall(B)": 0.77923,
+    "metrics/mAP50(B)": 0.83386,
+    "metrics/mAP50-95(B)": 0.47244,
+    "train/box_loss": 0.99329,
+    "train/cls_loss": 0.49779,
+    "train/dfl_loss": 1.2983,
+    "val/box_loss": 1.52764,
+    "val/cls_loss": 0.75879,
+    "val/dfl_loss": 1.82962
+  },
+  "best_map50_row": {
+    "epoch": 64.0,
+    "metrics/precision(B)": 0.85379,
+    "metrics/recall(B)": 0.81538,
+    "metrics/mAP50(B)": 0.84834,
+    "metrics/mAP50-95(B)": 0.47721,
+    "train/box_loss": 1.24086,
+    "train/cls_loss": 0.74057,
+    "train/dfl_loss": 1.39874,
+    "val/box_loss": 1.54366,
+    "val/cls_loss": 0.78734,
+    "val/dfl_loss": 1.78677
+  },
+  "best_map5095_row": {
+    "epoch": 65.0,
+    "metrics/precision(B)": 0.88962,
+    "metrics/recall(B)": 0.77968,
+    "metrics/mAP50(B)": 0.84771,
+    "metrics/mAP50-95(B)": 0.48506,
+    "train/box_loss": 1.2136,
+    "train/cls_loss": 0.73819,
+    "train/dfl_loss": 1.3827,
+    "val/box_loss": 1.5422,
+    "val/cls_loss": 0.80056,
+    "val/dfl_loss": 1.80709
+  },
+  "best_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/weights/best.pt",
+  "best_pt_sha256": "5dcc487e122670fb0b2b37a2a7d74ac2c7401bb19638065c1b27c16b1bf75938",
+  "last_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/weights/last.pt",
+  "last_pt_sha256": "6bcf17bdf4618e4c1d9f9780fb3cf098f1c7c4fdc1c08c8fbee959fd806c0e36",
+  "results_csv": "/root/autodl-tmp/jetson-ppe-outputs/exp04_3_yolo11n_rep_e100_20260804_223547/results.csv",
+  "checkpoint_rep_count": 2,
+  "checkpoint_parameter_count": 2611289,
+  "checkpoint_block_details": [
+    {
+      "index": 17,
+      "deploy": false,
+      "in_channels": 64,
+      "out_channels": 64,
+      "stride": 2,
+      "parameter_count": 41216,
+      "branch_1x1_bn_gamma_abs_max": 0.052886962890625,
+      "branch_1x1_bn_gamma_abs_mean": 0.010207124054431915,
+      "branch_1x1_bn_gamma_nonzero_count": 64
+    },
+    {
+      "index": 20,
+      "deploy": false,
+      "in_channels": 128,
+      "out_channels": 128,
+      "stride": 2,
+      "parameter_count": 164352,
+      "branch_1x1_bn_gamma_abs_max": 0.08477783203125,
+      "branch_1x1_bn_gamma_abs_mean": 0.012402204796671867,
+      "branch_1x1_bn_gamma_nonzero_count": 128
+    }
+  ],
+  "checkpoint_training_form": true,
+  "learned_1x1_branches": true,
+  "converted_block_count": 2,
+  "all_blocks_deployed": true,
+  "deploy_parameter_count": 2590233,
+  "conversion_error": {
+    "tensor_count": 6,
+    "element_count": 334600,
+    "max_abs_error": 6.103515625e-05,
+    "mean_abs_error": 8.33107671520611e-08,
+    "relative_l2_error": 3.160384369751919e-08,
+    "per_tensor": [
+      {
+        "path": "output.tuple[0]",
+        "shape": [
+          1,
+          7,
+          2100
+        ],
+        "max_abs_error": 6.103515625e-05,
+        "mean_abs_error": 5.70337704175472e-07
+      },
+      {
+        "path": "output.tuple[1].dict[boxes]",
+        "shape": [
+          1,
+          64,
+          2100
+        ],
+        "max_abs_error": 2.86102294921875e-06,
+        "mean_abs_error": 8.099135584416217e-08
+      },
+      {
+        "path": "output.tuple[1].dict[feats].list[0]",
+        "shape": [
+          1,
+          64,
+          40,
+          40
+        ],
+        "max_abs_error": 0.0,
+        "mean_abs_error": 0.0
+      },
+      {
+        "path": "output.tuple[1].dict[feats].list[1]",
+        "shape": [
+          1,
+          128,
+          20,
+          20
+        ],
+        "max_abs_error": 2.682209014892578e-06,
+        "mean_abs_error": 9.936349698591584e-08
+      },
+      {
+        "path": "output.tuple[1].dict[feats].list[2]",
+        "shape": [
+          1,
+          256,
+          10,
+          10
+        ],
+        "max_abs_error": 3.814697265625e-06,
+        "mean_abs_error": 1.0735787014937159e-07
+      },
+      {
+        "path": "output.tuple[1].dict[scores]",
+        "shape": [
+          1,
+          3,
+          2100
+        ],
+        "max_abs_error": 3.814697265625e-06,
+        "mean_abs_error": 1.223503574010465e-07
+      }
+    ]
+  },
+  "thresholds": {
+    "deploy_max_abs_error": 0.0005,
+    "deploy_mean_abs_error": 1e-06,
+    "deploy_relative_l2_error": 1e-06
+  },
+  "checks": {
+    "base_candidate_indices": true,
+    "formal_epoch_count": true,
+    "trainer_rep_count": true,
+    "ema_rep_count": true,
+    "best_pt_generated": true,
+    "last_pt_generated": true,
+    "results_csv_generated": true,
+    "checkpoint_reload": true,
+    "checkpoint_training_form": true,
+    "new_1x1_branches_learned": true,
+    "converted_block_count": true,
+    "all_blocks_deployed": true,
+    "deploy_max_abs_error": true,
+    "deploy_mean_abs_error": true,
+    "deploy_relative_l2_error": true,
+    "training_metrics_finite": true
+  }
+}

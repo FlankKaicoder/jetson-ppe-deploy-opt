@@ -1,0 +1,10 @@
+============================================================
+ Exp04.0 Runner Summary
+============================================================
+result=PASS
+python_return_code=0
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/summary.txt
+metrics=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/metrics.csv
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/abnormal.txt

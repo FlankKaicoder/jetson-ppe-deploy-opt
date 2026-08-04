@@ -1,0 +1,12 @@
+============================================================
+ Exp04.5a Runner Summary
+============================================================
+result=PASS
+python_return_code=0
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914/summary.txt
+summary_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914/summary.json
+overall_metrics=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914/overall_metrics.csv
+per_class_metrics=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914/per_class_metrics.csv
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5a_reparam_independent_test_20260804_225914/abnormal.txt

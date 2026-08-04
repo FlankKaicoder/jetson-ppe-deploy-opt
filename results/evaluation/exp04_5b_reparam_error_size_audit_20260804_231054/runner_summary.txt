@@ -1,0 +1,15 @@
+============================================================
+ Exp04.5b Runner Summary
+============================================================
+result=PASS
+python_return_code=0
+output_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/summary.txt
+summary_json=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/summary.json
+overall_metrics=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/overall_metrics.csv
+per_class_metrics=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/per_class_metrics.csv
+per_size_metrics=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/per_size_metrics.csv
+baseline_per_image=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/baseline_per_image.csv
+rep_deploy_per_image=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/rep_deploy_per_image.csv
+environment=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/environment.txt
+abnormal=/root/autodl-tmp/jetson-ppe-deploy-opt/results/evaluation/exp04_5b_reparam_error_size_audit_20260804_231054/abnormal.txt

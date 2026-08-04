@@ -1,0 +1,98 @@
+{
+  "experiment": "Exp04.0 Reparameterization Block Probe",
+  "torch_version": "2.8.0+cu128",
+  "threshold_max_abs_error": 1e-05,
+  "overall": "PASS",
+  "cases": [
+    {
+      "name": "same_channels_identity",
+      "in_channels": 16,
+      "out_channels": 16,
+      "stride": 1,
+      "shape": [
+        2,
+        16,
+        32,
+        32
+      ],
+      "output_shape": [
+        2,
+        16,
+        32,
+        32
+      ],
+      "conv_before": 2,
+      "conv_after": 1,
+      "bn_before": 3,
+      "bn_after": 0,
+      "params_before": 2656,
+      "params_after": 2320,
+      "max_abs_error": 3.337860107421875e-06,
+      "mean_abs_error": 1.358375811832957e-07,
+      "relative_l2_error": 2.869156219276192e-07,
+      "training_state": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/same_channels_identity_training_state.pt",
+      "deploy_state": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/same_channels_identity_deploy_state.pt",
+      "result": "PASS"
+    },
+    {
+      "name": "channel_projection",
+      "in_channels": 16,
+      "out_channels": 24,
+      "stride": 1,
+      "shape": [
+        2,
+        16,
+        32,
+        32
+      ],
+      "output_shape": [
+        2,
+        24,
+        32,
+        32
+      ],
+      "conv_before": 2,
+      "conv_after": 1,
+      "bn_before": 2,
+      "bn_after": 0,
+      "params_before": 3936,
+      "params_after": 3480,
+      "max_abs_error": 2.6226043701171875e-06,
+      "mean_abs_error": 1.0220745849665036e-07,
+      "relative_l2_error": 3.10388458046873e-07,
+      "training_state": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/channel_projection_training_state.pt",
+      "deploy_state": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/channel_projection_deploy_state.pt",
+      "result": "PASS"
+    },
+    {
+      "name": "stride2_projection",
+      "in_channels": 16,
+      "out_channels": 24,
+      "stride": 2,
+      "shape": [
+        2,
+        16,
+        32,
+        32
+      ],
+      "output_shape": [
+        2,
+        24,
+        16,
+        16
+      ],
+      "conv_before": 2,
+      "conv_after": 1,
+      "bn_before": 2,
+      "bn_after": 0,
+      "params_before": 3936,
+      "params_after": 3480,
+      "max_abs_error": 2.1457672119140625e-06,
+      "mean_abs_error": 1.020537254703413e-07,
+      "relative_l2_error": 3.0290831887214154e-07,
+      "training_state": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/stride2_projection_training_state.pt",
+      "deploy_state": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/model_design/exp04_0_reparam_block_probe_20260804_214256/stride2_projection_deploy_state.pt",
+      "result": "PASS"
+    }
+  ]
+}
