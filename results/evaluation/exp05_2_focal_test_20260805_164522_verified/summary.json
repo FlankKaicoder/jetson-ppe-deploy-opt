@@ -1,0 +1,57 @@
+{
+  "result": "PASS",
+  "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_e100_20260805_162350/weights/best.pt",
+  "weights_sha256": "03b7f32529861d6060bc2a22afb8d114a6d5b3fa92a7fc211fcc4dd1319eb299",
+  "data": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "split": "test",
+  "imgsz": 640,
+  "batch": 16,
+  "parameters": 2590425,
+  "fused_parameters_after_validation": 2582737,
+  "checks": {
+    "focal_model": true,
+    "focal_criterion": true,
+    "focal_bce": true,
+    "no_attention": true,
+    "baseline_parameters": true,
+    "three_classes": true
+  },
+  "overall_metrics": {
+    "metrics/precision(B)": 0.8885559172659846,
+    "metrics/recall(B)": 0.8176957138777383,
+    "metrics/mAP50(B)": 0.8798860799772174,
+    "metrics/mAP50-95(B)": 0.5269375623797605
+  },
+  "per_class_metrics": [
+    {
+      "class_id": 0,
+      "class_name": "person",
+      "precision": 0.9088243520179652,
+      "recall": 0.76903366046386,
+      "mAP50": 0.8567001985679307,
+      "mAP50-95": 0.523303088175189
+    },
+    {
+      "class_id": 1,
+      "class_name": "helmet",
+      "precision": 0.8661811180503883,
+      "recall": 0.8494208494208494,
+      "mAP50": 0.8818314338461257,
+      "mAP50-95": 0.49520775066442174
+    },
+    {
+      "class_id": 2,
+      "class_name": "safety_vest",
+      "precision": 0.8906622817296002,
+      "recall": 0.8346326317485055,
+      "mAP50": 0.9011266075175959,
+      "mAP50-95": 0.5623018482996708
+    }
+  ],
+  "speed_ms_per_image": {
+    "preprocess": 1.24207004579422,
+    "inference": 2.1773080738074224,
+    "loss": 0.00047023603735176937,
+    "postprocess": 15.234349684611168
+  }
+}

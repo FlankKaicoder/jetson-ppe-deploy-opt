@@ -1,0 +1,48 @@
+{
+  "experiment": "Exp05.4",
+  "result": "PASS",
+  "acceptance": {
+    "minimum_map50_95": 0.52047856,
+    "minimum_tiny_small_recall": 0.79020979
+  },
+  "models": [
+    {
+      "name": "YOLO11n baseline",
+      "parameters": 2590425,
+      "map50": 0.89270104,
+      "map50_95": 0.52047856,
+      "tiny_small_tp": 113,
+      "tiny_small_gt": 143,
+      "tiny_small_recall": 0.79020979,
+      "decision": "KEEP"
+    },
+    {
+      "name": "P3 Residual CBAM-Lite",
+      "parameters": 2594684,
+      "map50": 0.89846973,
+      "map50_delta": 0.00576869,
+      "map50_95": 0.52056023,
+      "map50_95_delta": 0.00008167,
+      "tiny_small_tp": 108,
+      "tiny_small_gt": 143,
+      "tiny_small_recall": 0.75524476,
+      "tiny_small_delta": -0.03496503,
+      "decision": "REJECT"
+    },
+    {
+      "name": "Focal Classification Loss",
+      "parameters": 2590425,
+      "map50": 0.87988608,
+      "map50_delta": -0.01281496,
+      "map50_95": 0.52693756,
+      "map50_95_delta": 0.006459,
+      "tiny_small_tp": 101,
+      "tiny_small_gt": 143,
+      "tiny_small_recall": 0.70629371,
+      "tiny_small_delta": -0.08391608,
+      "decision": "REJECT"
+    }
+  ],
+  "combined_experiment": "SKIPPED_BY_RULE",
+  "deployment_mainline": "original YOLO11n baseline"
+}

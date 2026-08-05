@@ -1,0 +1,75 @@
+{
+  "overall": "PASS",
+  "run_name": "exp05_1_attention_smoke_20260805_154712_retry1",
+  "elapsed_seconds": 51.62193323392421,
+  "train_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_smoke_20260805_154712_retry1",
+  "best_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_smoke_20260805_154712_retry1/weights/best.pt",
+  "last_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_smoke_20260805_154712_retry1/weights/last.pt",
+  "results_csv": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_smoke_20260805_154712_retry1/results.csv",
+  "required_artifacts": {
+    "best_pt": true,
+    "last_pt": true,
+    "results_csv": true
+  },
+  "checks": {
+    "artifacts": true,
+    "finite_metrics": true,
+    "trainer_wrapper_count": true,
+    "ema_wrapper_count": true,
+    "checkpoint_wrapper_count": true,
+    "residual_scale_updated": true
+  },
+  "last_metrics": {
+    "epoch": 2.0,
+    "time": 39.2297,
+    "train/box_loss": 1.62031,
+    "train/cls_loss": 1.42768,
+    "train/dfl_loss": 1.68246,
+    "metrics/precision(B)": 0.72253,
+    "metrics/recall(B)": 0.48852,
+    "metrics/mAP50(B)": 0.56197,
+    "metrics/mAP50-95(B)": 0.25376,
+    "val/box_loss": 2.03387,
+    "val/cls_loss": 2.14193,
+    "val/dfl_loss": 2.4638,
+    "lr/pg0": 0.000500927,
+    "lr/pg1": 0.000500927,
+    "lr/pg2": 0.0343719
+  },
+  "trainer_attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.004106282256543636
+    }
+  ],
+  "ema_attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.004103670362383127
+    }
+  ],
+  "checkpoint_attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.0041046142578125
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+Exp05.2 Focal Classification Loss Smoke Training
+overall=PASS
+run_name=exp05_2_focal_smoke_20260805_162003
+elapsed_seconds=58.281
+best_pt=/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_smoke_20260805_162003/weights/best.pt
+parameters=2590425
+checks={"artifacts": true, "checkpoint_focal_bce": true, "checkpoint_model_class": true, "finite_metrics": true, "no_attention_checkpoint": true, "no_attention_ema": true, "no_attention_trainer": true, "trainer_criterion": true, "trainer_focal_bce": true, "trainer_model_class": true}
+last_mAP50=0.55659
+last_mAP50_95=0.24218
+trainer_criterion={"alpha": 0.25, "classification_loss_class": "models.exp05_trainer.ElementwiseFocalBCE", "criterion_class": "models.exp05_trainer.FocalDetectionLoss", "gamma": 1.5, "model_class": "models.exp05_trainer.FocalDetectionModel", "reduction": "none"}
+checkpoint_criterion={"alpha": 0.25, "classification_loss_class": "models.exp05_trainer.ElementwiseFocalBCE", "criterion_class": "models.exp05_trainer.FocalDetectionLoss", "gamma": 1.5, "model_class": "models.exp05_trainer.FocalDetectionModel", "reduction": "none"}

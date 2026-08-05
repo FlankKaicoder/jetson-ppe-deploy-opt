@@ -1,0 +1,15 @@
+Exp05.0 Attention and Focal Probe
+overall=PASS
+attention_pass=True
+focal_pass=True
+p3_index=16
+p3_channels=64
+added_parameters=4259
+identity_max_abs_error=0.0
+serialization_max_abs_error=0.0
+residual_scale_gradient=0.06946050375699997
+attention_gradient_abs_sum_at_scale_0_1=0.22662003943696618
+focal_gamma=1.5
+focal_alpha=0.25
+easy_negative_focal_to_bce_ratio=9.221516666002572e-05
+hard_negative_focal_to_bce_ratio=0.6199762225151062
