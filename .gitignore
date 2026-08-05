@@ -90,3 +90,7 @@ Thumbs.db
 # Large generated model artifacts
 # Failed or superseded Exp02 smoke runs
 results/training/exp02_5_yolo11n_smoke_*/
+
+# Failed or superseded Exp05 diagnostic runs
+results/training/exp05_1_attention_smoke_20260805_154712/
+results/evaluation/exp05_2_focal_test_20260805_164522/
