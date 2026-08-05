@@ -1,0 +1,11 @@
+Exp05.2 Focal Classification Loss Independent Test
+result=PASS
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_e100_20260805_162350/weights/best.pt
+parameters=2590425
+checks={"baseline_parameters": true, "focal_bce": true, "focal_criterion": true, "focal_model": true, "no_attention": true, "three_classes": true}
+mAP50=0.87988608
+mAP50-95=0.52693756
+precision=0.88855592
+recall=0.81769571
+per_class=[{"class_id": 0, "class_name": "person", "mAP50": 0.8567001985679307, "mAP50-95": 0.523303088175189, "precision": 0.9088243520179652, "recall": 0.76903366046386}, {"class_id": 1, "class_name": "helmet", "mAP50": 0.8818314338461257, "mAP50-95": 0.49520775066442174, "precision": 0.8661811180503883, "recall": 0.8494208494208494}, {"class_id": 2, "class_name": "safety_vest", "mAP50": 0.9011266075175959, "mAP50-95": 0.5623018482996708, "precision": 0.8906622817296002, "recall": 0.8346326317485055}]
+speed_ms_per_image={"inference": 2.1773080738074224, "loss": 0.00047023603735176937, "postprocess": 15.234349684611168, "preprocess": 1.24207004579422}

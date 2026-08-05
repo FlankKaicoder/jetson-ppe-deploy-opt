@@ -1,0 +1,10 @@
+Exp05.4 Final Comparison
+result=PASS
+baseline_decision=KEEP
+attention_decision=REJECT
+focal_decision=REJECT
+combined_experiment=SKIPPED_BY_RULE
+baseline_tiny_small=113/143=0.79020979
+attention_tiny_small=108/143=0.75524476 delta=-0.03496503
+focal_tiny_small=101/143=0.70629371 delta=-0.08391608
+deployment_mainline=original_YOLO11n_baseline

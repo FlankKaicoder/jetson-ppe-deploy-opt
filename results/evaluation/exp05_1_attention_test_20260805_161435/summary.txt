@@ -1,0 +1,11 @@
+Exp05.1 P3 Residual CBAM-Lite Independent Test
+result=PASS
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_e100_20260805_155714/weights/best.pt
+parameters=2594684
+wrapper_count=1
+mAP50=0.89846973
+mAP50-95=0.52056023
+precision=0.89793076
+recall=0.84341607
+per_class=[{"class_id": 0, "class_name": "person", "mAP50": 0.8875697574891807, "mAP50-95": 0.5145835172486423, "precision": 0.8904266750863061, "recall": 0.819866970245311}, {"class_id": 1, "class_name": "helmet", "mAP50": 0.9210323814881348, "mAP50-95": 0.5034101321427018, "precision": 0.9417750451360366, "recall": 0.874315667586419}, {"class_id": 2, "class_name": "safety_vest", "mAP50": 0.8868070501686326, "mAP50-95": 0.5436870272120812, "precision": 0.8615905479577198, "recall": 0.8360655737704918}]
+speed_ms_per_image={"inference": 2.713379182759247, "loss": 0.0007033696797884762, "postprocess": 1.700740168296379, "preprocess": 1.4126630772126318}

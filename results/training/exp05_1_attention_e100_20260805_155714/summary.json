@@ -1,0 +1,99 @@
+{
+  "overall": "PASS",
+  "run_name": "exp05_1_attention_e100_20260805_155714",
+  "elapsed_seconds": 720.8491928339936,
+  "train_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_e100_20260805_155714",
+  "best_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_e100_20260805_155714/weights/best.pt",
+  "best_pt_sha256": "0a1d2e1507f3c38d5901af0a20980c19a4932a346720c06db95e74ef6db2a063",
+  "last_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_e100_20260805_155714/weights/last.pt",
+  "required_artifacts": {
+    "best_pt": true,
+    "last_pt": true,
+    "results_csv": true,
+    "args_yaml": true
+  },
+  "checks": {
+    "artifacts": true,
+    "epoch_count": true,
+    "trainer_wrapper_count": true,
+    "ema_wrapper_count": true,
+    "checkpoint_wrapper_count": true,
+    "residual_scale_updated": true
+  },
+  "epoch_count": 100,
+  "final_metrics": {
+    "epoch": 100.0,
+    "metrics/precision(B)": 0.85724,
+    "metrics/recall(B)": 0.81733,
+    "metrics/mAP50(B)": 0.84992,
+    "metrics/mAP50-95(B)": 0.48303,
+    "train/box_loss": 0.99486,
+    "train/cls_loss": 0.49821,
+    "train/dfl_loss": 1.28449,
+    "val/box_loss": 1.53942,
+    "val/cls_loss": 0.74714,
+    "val/dfl_loss": 1.80861
+  },
+  "best_map50": {
+    "epoch": 96.0,
+    "metrics/precision(B)": 0.88242,
+    "metrics/recall(B)": 0.80526,
+    "metrics/mAP50(B)": 0.85986,
+    "metrics/mAP50-95(B)": 0.4861,
+    "train/box_loss": 1.00699,
+    "train/cls_loss": 0.50753,
+    "train/dfl_loss": 1.29537,
+    "val/box_loss": 1.54778,
+    "val/cls_loss": 0.74383,
+    "val/dfl_loss": 1.81287
+  },
+  "best_map50_95": {
+    "epoch": 87.0,
+    "metrics/precision(B)": 0.86637,
+    "metrics/recall(B)": 0.80566,
+    "metrics/mAP50(B)": 0.84266,
+    "metrics/mAP50-95(B)": 0.48689,
+    "train/box_loss": 1.10849,
+    "train/cls_loss": 0.65486,
+    "train/dfl_loss": 1.29923,
+    "val/box_loss": 1.51813,
+    "val/cls_loss": 0.74752,
+    "val/dfl_loss": 1.77009
+  },
+  "trainer_attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.1675395667552948
+    }
+  ],
+  "ema_attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.16754835844039917
+    }
+  ],
+  "checkpoint_attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.1669921875
+    }
+  ]
+}

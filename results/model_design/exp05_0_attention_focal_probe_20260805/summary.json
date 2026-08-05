@@ -1,0 +1,74 @@
+{
+  "pretrained": "/root/autodl-tmp/models/ultralytics/yolo11n.pt",
+  "attention": {
+    "manifest": {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "source_parameter_count": 32096,
+      "wrapper_parameter_count": 36355,
+      "added_parameter_count": 4259,
+      "residual_scale_initial": 0.0
+    },
+    "description": [
+      {
+        "index": 16,
+        "source_class": "C3k2",
+        "replacement_class": "P3AttentionWrapper",
+        "channels": 64,
+        "kernel_size": 7,
+        "parameter_count": 36355,
+        "attention_parameter_count": 4259,
+        "residual_scale": 0.0
+      }
+    ],
+    "wrapper_count": 1,
+    "baseline_parameters": 2590425,
+    "attention_parameters": 2594684,
+    "added_parameters": 4259,
+    "identity_comparison": {
+      "tensor_count": 6,
+      "element_count": 1338400,
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    "residual_scale_gradient": 0.06946050375699997,
+    "attention_gradient_abs_sum_at_scale_0_1": 0.22662003943696618,
+    "serialization_comparison": {
+      "tensor_count": 6,
+      "element_count": 1338400,
+      "max_abs_error": 0.0,
+      "mean_abs_error": 0.0
+    },
+    "pass": true
+  },
+  "focal": {
+    "gamma": 1.5,
+    "alpha": 0.25,
+    "input_shape": [
+      2,
+      100,
+      3
+    ],
+    "focal_shape": [
+      2,
+      100,
+      3
+    ],
+    "bce_shape": [
+      2,
+      100,
+      3
+    ],
+    "gradient_abs_sum": 62.09037780761719,
+    "easy_negative_focal_to_bce_ratio": 9.221516666002572e-05,
+    "hard_negative_focal_to_bce_ratio": 0.6199762225151062,
+    "criterion_class": "models.exp05_trainer.FocalDetectionLoss",
+    "bbox_loss_class": "BboxLoss",
+    "classification_reduction": "none",
+    "pass": true
+  },
+  "overall": "PASS"
+}

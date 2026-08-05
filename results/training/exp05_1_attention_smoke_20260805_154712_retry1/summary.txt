@@ -1,0 +1,12 @@
+Exp05.1 P3 Residual CBAM-Lite Smoke Training
+overall=PASS
+run_name=exp05_1_attention_smoke_20260805_154712_retry1
+elapsed_seconds=51.622
+train_dir=/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_smoke_20260805_154712_retry1
+best_pt=/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_smoke_20260805_154712_retry1/weights/best.pt
+checks={"artifacts": true, "checkpoint_wrapper_count": true, "ema_wrapper_count": true, "finite_metrics": true, "residual_scale_updated": true, "trainer_wrapper_count": true}
+last_mAP50=0.56197
+last_mAP50_95=0.25376
+trainer_attention=[{"attention_parameter_count": 4259, "channels": 64, "index": 16, "kernel_size": 7, "parameter_count": 36355, "replacement_class": "P3AttentionWrapper", "residual_scale": -0.004106282256543636, "source_class": "C3k2"}]
+ema_attention=[{"attention_parameter_count": 4259, "channels": 64, "index": 16, "kernel_size": 7, "parameter_count": 36355, "replacement_class": "P3AttentionWrapper", "residual_scale": -0.004103670362383127, "source_class": "C3k2"}]
+checkpoint_attention=[{"attention_parameter_count": 4259, "channels": 64, "index": 16, "kernel_size": 7, "parameter_count": 36355, "replacement_class": "P3AttentionWrapper", "residual_scale": -0.0041046142578125, "source_class": "C3k2"}]

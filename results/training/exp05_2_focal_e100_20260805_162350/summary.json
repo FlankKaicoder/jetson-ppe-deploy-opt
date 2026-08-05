@@ -1,0 +1,63 @@
+{
+  "overall": "PASS",
+  "run_name": "exp05_2_focal_e100_20260805_162350",
+  "elapsed_seconds": 995.8616523368983,
+  "train_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_e100_20260805_162350",
+  "best_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_e100_20260805_162350/weights/best.pt",
+  "best_pt_sha256": "03b7f32529861d6060bc2a22afb8d114a6d5b3fa92a7fc211fcc4dd1319eb299",
+  "last_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_e100_20260805_162350/weights/last.pt",
+  "checks": {
+    "artifacts": true,
+    "epoch_count": true,
+    "trainer_model_class": true,
+    "trainer_criterion": true,
+    "checkpoint_model_class": true,
+    "checkpoint_criterion": true,
+    "no_attention_trainer": true,
+    "no_attention_ema": true,
+    "no_attention_checkpoint": true,
+    "baseline_parameter_count": true
+  },
+  "parameters": 2590425,
+  "focal_gamma": 1.5,
+  "focal_alpha": 0.25,
+  "final_metrics": {
+    "epoch": 100.0,
+    "metrics/precision(B)": 0.82741,
+    "metrics/recall(B)": 0.78042,
+    "metrics/mAP50(B)": 0.82672,
+    "metrics/mAP50-95(B)": 0.47881,
+    "train/box_loss": 1.00523,
+    "train/cls_loss": 0.13012,
+    "train/dfl_loss": 1.34801,
+    "val/box_loss": 1.34237,
+    "val/cls_loss": 0.16804,
+    "val/dfl_loss": 1.70438
+  },
+  "best_map50": {
+    "epoch": 94.0,
+    "metrics/precision(B)": 0.84241,
+    "metrics/recall(B)": 0.77175,
+    "metrics/mAP50(B)": 0.8275,
+    "metrics/mAP50-95(B)": 0.48139,
+    "train/box_loss": 1.02141,
+    "train/cls_loss": 0.13797,
+    "train/dfl_loss": 1.37778,
+    "val/box_loss": 1.3406,
+    "val/cls_loss": 0.17027,
+    "val/dfl_loss": 1.7048
+  },
+  "best_map50_95": {
+    "epoch": 94.0,
+    "metrics/precision(B)": 0.84241,
+    "metrics/recall(B)": 0.77175,
+    "metrics/mAP50(B)": 0.8275,
+    "metrics/mAP50-95(B)": 0.48139,
+    "train/box_loss": 1.02141,
+    "train/cls_loss": 0.13797,
+    "train/dfl_loss": 1.37778,
+    "val/box_loss": 1.3406,
+    "val/cls_loss": 0.17027,
+    "val/dfl_loss": 1.7048
+  }
+}

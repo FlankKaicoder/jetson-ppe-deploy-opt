@@ -1,0 +1,55 @@
+{
+  "overall": "PASS",
+  "run_name": "exp05_2_focal_smoke_20260805_162003",
+  "elapsed_seconds": 58.280849661910906,
+  "train_dir": "/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_smoke_20260805_162003",
+  "best_pt": "/root/autodl-tmp/jetson-ppe-outputs/exp05_2_focal_smoke_20260805_162003/weights/best.pt",
+  "checks": {
+    "artifacts": true,
+    "finite_metrics": true,
+    "trainer_model_class": true,
+    "trainer_criterion": true,
+    "trainer_focal_bce": true,
+    "checkpoint_model_class": true,
+    "checkpoint_focal_bce": true,
+    "no_attention_trainer": true,
+    "no_attention_ema": true,
+    "no_attention_checkpoint": true
+  },
+  "last_metrics": {
+    "epoch": 2.0,
+    "time": 43.975,
+    "train/box_loss": 1.41796,
+    "train/cls_loss": 0.22559,
+    "train/dfl_loss": 1.64961,
+    "metrics/precision(B)": 0.6239,
+    "metrics/recall(B)": 0.47984,
+    "metrics/mAP50(B)": 0.55659,
+    "metrics/mAP50-95(B)": 0.24218,
+    "val/box_loss": 1.62806,
+    "val/cls_loss": 0.26933,
+    "val/dfl_loss": 2.06734,
+    "lr/pg0": 0.000500927,
+    "lr/pg1": 0.000500927,
+    "lr/pg2": 0.0343719
+  },
+  "trainer_criterion": {
+    "model_class": "models.exp05_trainer.FocalDetectionModel",
+    "criterion_class": "models.exp05_trainer.FocalDetectionLoss",
+    "classification_loss_class": "models.exp05_trainer.ElementwiseFocalBCE",
+    "gamma": 1.5,
+    "alpha": 0.25,
+    "reduction": "none"
+  },
+  "checkpoint_criterion": {
+    "model_class": "models.exp05_trainer.FocalDetectionModel",
+    "criterion_class": "models.exp05_trainer.FocalDetectionLoss",
+    "classification_loss_class": "models.exp05_trainer.ElementwiseFocalBCE",
+    "gamma": 1.5,
+    "alpha": 0.25,
+    "reduction": "none"
+  },
+  "parameters": 2590425,
+  "focal_gamma": 1.5,
+  "focal_alpha": 0.25
+}

@@ -1,0 +1,66 @@
+{
+  "result": "PASS",
+  "weights": "/root/autodl-tmp/jetson-ppe-outputs/exp05_1_attention_e100_20260805_155714/weights/best.pt",
+  "weights_sha256": "0a1d2e1507f3c38d5901af0a20980c19a4932a346720c06db95e74ef6db2a063",
+  "data": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "split": "test",
+  "imgsz": 640,
+  "batch": 16,
+  "parameters": 2594684,
+  "wrapper_count": 1,
+  "attention": [
+    {
+      "index": 16,
+      "source_class": "C3k2",
+      "replacement_class": "P3AttentionWrapper",
+      "channels": 64,
+      "kernel_size": 7,
+      "parameter_count": 36355,
+      "attention_parameter_count": 4259,
+      "residual_scale": -0.1669921875
+    }
+  ],
+  "checks": {
+    "wrapper_count": true,
+    "class_count": true,
+    "finite_metrics": true
+  },
+  "overall_metrics": {
+    "metrics/precision(B)": 0.8979307560600208,
+    "metrics/recall(B)": 0.843416070534074,
+    "metrics/mAP50(B)": 0.898469729715316,
+    "metrics/mAP50-95(B)": 0.5205602255344751
+  },
+  "per_class_metrics": [
+    {
+      "class_id": 0,
+      "class_name": "person",
+      "precision": 0.8904266750863061,
+      "recall": 0.819866970245311,
+      "mAP50": 0.8875697574891807,
+      "mAP50-95": 0.5145835172486423
+    },
+    {
+      "class_id": 1,
+      "class_name": "helmet",
+      "precision": 0.9417750451360366,
+      "recall": 0.874315667586419,
+      "mAP50": 0.9210323814881348,
+      "mAP50-95": 0.5034101321427018
+    },
+    {
+      "class_id": 2,
+      "class_name": "safety_vest",
+      "precision": 0.8615905479577198,
+      "recall": 0.8360655737704918,
+      "mAP50": 0.8868070501686326,
+      "mAP50-95": 0.5436870272120812
+    }
+  ],
+  "speed_ms_per_image": {
+    "preprocess": 1.4126630772126318,
+    "inference": 2.713379182759247,
+    "loss": 0.0007033696797884762,
+    "postprocess": 1.700740168296379
+  }
+}
