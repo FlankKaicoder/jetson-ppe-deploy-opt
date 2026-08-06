@@ -1,1 +1,8 @@
 experiment_id,run_id,date,commit,platform,model,precision,input_size,batch,status,primary_metric,latency_ms,fps,power_w,output_path,document
+Exp00,project_initialization,2026-08-02,863bc0f,Windows,,,,,PASS,,,,,docs/experiments/exp00_project_initialization.md
+Exp01,environment_audit,2026-08-02,8d8b254,AutoDL+Jetson,,,,,PASS,,,,,docs/01_environment.md
+Exp02,exp02_6_yolo11n_baseline_e100_20260804_185444,2026-08-04,e5ca2ed,AutoDL,YOLO11n,AMP,640,16,PASS,test_mAP50-95=0.52047856,,,,results/training/exp02_6_yolo11n_baseline_e100_20260804_185444,docs/02_YOLO11n基线训练与评估总结.md
+Exp03,exp03_2_yolo11n_p2_e100_20260804_194556,2026-08-04,747a1b8,AutoDL,YOLO11n-P2,AMP,640,16,REJECT,test_mAP50-95=0.51273409,,,,results/training/exp03_2_yolo11n_p2_e100_20260804_194556,docs/03_YOLO11n-P2小目标结构消融总结.md
+Exp04,exp04_4_yolo11n_rep_deploy_20260804_225458,2026-08-04,8839178,AutoDL,YOLO11n-Rep,FP32,640,,REJECT,test_mAP50-95=0.52323539,,,,results/model_conversion/exp04_4_yolo11n_rep_deploy_20260804_225458,docs/04_YOLO11n部署可重参数化结构消融总结.md
+Exp05,exp05_1_attention_e100_20260805_155714,2026-08-05,ee62bf3,AutoDL,YOLO11n-CBAM-Lite,AMP,640,16,REJECT,test_mAP50-95=0.52056023,,,,results/training/exp05_1_attention_e100_20260805_155714,docs/05_YOLO11n轻量注意力与Focal损失消融总结.md
+Exp05,exp05_2_focal_e100_20260805_162350,2026-08-05,ee62bf3,AutoDL,YOLO11n-Focal,AMP,640,16,REJECT,test_mAP50-95=0.52693756,,,,results/training/exp05_2_focal_e100_20260805_162350,docs/05_YOLO11n轻量注意力与Focal损失消融总结.md
