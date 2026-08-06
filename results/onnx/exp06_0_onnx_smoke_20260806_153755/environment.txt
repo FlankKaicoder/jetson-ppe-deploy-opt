@@ -1,0 +1,58 @@
+experiment=Exp06.0 ONNX smoke
+timestamp=20260806_153755
+hostname=autodl-container-st7df777ls-67bd2e51
+whoami=root
+repo_dir=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06
+git_branch=exp/06-onnx-export
+git_commit=2b38170d02e77dea91c10d6a87d5dce8a502a868
+python=/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+weight_sha256=79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_0_onnx_smoke_20260806_153755
+artifact_dir=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755
+Python 3.12.3
+Name: torch
+Version: 2.8.0+cu128
+Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration
+Home-page: https://pytorch.org/
+Author: PyTorch Team
+Author-email: packages@pytorch.org
+License: BSD-3-Clause
+Location: /root/miniconda3/lib/python3.12/site-packages
+Requires: filelock, fsspec, jinja2, networkx, nvidia-cublas-cu12, nvidia-cuda-cupti-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-runtime-cu12, nvidia-cudnn-cu12, nvidia-cufft-cu12, nvidia-cufile-cu12, nvidia-curand-cu12, nvidia-cusolver-cu12, nvidia-cusparse-cu12, nvidia-cusparselt-cu12, nvidia-nccl-cu12, nvidia-nvjitlink-cu12, nvidia-nvtx-cu12, setuptools, sympy, triton, typing-extensions
+Required-by: torchvision, ultralytics, ultralytics-thop
+---
+Name: ultralytics
+Version: 8.4.95
+Summary: Ultralytics YOLO 🚀 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation, classification, and oriented object detection.
+Home-page: https://ultralytics.com
+Author:
+Author-email: Glenn Jocher <glenn.jocher@ultralytics.com>, Jing Qiu <jing.qiu@ultralytics.com>
+License: AGPL-3.0
+Location: /root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/lib/python3.12/site-packages
+Requires: matplotlib, numpy, nvidia-ml-py, opencv-python, pillow, polars, psutil, pyyaml, requests, torch, torchvision, ultralytics-thop
+Required-by:
+---
+Name: onnx
+Version: 1.22.0
+Summary: Open Neural Network Exchange
+Home-page: https://onnx.ai/
+Author:
+Author-email: ONNX Contributors <onnx-technical-discuss@lists.lfaidata.foundation>
+License-Expression: Apache-2.0
+Location: /root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/lib/python3.12/site-packages
+Requires: ml_dtypes, numpy, protobuf, typing_extensions
+Required-by:
+---
+Name: onnxruntime
+Version: 1.28.0
+Summary: ONNX Runtime is a runtime accelerator for Machine Learning models
+Home-page: https://onnxruntime.ai
+Author: Microsoft Corporation
+Author-email: onnxruntime@microsoft.com
+License: MIT License
+Location: /root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/lib/python3.12/site-packages
+Requires: flatbuffers, numpy, packaging, protobuf
+Required-by:
+NVIDIA GeForce RTX 3080 Ti, 595.71.05, 12288 MiB

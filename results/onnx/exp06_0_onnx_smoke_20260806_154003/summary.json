@@ -1,0 +1,136 @@
+{
+  "experiment": "Exp06 PyTorch to ONNX export and consistency",
+  "run_kind": "smoke",
+  "result": "PASS",
+  "repo_root": "/root/autodl-tmp/jetson-ppe-deploy-opt-exp06",
+  "git_branch": "exp/06-onnx-export",
+  "git_commit": "2b38170d02e77dea91c10d6a87d5dce8a502a868",
+  "python_executable": "/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python",
+  "versions": {
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128",
+    "torch_cuda": "12.8",
+    "onnx": "1.22.0",
+    "onnxruntime": "1.28.0"
+  },
+  "data_yaml": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml",
+  "test_image_count": 219,
+  "class_names": {
+    "0": "person",
+    "1": "helmet",
+    "2": "safety_vest"
+  },
+  "probe_image": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/images/test/train__image784.jpg",
+  "probe_label_count": 23,
+  "preprocess": {
+    "original_height": 640,
+    "original_width": 640,
+    "resize_ratio": 1.0,
+    "resized_height": 640,
+    "resized_width": 640,
+    "padding_left": 0,
+    "padding_right": 0,
+    "padding_top": 0,
+    "padding_bottom": 0,
+    "image_path": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/images/test/train__image784.jpg",
+    "input_shape": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "input_dtype": "float32",
+    "input_min": 0.0,
+    "input_max": 1.0
+  },
+  "onnx_checker": "PASS",
+  "onnx_input": {
+    "name": "images",
+    "shape": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "type": "tensor(float)"
+  },
+  "onnx_outputs": [
+    {
+      "name": "output0",
+      "shape": [
+        1,
+        7,
+        8400
+      ],
+      "type": "tensor(float)"
+    }
+  ],
+  "raw_tensor": {
+    "shape_equal": true,
+    "reference_shape": [
+      1,
+      7,
+      8400
+    ],
+    "candidate_shape": [
+      1,
+      7,
+      8400
+    ],
+    "finite": true,
+    "max_abs_error": 0.0006103515625,
+    "mean_abs_error": 1.0301261660966201e-05,
+    "relative_l2_error": 1.2698316979787282e-07,
+    "thresholds": {
+      "max_abs_atol": 0.001,
+      "mean_abs_atol": 2e-05,
+      "relative_l2_atol": 1e-05
+    },
+    "result": "PASS"
+  },
+  "detections": {
+    "count_equal": true,
+    "reference_count": 30,
+    "candidate_count": 30,
+    "classes_equal": true,
+    "max_box_abs_error": 0.0001220703125,
+    "max_confidence_abs_error": 1.1324882507324219e-06,
+    "confidence": 0.25,
+    "nms_iou": 0.7,
+    "box_atol": 0.001,
+    "confidence_atol": 1e-05,
+    "result": "PASS"
+  },
+  "timing_seconds": {
+    "export": 0.8665385120548308,
+    "pytorch_probe_forward": 0.07371405092999339,
+    "onnxruntime_probe_forward": 0.04297409998252988
+  },
+  "artifact_manifest": {
+    "source_weight": {
+      "original_path": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt",
+      "artifact_copy": "/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_154003/source_best.pt",
+      "size_bytes": 5479514,
+      "sha256": "79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6"
+    },
+    "onnx": {
+      "path": "/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_154003/yolo11n_baseline_exp06_b1_640_opset17.onnx",
+      "size_bytes": 10566605,
+      "sha256": "57cc22917a21d17c358d6475202fa6b14018fa7988fea91dfc6f5522e76056a7",
+      "opset": 17,
+      "batch": 1,
+      "imgsz": 640,
+      "dynamic": false,
+      "simplify": false,
+      "half": false,
+      "nms": false
+    }
+  },
+  "full_evaluation": {
+    "enabled": false,
+    "metric_atol": 0.0001,
+    "evaluations": {},
+    "onnx_minus_pytorch": {},
+    "result": "PASS"
+  }
+}

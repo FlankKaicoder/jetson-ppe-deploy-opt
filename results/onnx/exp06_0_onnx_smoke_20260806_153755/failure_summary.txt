@@ -1,0 +1,61 @@
+result=FAIL
+python_return_code=1
+last_log_lines:
+========== Exp06 export configuration ==========
+run_kind=smoke
+repo_root=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06
+weights=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+weight_sha256=79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+data_yaml=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+test_image_count=219
+probe_image=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/images/test/train__image784.jpg
+probe_label_count=23
+artifact_dir=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755
+imgsz=640
+batch=1
+opset=17
+WARNING ⚠️ 'int8' is deprecated and will be removed in the future. Use 'quantize' instead.
+Ultralytics 8.4.95 🚀 Python-3.12.3 torch-2.8.0+cu128 CPU (Intel Xeon Gold 6248 CPU @ 2.50GHz)
+💡 ProTip: Export to OpenVINO format for best performance on Intel hardware. Learn more at https://docs.ultralytics.com/integrations/openvino/
+YOLO11n summary (fused): 101 layers, 2,582,737 parameters, 0 gradients, 6.3 GFLOPs
+
+[34m[1mPyTorch:[0m starting from '/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755/source_best.pt' with input shape (1, 3, 640, 640) BCHW and output shape(s) (1, 7, 8400) (5.2 MB)
+
+[34m[1mONNX:[0m starting export with onnx 1.22.0 opset 17...
+[34m[1mONNX:[0m export success ✅ 0.7s, saved as '/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755/source_best.onnx' (10.1 MB)
+
+Export complete (1.1s)
+Results saved to [1m/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755/source_best.onnx[0m
+Predict:         yolo predict task=detect model=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755/source_best.onnx imgsz=640
+Validate:        yolo val task=detect model=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755/source_best.onnx imgsz=640 data=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+Visualize:       https://netron.app
+
+============================================================
+ Exp06 PyTorch to ONNX Summary
+============================================================
+result=FAIL
+run_kind=smoke
+git_branch=exp/06-onnx-export
+git_commit=2b38170d02e77dea91c10d6a87d5dce8a502a868
+source_weight=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+source_weight_sha256=79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+onnx_path=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755/yolo11n_baseline_exp06_b1_640_opset17.onnx
+onnx_size_bytes=10566605
+onnx_sha256=976db4bbf5e66d1425d85bdc5a23e839d86ede67c79f7148dc1c78a7b8812242
+onnx_input_name=images
+onnx_input_shape=[1, 3, 640, 640]
+onnx_output_name=output0
+onnx_output_shape=[1, 7, 8400]
+probe_image=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/images/test/train__image784.jpg
+probe_label_count=23
+raw_max_abs_error=0.0006103515625
+raw_mean_abs_error=1.0301261661e-05
+raw_relative_l2_error=1.26983169798e-07
+raw_tensor_result=FAIL
+pytorch_detection_count=30
+onnxruntime_detection_count=30
+detection_max_box_abs_error=0.0001220703125
+detection_max_confidence_abs_error=1.13248825073e-06
+detection_result=PASS
+full_evaluation_enabled=False
+full_evaluation_result=PASS

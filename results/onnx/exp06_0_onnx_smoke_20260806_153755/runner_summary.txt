@@ -1,0 +1,6 @@
+result=FAIL
+python_return_code=1
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_0_onnx_smoke_20260806_153755
+artifact_dir=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_153755
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_0_onnx_smoke_20260806_153755/summary.txt
+manifest=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_0_onnx_smoke_20260806_153755/artifact_manifest.json
