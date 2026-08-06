@@ -1,50 +1,70 @@
 # Jetson PPE Deploy Optimization
 
-基于 Jetson Orin Nano Super 的部署感知型 PPE 小目标检测、
-TensorRT 量化部署与 CUDA 推理优化项目。
+基于 Jetson Orin Nano Super 的 PPE 小目标检测、TensorRT 量化部署与
+CUDA 推理优化项目。
 
 ## 当前状态
 
-项目处于初始化阶段。精度、延迟、吞吐、功耗和优化比例均以正式实验结果为准，
-不提前填写未经验证的数据。
+截至 2026-08-06，Exp00～Exp05 已完成。P2、部署可重参数化、轻量注意力和
+Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
+继续使用原始 YOLO11n baseline，下一阶段为 Exp06：PyTorch → ONNX 导出与
+一致性验证。
+
+冻结基线：
+
+| 项目 | 数值 |
+|---|---:|
+| Precision | 0.92161767 |
+| Recall | 0.82040743 |
+| mAP50 | 0.89270104 |
+| mAP50-95 | 0.52047856 |
+| tiny+small recall | 0.79020979 |
+| 参数量 | 2,590,425 |
+
+冻结 `best.pt` SHA256：
+
+```text
+79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+```
 
 ## 项目主线
 
-1. PPE 数据集审计；
-2. 轻量检测模型基线；
-3. P2 小目标检测结构；
-4. 部署可重参数化模块；
-5. PyTorch → ONNX → TensorRT；
-6. FP32、FP16、INT8 对照；
-7. TensorRT C++ Runtime；
-8. CUDA 融合预处理；
-9. Jetson 性能、功耗与稳定性测试。
+```text
+数据集审计
+→ YOLO11n 基线与结构消融
+→ PyTorch 模型冻结
+→ ONNX 导出与一致性验证
+→ TensorRT FP32 / FP16 / INT8
+→ TensorRT C++ Runtime
+→ CUDA 融合预处理
+→ 视频与摄像头端到端推理
+→ Jetson 性能、功耗、温度与稳定性测试
+```
 
-## 主要平台
+## 三端职责
 
-- 训练端：NVIDIA RTX 4090
-- 部署端：NVIDIA Jetson Orin Nano Super
-- 系统：Ubuntu 22.04 / JetPack
-- 技术栈：PyTorch、ONNX、TensorRT、CUDA、C++
+- Windows：项目总控、代码和文档审查、分支合并、关键产物中转；
+- AutoDL：RTX 3080 Ti 训练、评估、PyTorch 冻结、ONNX 导出与 ORT 验证；
+- Jetson Orin Nano Super：TensorRT、CUDA、C++、摄像头和板端 Benchmark。
+
+Windows 上的保存或静态检查不能替代 AutoDL/Jetson 上的真实实验。
 
 ## 实验管理
 
 每个正式实验必须包含：
 
-- 独立实验编号；
-- 对应 Git 分支和 Commit；
-- 不覆盖的运行目录；
-- 完整执行命令；
-- 配置和环境快照；
-- 指标、异常和实验结论；
-- `docs/experiments/` 下的总结文档。
+- 独立实验编号、分支和 Commit；
+- 不覆盖的时间戳运行目录；
+- 输入配置、环境、命令和返回码；
+- Smoke Test、正式结果、异常和最终决策；
+- 小型日志摘要、JSON/CSV、产物大小与 SHA256。
+
+详细协作规范见 `AGENTS.md`，实验状态见 `docs/experiment_index.md`。
 
 ## 仓库内容边界
 
-仓库保存源代码、配置、测试、实验文档和小型指标文件。
-
-仓库不直接保存完整数据集、模型权重、ONNX、TensorRT Engine、
-大型视频和完整 Profiling 文件。
+仓库保存源代码、配置、测试、实验文档和小型指标文件；不直接保存数据集、
+模型权重、ONNX、TensorRT Engine、视频、完整训练输出或大型 Profiling 文件。
 
 ## License
 

@@ -2,33 +2,32 @@
 
 | 实验 | 名称 | 状态 | 文档 |
 |---|---|---|---|
-| Exp00 | 项目仓库和实验管理初始化 | PASSED | `experiments/exp00_project_initialization.md` |
-| Exp01 | RTX 4090 与 Jetson 环境审计 | NOT STARTED | 待创建 |
-| Exp02 | PPE 数据集审计和划分 | NOT STARTED | 待创建 |
-| Exp03 | M0 基线 Smoke Test | NOT STARTED | 待创建 |
-| Exp04 | M0 基线正式训练 | NOT STARTED | 待创建 |
-| Exp05 | M1 P2 小目标模型 | NOT STARTED | 待创建 |
-| Exp06 | 重参数化模块和单元测试 | NOT STARTED | 待创建 |
-| Exp07 | M2 重参数化模型训练 | NOT STARTED | 待创建 |
-| Exp08 | 训练态到部署态转换 | NOT STARTED | 待创建 |
-| Exp09 | ONNX 导出和一致性验证 | NOT STARTED | 待创建 |
-| Exp10 | TensorRT FP32 和 FP16 | NOT STARTED | 待创建 |
-| Exp11 | INT8 PTQ | NOT STARTED | 待创建 |
-| Exp12 | TensorRT C++ 单图运行时 | NOT STARTED | 待创建 |
-| Exp13 | C++ 视频推理和阶段计时 | NOT STARTED | 待创建 |
-| Exp14 | CUDA 融合预处理正确性 | NOT STARTED | 待创建 |
-| Exp15 | Pinned Memory 和异步流水 | NOT STARTED | 待创建 |
-| Exp16 | Jetson 综合 Benchmark | NOT STARTED | 待创建 |
-| Exp17 | README、演示和简历总结 | NOT STARTED | 待创建 |
-| Exp18 | 可选 TensorRT Plugin | OPTIONAL | 待创建 |
+| Exp00 | 项目初始化与范围冻结 | PASS | `experiments/exp00_project_initialization.md` |
+| Exp01 | Jetson 环境与编译链审计 | PASS | `01_environment.md` |
+| Exp02 | PPE 数据集审计与 YOLO11n 基线 | PASS | `02_YOLO11n基线训练与评估总结.md` |
+| Exp03 | YOLO11n-P2 小目标结构消融 | REJECT | `03_YOLO11n-P2小目标结构消融总结.md` |
+| Exp04 | 部署可重参数化结构消融 | REJECT | `04_YOLO11n部署可重参数化结构消融总结.md` |
+| Exp05 | 轻量注意力与 Focal 损失消融 | REJECT | `05_YOLO11n轻量注意力与Focal损失消融总结.md` |
+| Exp06 | PyTorch → ONNX 导出与一致性验证 | PLANNED | 待创建 |
+| Exp07 | Jetson TensorRT FP32 / FP16 | PLANNED | 待创建 |
+| Exp08 | INT8 PTQ 与精度—性能比较 | PLANNED | 待创建 |
+| Exp09 | TensorRT C++ Runtime | PLANNED | 待创建 |
+| Exp10 | CUDA 融合预处理 | PLANNED | 待创建 |
+| Exp11 | 视频/摄像头端到端推理 | PLANNED | 待创建 |
+| Exp12 | Jetson 性能、功耗、温度与稳定性测试 | PLANNED | 待创建 |
+| Exp13 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 
 ## 状态定义
 
-- `NOT STARTED`：尚未开始；
-- `PLANNED`：方案已经确定；
-- `RUNNING`：正在开发或执行；
-- `PASSED`：满足验收条件；
-- `PARTIAL`：获得部分有效结果；
-- `FAILED`：未达到目的，但过程已经记录；
-- `BLOCKED`：受到外部依赖阻塞；
-- `OPTIONAL`：不属于简历前必须完成的主线。
+- `PLANNED`：方案或推荐顺序已经确定，尚未产生正式结果；
+- `IN_PROGRESS`：正在开发或执行，尚未满足验收条件；
+- `PASS`：实验完成并满足当前实验验收条件；
+- `FAIL`：实验已执行但没有达到实验目的；
+- `REJECT`：实验工程链路完成，但候选方案不进入最终主线；
+- `SKIPPED`：依据预设规则跳过；
+- `BLOCKED`：受到外部依赖或权限阻塞。
+
+## 当前模型决策
+
+后续 ONNX、TensorRT 和 Jetson 部署统一使用 Exp02 原始 YOLO11n baseline。
+Exp03～Exp05 作为负向或部署感知消融保留，不得表述为已经替换基线。
