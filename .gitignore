@@ -90,3 +90,7 @@ Thumbs.db
 # Large generated model artifacts
 # Failed or superseded Exp02 smoke runs
 results/training/exp02_5_yolo11n_smoke_*/
+*.pyc
+results/**/run.log
+results/**/console.log
+results/**/validation_runs/
