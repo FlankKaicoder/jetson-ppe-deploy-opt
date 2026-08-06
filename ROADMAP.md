@@ -19,7 +19,7 @@
 | 实验 | 内容 | 状态 |
 |---|---|---|
 | Exp06 | PyTorch → ONNX 导出与一致性验证 | PASS |
-| Exp07 | Jetson TensorRT FP32 / FP16 Engine | PLANNED |
+| Exp07 | Jetson TensorRT FP32 / FP16 Engine | PASS |
 | Exp08 | INT8 PTQ 与精度—性能比较 | PLANNED |
 
 ## M2：C++ Runtime 与 CUDA 优化

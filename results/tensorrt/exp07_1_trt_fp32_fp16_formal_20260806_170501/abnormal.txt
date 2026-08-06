@@ -1,0 +1,6 @@
+310:result=FAIL
+324:raw_tensor_result=FAIL
+330:detection_result=FAIL
+453:result=FAIL
+496:fp16_raw_result=FAIL
+501:fp16_detection_result=FAIL

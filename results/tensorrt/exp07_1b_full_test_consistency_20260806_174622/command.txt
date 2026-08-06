@@ -1,0 +1,5 @@
+/usr/bin/python3 tools/exp07_full_test_consistency.py
+ONNX reference: /home/nvidia/projects/jetson-ppe-deploy-opt/results/onnx/exp06_1_onnx_formal_20260806_155847/summary.json (AutoDL Exp06 formal)
+--imgsz 640 --batch 1 --workers 2 --rect false --split test
+FP32 thresholds: PR=5e-4 AP=1e-4
+FP16 thresholds: PR=2e-3 AP=1e-3

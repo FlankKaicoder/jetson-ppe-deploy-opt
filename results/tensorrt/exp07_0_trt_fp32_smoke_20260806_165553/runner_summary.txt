@@ -1,0 +1,9 @@
+result=PASS
+build_return_code=0
+consistency_return_code=0
+build_seconds=165
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/tensorrt/exp07_0_trt_fp32_smoke_20260806_165553
+artifact_dir=/home/nvidia/models/jetson-ppe/exp07/exp07_0_trt_fp32_smoke_20260806_165553
+engine_path=/home/nvidia/models/jetson-ppe/exp07/exp07_0_trt_fp32_smoke_20260806_165553/yolo11n_baseline_exp07_b1_640_fp32.engine
+engine_size_bytes=14788188
+engine_sha256=4ad7e15fbcfcb877f0d40cf1a1dae78726ff148c29ab4fbced8521b4534e1366

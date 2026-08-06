@@ -1,0 +1,10 @@
+/usr/src/tensorrt/bin/trtexec
+--onnx=/home/nvidia/models/jetson-ppe/exp06/yolo11n_baseline_exp06_b1_640_opset17.onnx
+--saveEngine=/home/nvidia/models/jetson-ppe/exp07/exp07_0_trt_fp32_smoke_20260806_165158/yolo11n_baseline_exp07_b1_640_fp32.engine
+--noTF32 --memPoolSize=workspace:1024
+--builderOptimizationLevel=3
+--profilingVerbosity=detailed --skipInference --verbose
+/usr/bin/python3 tools/exp07_trt_consistency.py
+--precision fp32 --imgsz 640 --confidence 0.25 --nms-iou 0.70
+raw thresholds: max=1e-3 mean=2e-5 relative_l2=1e-5
+detection thresholds: box=1e-3 confidence=1e-5

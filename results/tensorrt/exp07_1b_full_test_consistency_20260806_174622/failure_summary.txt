@@ -1,0 +1,16 @@
+result=FAIL
+python_return_code=2
+last_log_lines:
+Traceback (most recent call last):
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp07_full_test_consistency.py", line 185, in main
+    onnx_evaluation = reference_document["evaluations"]["onnxruntime"]
+KeyError: 'evaluations'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp07_full_test_consistency.py", line 365, in <module>
+    raise SystemExit(main())
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp07_full_test_consistency.py", line 188, in main
+    raise ValueError(
+ValueError: invalid Exp06 ONNX reference summary: /home/nvidia/projects/jetson-ppe-deploy-opt/results/onnx/exp06_1_onnx_formal_20260806_155847/summary.json

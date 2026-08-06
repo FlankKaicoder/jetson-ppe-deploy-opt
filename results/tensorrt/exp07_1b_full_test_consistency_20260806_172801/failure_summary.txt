@@ -1,0 +1,1 @@
+FAIL: Ultralytics attempted unauthorized automatic dependency installation (onnx/onnxruntime); run terminated before inference.

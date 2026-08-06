@@ -1,0 +1,124 @@
+result=FAIL
+build_return_code=141
+consistency_return_code=99
+last_log_lines:
+[08/06/2026-16:53:53] [V] [TRT] Tactic: 0x0000000000000018 Time: 0.209893
+[08/06/2026-16:53:53] [V] [TRT] Tactic: 0x0000000000000019 Time: 0.210862
+[08/06/2026-16:53:53] [V] [TRT] Tactic: 0x000000000000001a Time: 0.210953
+[08/06/2026-16:53:53] [V] [TRT] Tactic: 0x000000000000001b Time: 0.211319
+[08/06/2026-16:53:53] [V] [TRT] Tactic: 0x000000000000001f Time: 0.209746
+[08/06/2026-16:53:53] [V] [TRT] PWN(/model.23/Add_1) (PointWiseV2[0x80000028]) profiling completed in 0.02301 seconds. Fastest Tactic: 0x000000000000001f Time: 0.209746
+[08/06/2026-16:53:53] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x000000000000001f
+[08/06/2026-16:53:53] [V] [TRT] =============== Computing costs for PWN(/model.23/Sub)
+[08/06/2026-16:53:53] [V] [TRT] *************** Autotuning format combination: Float(16800,8400,1), Float(33600,8400,1) long-strided -> Float(16800,8400,1) ***************
+[08/06/2026-16:53:53] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:53] [V] [TRT] Tactic: 0x0000000000000000 Time: 0.0186966
+[08/06/2026-16:53:54] [V] [TRT] Tactic: 0x0000000000000001 Time: 0.0172719
+[08/06/2026-16:53:54] [V] [TRT] Tactic: 0x0000000000000002 Time: 0.016002
+[08/06/2026-16:53:54] [V] [TRT] Tactic: 0x0000000000000003 Time: 0.0167741
+[08/06/2026-16:53:54] [V] [TRT] Tactic: 0x0000000000000004 Time: 0.0162743
+[08/06/2026-16:53:54] [V] [TRT] Tactic: 0x0000000000000005 Time: 0.0156507
+[08/06/2026-16:53:54] [V] [TRT] Tactic: 0x0000000000000006 Time: 0.0197629
+[08/06/2026-16:53:55] [V] [TRT] Tactic: 0x0000000000000007 Time: 0.0173054
+[08/06/2026-16:53:55] [V] [TRT] Tactic: 0x0000000000000008 Time: 0.0166334
+[08/06/2026-16:53:55] [V] [TRT] Tactic: 0x0000000000000009 Time: 0.0165105
+[08/06/2026-16:53:55] [V] [TRT] Tactic: 0x000000000000001c Time: 0.0180086
+[08/06/2026-16:53:55] [V] [TRT] PWN(/model.23/Sub) (PointWiseV2[0x80000028]) profiling completed in 1.98974 seconds. Fastest Tactic: 0x0000000000000005 Time: 0.0156507
+[08/06/2026-16:53:55] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x0000000000000005
+[08/06/2026-16:53:55] [V] [TRT] *************** Autotuning format combination: Float(16800,8400,1), Float(16800,8400,1) -> Float(16800,8400,1) ***************
+[08/06/2026-16:53:55] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:55] [V] [TRT] Tactic: 0x0000000000000000 Time: 0.0165166
+[08/06/2026-16:53:56] [V] [TRT] Tactic: 0x0000000000000001 Time: 0.0156297
+[08/06/2026-16:53:56] [V] [TRT] Tactic: 0x0000000000000002 Time: 0.0153253
+[08/06/2026-16:53:56] [V] [TRT] Tactic: 0x0000000000000003 Time: 0.0165359
+[08/06/2026-16:53:56] [V] [TRT] Tactic: 0x0000000000000004 Time: 0.0154322
+[08/06/2026-16:53:56] [V] [TRT] Tactic: 0x0000000000000005 Time: 0.0154254
+[08/06/2026-16:53:56] [V] [TRT] Tactic: 0x0000000000000006 Time: 0.0187046
+[08/06/2026-16:53:57] [V] [TRT] Tactic: 0x0000000000000007 Time: 0.0165638
+[08/06/2026-16:53:57] [V] [TRT] Tactic: 0x0000000000000008 Time: 0.0157385
+[08/06/2026-16:53:57] [V] [TRT] Tactic: 0x0000000000000009 Time: 0.0167487
+[08/06/2026-16:53:57] [V] [TRT] Tactic: 0x000000000000001c Time: 0.0165719
+[08/06/2026-16:53:57] [V] [TRT] PWN(/model.23/Sub) (PointWiseV2[0x80000028]) profiling completed in 1.91788 seconds. Fastest Tactic: 0x0000000000000002 Time: 0.0153253
+[08/06/2026-16:53:57] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x0000000000000002
+[08/06/2026-16:53:57] [V] [TRT] *************** Autotuning format combination: Float(1,8400,1), Float(1,8400,1) long-strided -> Float(1,8400,1) ***************
+[08/06/2026-16:53:57] [V] [TRT] Skipping PointWiseV2: No valid tactics for PWN(/model.23/Sub)
+[08/06/2026-16:53:57] [V] [TRT] *************** Autotuning format combination: Float(1,8400,1), Float(1,8400,1) -> Float(1,8400,1) ***************
+[08/06/2026-16:53:57] [V] [TRT] Skipping PointWiseV2: No valid tactics for PWN(/model.23/Sub)
+[08/06/2026-16:53:57] [V] [TRT] *************** Autotuning format combination: Float(1:4,8400,1), Float(1:4,8400,1) long-strided -> Float(1:4,8400,1) ***************
+[08/06/2026-16:53:57] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:57] [V] [TRT] Tactic: 0x000000000000001c Time: 0.0263025
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x000000000000001d Time: 0.0296585
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x000000000000001e Time: 0.0393531
+[08/06/2026-16:53:58] [V] [TRT] PWN(/model.23/Sub) (PointWiseV2[0x80000028]) profiling completed in 0.542344 seconds. Fastest Tactic: 0x000000000000001c Time: 0.0263025
+[08/06/2026-16:53:58] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x000000000000001c
+[08/06/2026-16:53:58] [V] [TRT] *************** Autotuning format combination: Float(1:4,8400,1), Float(1:4,8400,1) -> Float(1:4,8400,1) ***************
+[08/06/2026-16:53:58] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x000000000000001c Time: 0.0262682
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x000000000000001d Time: 0.029525
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x000000000000001e Time: 0.0394126
+[08/06/2026-16:53:58] [V] [TRT] PWN(/model.23/Sub) (PointWiseV2[0x80000028]) profiling completed in 0.00977869 seconds. Fastest Tactic: 0x000000000000001c Time: 0.0262682
+[08/06/2026-16:53:58] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x000000000000001c
+[08/06/2026-16:53:58] [V] [TRT] *************** Autotuning format combination: Float(16800:32,8400,1), Float(33600:32,8400,1) long-strided -> Float(16800:32,8400,1) ***************
+[08/06/2026-16:53:58] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x0000000000000018 Time: 0.209929
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x0000000000000019 Time: 0.211058
+[08/06/2026-16:53:58] [V] [TRT] Tactic: 0x000000000000001a Time: 0.211141
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001b Time: 0.2112
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001f Time: 0.209664
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub) (PointWiseV2[0x80000028]) profiling completed in 1.02153 seconds. Fastest Tactic: 0x000000000000001f Time: 0.209664
+[08/06/2026-16:53:59] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x000000000000001f
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(16800:32,8400,1), Float(16800:32,8400,1) -> Float(16800:32,8400,1) ***************
+[08/06/2026-16:53:59] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000018 Time: 0.209595
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000019 Time: 0.210757
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001a Time: 0.210939
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001b Time: 0.210807
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001f Time: 0.209778
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub) (PointWiseV2[0x80000028]) profiling completed in 0.0234607 seconds. Fastest Tactic: 0x0000000000000018 Time: 0.209595
+[08/06/2026-16:53:59] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x0000000000000018
+[08/06/2026-16:53:59] [V] [TRT] =============== Computing costs for PWN(/model.23/Sub_1)
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(16800,8400,1), Float(16800,8400,1) -> Float(33600,8400,1) long-strided ***************
+[08/06/2026-16:53:59] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub_1) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000000 Time: 0.0184966
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000001 Time: 0.0172378
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000002 Time: 0.0161559
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000003 Time: 0.0170926
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000004 Time: 0.0161351
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000005 Time: 0.0159568
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000006 Time: 0.0196943
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000007 Time: 0.0183
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000008 Time: 0.0167162
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000009 Time: 0.0167324
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001c Time: 0.0182291
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub_1) (PointWiseV2[0x80000028]) profiling completed in 0.0356438 seconds. Fastest Tactic: 0x0000000000000005 Time: 0.0159568
+[08/06/2026-16:53:59] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x0000000000000005
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub_1) [Float(16800,8400,1), Float(16800,8400,1) -> Float(16800,8400,1)] got cached result: PointWiseV2, tactic 0x0000000000000002, 0.0153253 ms
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(1,8400,1), Float(1,8400,1) -> Float(1,8400,1) long-strided ***************
+[08/06/2026-16:53:59] [V] [TRT] Skipping PointWiseV2: No valid tactics for PWN(/model.23/Sub_1)
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(1,8400,1), Float(1,8400,1) -> Float(1,8400,1) ***************
+[08/06/2026-16:53:59] [V] [TRT] Skipping PointWiseV2: No valid tactics for PWN(/model.23/Sub_1)
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(1:4,8400,1), Float(1:4,8400,1) -> Float(1:4,8400,1) long-strided ***************
+[08/06/2026-16:53:59] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub_1) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001c Time: 0.0263505
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001d Time: 0.0296366
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001e Time: 0.0394057
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub_1) (PointWiseV2[0x80000028]) profiling completed in 0.00931697 seconds. Fastest Tactic: 0x000000000000001c Time: 0.0263505
+[08/06/2026-16:53:59] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x000000000000001c
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub_1) [Float(1:4,8400,1), Float(1:4,8400,1) -> Float(1:4,8400,1)] got cached result: PointWiseV2, tactic 0x000000000000001c, 0.0262682 ms
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(16800:32,8400,1), Float(16800:32,8400,1) -> Float(33600:32,8400,1) long-strided ***************
+[08/06/2026-16:53:59] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Sub_1) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000018 Time: 0.209079
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000019 Time: 0.211168
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001a Time: 0.211086
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001b Time: 0.211072
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x000000000000001f Time: 0.209317
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub_1) (PointWiseV2[0x80000028]) profiling completed in 0.0259996 seconds. Fastest Tactic: 0x0000000000000018 Time: 0.209079
+[08/06/2026-16:53:59] [V] [TRT] >>>>>>>>>>>>>>> Chose Runner Type: PointWiseV2 Tactic: 0x0000000000000018
+[08/06/2026-16:53:59] [V] [TRT] PWN(/model.23/Sub_1) [Float(16800:32,8400,1), Float(16800:32,8400,1) -> Float(16800:32,8400,1)] got cached result: PointWiseV2, tactic 0x0000000000000018, 0.209595 ms
+[08/06/2026-16:53:59] [V] [TRT] =============== Computing costs for PWN(/model.23/Constant_14_output_0 + ONNXTRT_Broadcast_107, PWN(PWN(/model.23/Add_2), PWN(/model.23/Div_1)))
+[08/06/2026-16:53:59] [V] [TRT] *************** Autotuning format combination: Float(16800,8400,1), Float(16800,8400,1) -> Float(16800,8400,1) ***************
+[08/06/2026-16:53:59] [V] [TRT] --------------- Timing Runner: PWN(/model.23/Constant_14_output_0 + ONNXTRT_Broadcast_107, PWN(PWN(/model.23/Add_2), PWN(/model.23/Div_1))) (PointWiseV2[0x80000028])
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000000 Time: 0.0187897
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000001 Time: 0.0177524
+[08/06/2026-16:53:59] [V] [TRT] Tactic: 0x0000000000000002 Time: 0.0188177
+[08/06/2026-16:54:00] [V] [TRT] Tactic: 0x0000000000000003 Time: 0.0196291

@@ -1,0 +1,275 @@
+{
+  "experiment": "Exp07 TensorRT GPU-only diagnostic benchmark",
+  "result": "PASS",
+  "scope": "GPU compute only; H2D/D2H disabled; not end-to-end",
+  "configuration": {
+    "batch": 1,
+    "input": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "warmup_milliseconds": 500,
+    "iterations": 200,
+    "duration_seconds": 0,
+    "cuda_graph": true,
+    "spin_wait": true,
+    "data_transfers": false,
+    "jetson_clocks": "NOT_CHECKED_NON_ROOT"
+  },
+  "return_codes": {
+    "fp32": 0,
+    "fp16": 0
+  },
+  "engines": {
+    "fp32": {
+      "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp32.engine",
+      "precision": "fp32",
+      "size_bytes": 14880428,
+      "sha256": "01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1"
+    },
+    "fp16": {
+      "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+      "precision": "fp16",
+      "size_bytes": 8951540,
+      "sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83"
+    }
+  },
+  "benchmarks": {
+    "fp32": {
+      "timings": {
+        "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/tensorrt/exp07_2_trt_fp32_fp16_benchmark_20260806_180305/fp32_times.json",
+        "record_count": 200,
+        "fields": {
+          "startEnqMs": {
+            "count": 200,
+            "mean": 1528.3583849999995,
+            "min": 494.418,
+            "p50": 1530.7350000000001,
+            "p95": 2433.804,
+            "p99": 2514.0609,
+            "max": 2534.14
+          },
+          "endEnqMs": {
+            "count": 200,
+            "mean": 1528.4381099999996,
+            "min": 494.505,
+            "p50": 1530.81,
+            "p95": 2433.8840000000005,
+            "p99": 2514.1408,
+            "max": 2534.22
+          },
+          "startH2dMs": {
+            "count": 200,
+            "mean": 1537.92095,
+            "min": 505.041,
+            "p50": 1540.135,
+            "p95": 2443.164,
+            "p99": 2523.4209,
+            "max": 2543.49
+          },
+          "endH2dMs": {
+            "count": 200,
+            "mean": 1537.92095,
+            "min": 505.041,
+            "p50": 1540.135,
+            "p95": 2443.164,
+            "p99": 2523.4209,
+            "max": 2543.49
+          },
+          "startComputeMs": {
+            "count": 200,
+            "mean": 1537.92095,
+            "min": 505.041,
+            "p50": 1540.135,
+            "p95": 2443.164,
+            "p99": 2523.4209,
+            "max": 2543.49
+          },
+          "endComputeMs": {
+            "count": 200,
+            "mean": 1548.162475,
+            "min": 516.312,
+            "p50": 1550.2150000000001,
+            "p95": 2453.2439999999997,
+            "p99": 2533.5108,
+            "max": 2553.58
+          },
+          "startD2hMs": {
+            "count": 200,
+            "mean": 1548.162475,
+            "min": 516.312,
+            "p50": 1550.2150000000001,
+            "p95": 2453.2439999999997,
+            "p99": 2533.5108,
+            "max": 2553.58
+          },
+          "endD2hMs": {
+            "count": 200,
+            "mean": 1548.162475,
+            "min": 516.312,
+            "p50": 1550.2150000000001,
+            "p95": 2453.2439999999997,
+            "p99": 2533.5108,
+            "max": 2553.58
+          },
+          "h2dMs": {
+            "count": 200,
+            "mean": 0.0,
+            "min": 0.0,
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+            "max": 0.0
+          },
+          "computeMs": {
+            "count": 200,
+            "mean": 10.241488000000006,
+            "min": 10.0688,
+            "p50": 10.0839,
+            "p95": 11.2709,
+            "p99": 11.279325,
+            "max": 11.2864
+          },
+          "d2hMs": {
+            "count": 200,
+            "mean": 0.0,
+            "min": 0.0,
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+            "max": 0.0
+          },
+          "latencyMs": {
+            "count": 200,
+            "mean": 10.241488000000006,
+            "min": 10.0688,
+            "p50": 10.0839,
+            "p95": 11.2709,
+            "p99": 11.279325,
+            "max": 11.2864
+          }
+        }
+      },
+      "throughput_qps": 97.6307
+    },
+    "fp16": {
+      "timings": {
+        "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/tensorrt/exp07_2_trt_fp32_fp16_benchmark_20260806_180305/fp16_times.json",
+        "record_count": 200,
+        "fields": {
+          "startEnqMs": {
+            "count": 200,
+            "mean": 844.6874349999997,
+            "min": 498.328,
+            "p50": 844.7085,
+            "p95": 1156.3845,
+            "p99": 1184.0948999999998,
+            "max": 1191.03
+          },
+          "endEnqMs": {
+            "count": 200,
+            "mean": 844.69464,
+            "min": 498.335,
+            "p50": 844.7155,
+            "p95": 1156.3945,
+            "p99": 1184.1047999999998,
+            "max": 1191.04
+          },
+          "startH2dMs": {
+            "count": 200,
+            "mean": 848.0685950000006,
+            "min": 501.722,
+            "p50": 848.0935,
+            "p95": 1159.7640000000001,
+            "p99": 1187.4748,
+            "max": 1194.39
+          },
+          "endH2dMs": {
+            "count": 200,
+            "mean": 848.0685950000006,
+            "min": 501.722,
+            "p50": 848.0935,
+            "p95": 1159.7640000000001,
+            "p99": 1187.4748,
+            "max": 1194.39
+          },
+          "startComputeMs": {
+            "count": 200,
+            "mean": 848.0685950000006,
+            "min": 501.722,
+            "p50": 848.0935,
+            "p95": 1159.7640000000001,
+            "p99": 1187.4748,
+            "max": 1194.39
+          },
+          "endComputeMs": {
+            "count": 200,
+            "mean": 851.5484049999999,
+            "min": 505.205,
+            "p50": 851.5740000000001,
+            "p95": 1163.244,
+            "p99": 1190.9547,
+            "max": 1197.87
+          },
+          "startD2hMs": {
+            "count": 200,
+            "mean": 851.5484049999999,
+            "min": 505.205,
+            "p50": 851.5740000000001,
+            "p95": 1163.244,
+            "p99": 1190.9547,
+            "max": 1197.87
+          },
+          "endD2hMs": {
+            "count": 200,
+            "mean": 851.5484049999999,
+            "min": 505.205,
+            "p50": 851.5740000000001,
+            "p95": 1163.244,
+            "p99": 1190.9547,
+            "max": 1197.87
+          },
+          "h2dMs": {
+            "count": 200,
+            "mean": 0.0,
+            "min": 0.0,
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+            "max": 0.0
+          },
+          "computeMs": {
+            "count": 200,
+            "mean": 3.4797129500000015,
+            "min": 3.4696,
+            "p50": 3.479645,
+            "p95": 3.48547,
+            "p99": 3.4884074,
+            "max": 3.49426
+          },
+          "d2hMs": {
+            "count": 200,
+            "mean": 0.0,
+            "min": 0.0,
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+            "max": 0.0
+          },
+          "latencyMs": {
+            "count": 200,
+            "mean": 3.4797129500000015,
+            "min": 3.4696,
+            "p50": 3.479645,
+            "p95": 3.48547,
+            "p99": 3.4884074,
+            "max": 3.49426
+          }
+        }
+      },
+      "throughput_qps": 287.295
+    }
+  }
+}

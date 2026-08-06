@@ -1,0 +1,162 @@
+result=FAIL
+python_return_code=1
+last_log_lines:
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17[:5008:/4606] /[TRT] [E] 2026-[defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)17
+:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50[:4608] /[TRT] [E] 06[defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)/
+2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08[/0806//062026/-202617-:1750::5046:] 46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)[TRT] [E]
+[defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08/06/2026-17:50:46] [TRT] [E] [defaultAllocator.cpp::deallocate::64] Error Code 1: Cuda Runtime (initialization error)
+[08[/0806//062026/-202617-:1750::4650] :46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08[/0806//062026/-202617-:1750::5046:] 46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[0808//0606//20262026--17:1750::5046:] 46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[0808//0606//20262026--1717::5050::4646] ] [TRT] [E] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+
+[08/06[/082026/-0617/2026:-5017::4650] :46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08[/0608//202606-/172026:-5017::4650] :46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/06/[2026-0817/:0650/:202646-] 17:[TRT] [E] 50[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error):
+46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/06/2026-17[:5008:/4606] /2026[TRT] [E] -[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)17:
+50:46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[0808//06/062026/2026--1717::5050::4646] ] [TRT] [E] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+
+[08/06[/2026-0817/:0650/:202646-] 17:[TRT] [E] 50[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error):
+46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[08/0806//062026/-202617-:1750::5046:] 46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[08/0806//062026/-202617-:1750::5046:] 46] [TRT] [E] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+
+[[08/0608//062026/-202617-:1750::5046:] 46[TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)]
+[TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[0808//0606//20262026--1717::5050::4646] ] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[08/06/082026-/1706:/502026:-4617] :50[TRT] [E] :[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)46
+] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[0808//0606//20262026--1717::5050::4646] ] [TRT] [E] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+
+[08/[06/082026/-0617/:202650-:1746:] 50[TRT] [E] :[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)46
+] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/[0608//202606-/172026:-50:17:4650] :[TRT] [E] 46[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)]
+[TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[0808//0606//20262026--1717::5050::46] 46[TRT] [E] ] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08[/0608//202606-/172026:-5017::4650] :[TRT] [E] 46[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)]
+[TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[08/0806//062026/-202617-:1750::5046:] 46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[08/0806//062026/-202617-:1750::5046:] 46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[[08/0806//062026/-202617-:1750::5046:] 46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)[TRT] [E]
+[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/[06/082026/-0617/:202650-:1746:] 50[TRT] [E] :[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)46
+] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/06/2026-[17:0850/:0646/] 2026-[TRT] [E] 17[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error):
+50:46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/06/2026-17:50:[46] 08[TRT] [E] /[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)06
+/2026-17:50:46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+[08/06/2026-17:50:[46] 08[TRT] [E] /[cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)06
+/2026-17:50:46] [TRT] [E] [cudaDriverHelpers.cpp::operator()::106] Error Code 1: Cuda Driver (initialization error)
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   0%|          | 1/219 [00:00<01:17,  2.82it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   2%|▏         | 5/219 [00:00<00:16, 12.90it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   4%|▎         | 8/219 [00:00<00:20, 10.37it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   5%|▌         | 12/219 [00:00<00:13, 15.18it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   7%|▋         | 16/219 [00:01<00:10, 19.23it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   9%|▉         | 20/219 [00:01<00:08, 22.49it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  11%|█         | 24/219 [00:01<00:07, 25.37it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  13%|█▎        | 28/219 [00:01<00:06, 27.68it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  15%|█▍        | 32/219 [00:01<00:06, 29.51it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  16%|█▋        | 36/219 [00:01<00:05, 31.21it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  18%|█▊        | 40/219 [00:01<00:05, 31.70it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  20%|██        | 44/219 [00:01<00:05, 32.51it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  22%|██▏       | 48/219 [00:02<00:05, 33.28it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  24%|██▎       | 52/219 [00:02<00:05, 33.05it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  26%|██▌       | 56/219 [00:02<00:04, 33.74it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  27%|██▋       | 60/219 [00:02<00:04, 35.04it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  29%|██▉       | 64/219 [00:02<00:04, 36.17it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  31%|███       | 68/219 [00:02<00:04, 36.48it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  33%|███▎      | 72/219 [00:02<00:04, 35.77it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  35%|███▍      | 76/219 [00:02<00:04, 35.37it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  37%|███▋      | 80/219 [00:02<00:04, 34.44it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  38%|███▊      | 84/219 [00:03<00:04, 33.57it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  40%|████      | 88/219 [00:03<00:03, 32.92it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  42%|████▏     | 92/219 [00:03<00:03, 32.54it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  44%|████▍     | 96/219 [00:03<00:03, 32.26it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  46%|████▌     | 100/219 [00:03<00:03, 31.93it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  47%|████▋     | 104/219 [00:03<00:03, 31.61it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  49%|████▉     | 108/219 [00:03<00:03, 31.64it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  51%|█████     | 112/219 [00:03<00:03, 31.77it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  53%|█████▎    | 116/219 [00:04<00:03, 31.91it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  55%|█████▍    | 120/219 [00:04<00:03, 31.96it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  57%|█████▋    | 124/219 [00:04<00:02, 31.88it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  58%|█████▊    | 128/219 [00:04<00:02, 31.74it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  60%|██████    | 132/219 [00:04<00:02, 31.79it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  62%|██████▏   | 136/219 [00:04<00:02, 31.63it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  64%|██████▍   | 140/219 [00:04<00:02, 31.76it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  66%|██████▌   | 144/219 [00:04<00:02, 31.82it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  68%|██████▊   | 148/219 [00:05<00:02, 31.80it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  69%|██████▉   | 152/219 [00:05<00:02, 31.73it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  71%|███████   | 156/219 [00:05<00:01, 31.57it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  73%|███████▎  | 160/219 [00:05<00:01, 31.46it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  75%|███████▍  | 164/219 [00:05<00:01, 31.51it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  77%|███████▋  | 168/219 [00:05<00:01, 31.59it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  79%|███████▊  | 172/219 [00:05<00:01, 31.64it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  80%|████████  | 176/219 [00:05<00:01, 31.73it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  82%|████████▏ | 180/219 [00:06<00:01, 31.66it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  84%|████████▍ | 184/219 [00:06<00:01, 31.76it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  86%|████████▌ | 188/219 [00:06<00:00, 31.81it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  88%|████████▊ | 192/219 [00:06<00:00, 31.76it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  89%|████████▉ | 196/219 [00:06<00:00, 32.37it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  91%|█████████▏| 200/219 [00:06<00:00, 32.43it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  93%|█████████▎| 204/219 [00:06<00:00, 32.26it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  95%|█████████▍| 208/219 [00:06<00:00, 32.27it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  97%|█████████▋| 212/219 [00:07<00:00, 32.53it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  99%|█████████▊| 216/219 [00:07<00:00, 32.62it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 219/219 [00:07<00:00, 30.06it/s]
+                   all        219        840      0.907      0.814      0.884      0.522
+Speed: 1.3ms preprocess, 11.9ms inference, 0.0ms loss, 7.6ms postprocess per image
+============================================================
+ Exp07 Full Test-Set Consistency Summary
+============================================================
+result=FAIL
+git_branch=exp/07-tensorrt-fp16
+git_commit=0b09fa49192d18a097e7293438e6a9c12a669013
+test_image_count=219
+test_instance_count=840
+fp32_result=FAIL
+fp16_result=FAIL
+onnxruntime_precision=0.890126184512
+onnxruntime_recall=0.83108479928
+onnxruntime_map50=0.880957038324
+onnxruntime_map50_95=0.513851518834
+tensorrt_fp32_precision=0.890126489963
+tensorrt_fp32_recall=0.831086598128
+tensorrt_fp32_map50=0.884320929181
+tensorrt_fp32_map50_95=0.52160406149
+tensorrt_fp16_precision=0.906842481519
+tensorrt_fp16_recall=0.814374066011
+tensorrt_fp16_map50=0.884373548441
+tensorrt_fp16_map50_95=0.52192880638
+tensorrt_fp32_minus_onnx_precision=3.05450718385e-07
+tensorrt_fp32_minus_onnx_recall=1.79884772888e-06
+tensorrt_fp32_minus_onnx_map50=0.0033638908569
+tensorrt_fp32_minus_onnx_map50_95=0.00775254265569
+tensorrt_fp16_minus_onnx_precision=0.0167162970074
+tensorrt_fp16_minus_onnx_recall=-0.0167107332694
+tensorrt_fp16_minus_onnx_map50=0.00341651011643
+tensorrt_fp16_minus_onnx_map50_95=0.00807728754583

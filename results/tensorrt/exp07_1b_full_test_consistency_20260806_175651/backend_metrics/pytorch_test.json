@@ -1,0 +1,27 @@
+{
+  "model_path": "/home/nvidia/models/jetson-ppe/exp02/yolo11n_baseline_exp02_best.pt",
+  "device": "0",
+  "batch": 1,
+  "workers": 2,
+  "rect": false,
+  "elapsed_seconds": 12.612831909998931,
+  "metrics": {
+    "precision": 0.907342787930693,
+    "recall": 0.8136932277751318,
+    "map50": 0.8842958532958175,
+    "map50_95": 0.5218951915947916
+  },
+  "all_results": {
+    "metrics/precision(B)": 0.907342787930693,
+    "metrics/recall(B)": 0.8136932277751318,
+    "metrics/mAP50(B)": 0.8842958532958175,
+    "metrics/mAP50-95(B)": 0.5218951915947916,
+    "fitness": 0.5581352577648941
+  },
+  "speed_ms_per_image": {
+    "preprocess": 1.024444191852828,
+    "inference": 29.83313365752376,
+    "loss": 0.020385451970880288,
+    "postprocess": 4.364430794484922
+  }
+}

@@ -1,0 +1,7 @@
+FP32 build: --noTF32 --memPoolSize=workspace:1024 --builderOptimizationLevel=3
+FP16 build: --fp16 --noTF32 --memPoolSize=workspace:1024 --builderOptimizationLevel=3
+FP32 raw thresholds: max=1e-3 mean=2e-5 relative_l2=1e-5
+FP32 detection thresholds: box=1e-3 confidence=1e-5
+FP16 raw thresholds: max=0.5 mean=0.01 relative_l2=1e-3
+FP16 detection thresholds: box=0.5 confidence=1e-3
+Benchmark: warmUp=500ms iterations=200 duration=0 CUDA graph spin wait no data transfers
