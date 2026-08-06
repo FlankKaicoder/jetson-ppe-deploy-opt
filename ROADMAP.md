@@ -18,7 +18,7 @@
 
 | 实验 | 内容 | 状态 |
 |---|---|---|
-| Exp06 | PyTorch → ONNX 导出与一致性验证 | PLANNED |
+| Exp06 | PyTorch → ONNX 导出与一致性验证 | PASS |
 | Exp07 | Jetson TensorRT FP32 / FP16 Engine | PLANNED |
 | Exp08 | INT8 PTQ 与精度—性能比较 | PLANNED |
 

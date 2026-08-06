@@ -8,7 +8,7 @@
 | Exp03 | YOLO11n-P2 小目标结构消融 | REJECT | `03_YOLO11n-P2小目标结构消融总结.md` |
 | Exp04 | 部署可重参数化结构消融 | REJECT | `04_YOLO11n部署可重参数化结构消融总结.md` |
 | Exp05 | 轻量注意力与 Focal 损失消融 | REJECT | `05_YOLO11n轻量注意力与Focal损失消融总结.md` |
-| Exp06 | PyTorch → ONNX 导出与一致性验证 | PLANNED | 待创建 |
+| Exp06 | PyTorch → ONNX 导出与一致性验证 | PASS | `06_YOLO11n基线ONNX导出与一致性验证总结.md` |
 | Exp07 | Jetson TensorRT FP32 / FP16 | PLANNED | 待创建 |
 | Exp08 | INT8 PTQ 与精度—性能比较 | PLANNED | 待创建 |
 | Exp09 | TensorRT C++ Runtime | PLANNED | 待创建 |
@@ -29,5 +29,6 @@
 
 ## 当前模型决策
 
-后续 ONNX、TensorRT 和 Jetson 部署统一使用 Exp02 原始 YOLO11n baseline。
+后续 TensorRT 和 Jetson 部署统一使用 Exp02 原始 YOLO11n baseline 生成的
+Exp06 静态 FP32 ONNX。
 Exp03～Exp05 作为负向或部署感知消融保留，不得表述为已经替换基线。

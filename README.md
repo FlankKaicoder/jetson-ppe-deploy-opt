@@ -5,10 +5,10 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-06，Exp00～Exp05 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-06，Exp00～Exp06 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
-继续使用原始 YOLO11n baseline，下一阶段为 Exp06：PyTorch → ONNX 导出与
-一致性验证。
+继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
+验证，下一阶段为 Exp07：Jetson TensorRT FP32 / FP16 Engine。
 
 冻结基线：
 
@@ -25,6 +25,12 @@ Focal 分类损失均完成公平消融，但未满足替换基线的综合验�
 
 ```text
 79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+```
+
+Exp06 冻结 ONNX SHA256：
+
+```text
+305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8
 ```
 
 ## 项目主线
