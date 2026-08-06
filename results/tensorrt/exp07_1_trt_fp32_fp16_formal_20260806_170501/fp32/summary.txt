@@ -1,0 +1,26 @@
+============================================================
+ Exp07 TensorRT Consistency Summary
+============================================================
+result=PASS
+precision=fp32
+git_branch=exp/07-tensorrt-fp16
+git_commit=0b09fa49192d18a097e7293438e6a9c12a669013
+onnx_sha256=305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8
+engine_path=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp32.engine
+engine_size_bytes=14880428
+engine_sha256=01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1
+probe_image_sha256=39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e
+output_name=output0
+output_shape=[1, 7, 8400]
+raw_max_abs_error=0.0006103515625
+raw_mean_abs_error=1.02522444656e-05
+raw_relative_l2_error=1.3789118874e-07
+raw_tensor_result=PASS
+onnxruntime_detection_count=30
+tensorrt_detection_count=30
+detection_classes_equal=True
+detection_max_box_abs_error=6.103515625e-05
+detection_max_confidence_abs_error=8.94069671631e-07
+detection_result=PASS
+onnxruntime_single_forward_seconds=0.119826156999
+tensorrt_single_forward_seconds=0.030914721001

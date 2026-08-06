@@ -1,0 +1,9 @@
+result=FAIL
+python_return_code=2
+last_log_lines:
+Traceback (most recent call last):
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp07_full_test_consistency.py", line 335, in <module>
+    raise SystemExit(main())
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp07_full_test_consistency.py", line 162, in main
+    raise FileExistsError(f"report directory is not empty: {report_dir}")
+FileExistsError: report directory is not empty: /home/nvidia/projects/jetson-ppe-deploy-opt/results/tensorrt/exp07_1b_full_test_consistency_20260806_172550

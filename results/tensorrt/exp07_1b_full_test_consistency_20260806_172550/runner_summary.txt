@@ -1,0 +1,3 @@
+result=FAIL
+python_return_code=2
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/tensorrt/exp07_1b_full_test_consistency_20260806_172550

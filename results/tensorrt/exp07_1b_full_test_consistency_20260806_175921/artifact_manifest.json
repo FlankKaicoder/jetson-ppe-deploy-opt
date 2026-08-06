@@ -1,0 +1,25 @@
+{
+  "onnx": {
+    "path": "/home/nvidia/models/jetson-ppe/exp06/yolo11n_baseline_exp06_b1_640_opset17.onnx",
+    "size_bytes": 10566605,
+    "sha256": "305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8",
+    "reference_summary": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/onnx/exp06_1_onnx_formal_20260806_155847/summary.json",
+    "reference_summary_sha256": "865b8a8fa238eb9935040eb11fb56dbaca2a93070f2d164f89cf3672c88c7766"
+  },
+  "pytorch_reference": {
+    "path": "/home/nvidia/models/jetson-ppe/exp02/yolo11n_baseline_exp02_best.pt",
+    "size_bytes": 5479514,
+    "sha256": "79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6"
+  },
+  "fp32_engine": {
+    "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp32.engine",
+    "size_bytes": 14880428,
+    "sha256": "01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1"
+  },
+  "fp16_engine": {
+    "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+    "size_bytes": 8951540,
+    "sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83"
+  },
+  "data_yaml": "/home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/construction_ppe3_jetson_test.yaml"
+}

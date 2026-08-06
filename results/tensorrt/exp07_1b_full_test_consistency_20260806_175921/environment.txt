@@ -1,0 +1,63 @@
+experiment=Exp07.1b full test consistency
+timestamp=20260806_175921
+hostname=nvidia-desktop
+git_branch=exp/07-tensorrt-fp16
+git_commit=0b09fa49192d18a097e7293438e6a9c12a669013
+onnx=/home/nvidia/models/jetson-ppe/exp06/yolo11n_baseline_exp06_b1_640_opset17.onnx
+onnx_sha256=305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8
+onnx_reference_summary=/home/nvidia/projects/jetson-ppe-deploy-opt/results/onnx/exp06_1_onnx_formal_20260806_155847/summary.json
+onnx_reference_summary_sha256=865b8a8fa238eb9935040eb11fb56dbaca2a93070f2d164f89cf3672c88c7766
+pytorch_reference=/home/nvidia/models/jetson-ppe/exp02/yolo11n_baseline_exp02_best.pt
+pytorch_reference_sha256=79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+fp32_engine=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp32.engine
+fp32_engine_sha256=01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1
+fp16_engine=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine
+fp16_engine_sha256=88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83
+data_yaml=/home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/construction_ppe3_jetson_test.yaml
+dataset_archive_sha256=3bf3addcb79e7ac46163f7a294265a92c5f84c7e633f56da0b16e22f33400f4a
+test_image_count=219
+test_label_count=219
+Python 3.10.12
+Name: ultralytics
+Version: 8.3.159
+Summary: Ultralytics YOLO 🚀 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation and image classification.
+Home-page: https://ultralytics.com
+Author:
+Author-email: Glenn Jocher <glenn.jocher@ultralytics.com>, Jing Qiu <jing.qiu@ultralytics.com>
+License: AGPL-3.0
+Location: /usr/local/lib/python3.10/dist-packages
+Requires: matplotlib, numpy, opencv-python, pandas, pillow, psutil, py-cpuinfo, pyyaml, requests, scipy, torch, torchvision, tqdm, ultralytics-thop
+Required-by:
+---
+Name: onnxruntime-gpu
+Version: 1.20.0
+Summary: ONNX Runtime is a runtime accelerator for Machine Learning models
+Home-page: https://onnxruntime.ai
+Author: Microsoft Corporation
+Author-email: onnxruntime@microsoft.com
+License: MIT License
+Location: /home/nvidia/.local/lib/python3.10/site-packages
+Requires: coloredlogs, flatbuffers, numpy, packaging, protobuf, sympy
+Required-by:
+---
+Name: torch
+Version: 2.5.0a0+872d972e41.nv24.8
+Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration
+Home-page: https://pytorch.org/
+Author: PyTorch Team
+Author-email: packages@pytorch.org
+License: BSD-3
+Location: /usr/local/lib/python3.10/dist-packages
+Requires: filelock, fsspec, jinja2, networkx, sympy, typing-extensions
+Required-by: torchvision, ultralytics, ultralytics-thop
+---
+Name: tensorrt
+Version: 10.3.0
+Summary: A high performance deep learning inference library
+Home-page: https://developer.nvidia.com/tensorrt
+Author: NVIDIA Corporation
+Author-email:
+License: Proprietary
+Location: /usr/lib/python3.10/dist-packages
+Requires:
+Required-by:

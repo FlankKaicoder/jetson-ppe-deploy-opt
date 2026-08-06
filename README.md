@@ -5,10 +5,11 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-06，Exp00～Exp06 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-06，Exp00～Exp07 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
-验证，下一阶段为 Exp07：Jetson TensorRT FP32 / FP16 Engine。
+验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
+测试集一致性验证和 GPU-only 诊断 benchmark。下一阶段为 Exp08：INT8 PTQ。
 
 冻结基线：
 
@@ -32,6 +33,23 @@ Exp06 冻结 ONNX SHA256：
 ```text
 305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8
 ```
+
+Exp07 Engine（仅保存在 Jetson，不进入 Git）：
+
+| 精度 | Engine SHA256 | 大小 | GPU-only mean |
+|---|---|---:|---:|
+| FP32 | `01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1` | 14,880,428 bytes | 10.2415 ms |
+| FP16 | `88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83` | 8,951,540 bytes | 3.4797 ms |
+
+Exp07 的诊断计时固定为 batch 1、640×640、500 ms warmup、200 次迭代、
+CUDA Graph、spin wait 且关闭 H2D/D2H；未锁定 `jetson_clocks`，不是端到端
+延迟。完整测试集 mAP50-95：
+
+| 后端 | mAP50-95 |
+|---|---:|
+| Jetson PyTorch FP32 | 0.52189519 |
+| TensorRT FP32 | 0.52160406 |
+| TensorRT FP16 | 0.52192881 |
 
 ## 项目主线
 

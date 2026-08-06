@@ -1,0 +1,4 @@
+result=PASS
+fp32_return_code=0
+fp16_return_code=0
+collector_return_code=0

@@ -1,0 +1,6 @@
+result=FAIL
+collector_return_code=1
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/tensorrt/exp07_1_trt_fp32_fp16_formal_20260806_170501
+artifact_dir=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501
+fp32_engine=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp32.engine
+fp16_engine=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine

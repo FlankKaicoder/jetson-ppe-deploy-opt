@@ -1,0 +1,21 @@
+============================================================
+ Exp07 TensorRT GPU-Only Diagnostic Benchmark
+============================================================
+result=PASS
+scope=GPU_COMPUTE_ONLY_NO_H2D_D2H_NOT_END_TO_END
+fp32_return_code=0
+fp32_engine_size_bytes=14880428
+fp32_engine_sha256=01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1
+fp32_compute_mean_ms=10.241488
+fp32_compute_p50_ms=10.0839
+fp32_compute_p95_ms=11.2709
+fp32_compute_p99_ms=11.279325
+fp32_throughput_qps=97.6307
+fp16_return_code=0
+fp16_engine_size_bytes=8951540
+fp16_engine_sha256=88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83
+fp16_compute_mean_ms=3.47971295
+fp16_compute_p50_ms=3.479645
+fp16_compute_p95_ms=3.48547
+fp16_compute_p99_ms=3.4884074
+fp16_throughput_qps=287.295

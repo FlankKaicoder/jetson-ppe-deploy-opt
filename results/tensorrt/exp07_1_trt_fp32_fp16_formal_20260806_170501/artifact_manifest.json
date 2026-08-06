@@ -1,0 +1,16 @@
+{
+  "fp32_engine": {
+    "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp32.engine",
+    "precision": "fp32",
+    "exists": true,
+    "size_bytes": 14880428,
+    "sha256": "01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1"
+  },
+  "fp16_engine": {
+    "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+    "precision": "fp16",
+    "exists": true,
+    "size_bytes": 8951540,
+    "sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83"
+  }
+}

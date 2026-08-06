@@ -1,0 +1,2 @@
+reference,candidate,shape_equal,finite,max_abs_error,mean_abs_error,relative_l2_error,result
+onnxruntime_fp32,tensorrt_fp16,True,True,2.200469970703125,0.0377564318113181,0.0004544729259829827,FAIL
