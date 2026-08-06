@@ -1,0 +1,7 @@
+result=FAIL
+python_return_code=1
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_1_onnx_formal_20260806_154447
+artifact_dir=/root/autodl-tmp/jetson-ppe-artifacts/exp06_1_onnx_formal_20260806_154447
+summary=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_1_onnx_formal_20260806_154447/summary.txt
+manifest=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_1_onnx_formal_20260806_154447/artifact_manifest.json
+evaluation_metrics=/root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_1_onnx_formal_20260806_154447/evaluation_metrics.csv

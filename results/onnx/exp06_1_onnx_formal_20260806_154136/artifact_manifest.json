@@ -1,0 +1,20 @@
+{
+  "source_weight": {
+    "original_path": "/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt",
+    "artifact_copy": "/root/autodl-tmp/jetson-ppe-artifacts/exp06_1_onnx_formal_20260806_154136/source_best.pt",
+    "size_bytes": 5479514,
+    "sha256": "79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6"
+  },
+  "onnx": {
+    "path": "/root/autodl-tmp/jetson-ppe-artifacts/exp06_1_onnx_formal_20260806_154136/yolo11n_baseline_exp06_b1_640_opset17.onnx",
+    "size_bytes": 10566605,
+    "sha256": "2d622917cfa67ee4e588ae218536abdc64598efbbeb566cf571d8310da2832db",
+    "opset": 17,
+    "batch": 1,
+    "imgsz": 640,
+    "dynamic": false,
+    "simplify": false,
+    "half": false,
+    "nms": false
+  }
+}

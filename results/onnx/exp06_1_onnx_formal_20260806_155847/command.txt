@@ -1,0 +1,6 @@
+/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python -u tools/exp06_export_onnx.py
+--run-kind formal --full-eval --imgsz 640 --batch 1 --opset 17
+--weights /root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+--data /root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/construction_ppe3.yaml
+--report-dir /root/autodl-tmp/jetson-ppe-deploy-opt-exp06/results/onnx/exp06_1_onnx_formal_20260806_155847
+--artifact-dir /root/autodl-tmp/jetson-ppe-artifacts/exp06_1_onnx_formal_20260806_155847

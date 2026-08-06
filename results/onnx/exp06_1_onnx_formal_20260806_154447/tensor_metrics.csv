@@ -1,0 +1,2 @@
+reference,candidate,shape_equal,finite,max_abs_error,mean_abs_error,relative_l2_error,result
+pytorch_fp32,onnxruntime_fp32,True,True,0.0006103515625,1.0301261660966201e-05,1.2698316979787282e-07,PASS

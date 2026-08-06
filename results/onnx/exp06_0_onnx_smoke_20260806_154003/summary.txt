@@ -1,0 +1,29 @@
+============================================================
+ Exp06 PyTorch to ONNX Summary
+============================================================
+result=PASS
+run_kind=smoke
+git_branch=exp/06-onnx-export
+git_commit=2b38170d02e77dea91c10d6a87d5dce8a502a868
+source_weight=/root/autodl-tmp/jetson-ppe-outputs/exp02_6_yolo11n_baseline_e100_20260804_185444/weights/best.pt
+source_weight_sha256=79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
+onnx_path=/root/autodl-tmp/jetson-ppe-artifacts/exp06_0_onnx_smoke_20260806_154003/yolo11n_baseline_exp06_b1_640_opset17.onnx
+onnx_size_bytes=10566605
+onnx_sha256=57cc22917a21d17c358d6475202fa6b14018fa7988fea91dfc6f5522e76056a7
+onnx_input_name=images
+onnx_input_shape=[1, 3, 640, 640]
+onnx_output_name=output0
+onnx_output_shape=[1, 7, 8400]
+probe_image=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104/images/test/train__image784.jpg
+probe_label_count=23
+raw_max_abs_error=0.0006103515625
+raw_mean_abs_error=1.0301261661e-05
+raw_relative_l2_error=1.26983169798e-07
+raw_tensor_result=PASS
+pytorch_detection_count=30
+onnxruntime_detection_count=30
+detection_max_box_abs_error=0.0001220703125
+detection_max_confidence_abs_error=1.13248825073e-06
+detection_result=PASS
+full_evaluation_enabled=False
+full_evaluation_result=PASS
