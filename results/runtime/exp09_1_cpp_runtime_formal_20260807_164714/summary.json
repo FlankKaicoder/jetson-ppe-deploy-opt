@@ -1,0 +1,283 @@
+{
+  "experiment": "Exp09 TensorRT C++ Runtime formal validation",
+  "result": "PASS",
+  "scope": "preprocessed FP32 NCHW input; H2D + enqueueV3 + D2H + synchronize",
+  "configuration": {
+    "independent_processes": 3,
+    "warmup_per_process": 20,
+    "timed_iterations_per_process": 200
+  },
+  "reference": {
+    "engine_sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83",
+    "image_sha256": "39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e",
+    "input_sha256": "963a674701c7bc3bcf26b121646fd7754e1e87d7db5f14eb8d24fe07984fe90f",
+    "python_output_sha256": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d"
+  },
+  "processes": [
+    {
+      "index": 1,
+      "result": "PASS",
+      "return_codes": {
+        "runtime": 0,
+        "comparison": 0
+      },
+      "output_sha256": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+      "host_total_ms": {
+        "mean": 6.60620008,
+        "p50": 6.612337,
+        "p95": 8.3641612,
+        "p99": 9.91560962,
+        "min": 4.926728,
+        "max": 9.954535
+      },
+      "cuda_total_ms": {
+        "mean": 6.591960161,
+        "p50": 6.596895933,
+        "p95": 8.348848009,
+        "p99": 9.898549528,
+        "min": 4.91638422,
+        "max": 9.938112259
+      },
+      "comparison": {
+        "experiment": "Exp09 C++ vs Python TensorRT output consistency",
+        "result": "PASS",
+        "configuration": {
+          "shape": [
+            1,
+            7,
+            8400
+          ],
+          "confidence": 0.25,
+          "nms_iou": 0.7
+        },
+        "thresholds": {
+          "max_abs": 0.001,
+          "mean_abs": 1e-05,
+          "relative_l2": 1e-05,
+          "box_max_abs": 0.1,
+          "confidence_max_abs": 0.001
+        },
+        "sha256": {
+          "reference": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+          "candidate": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d"
+        },
+        "raw_tensor": {
+          "shape_equal": true,
+          "reference_shape": [
+            1,
+            7,
+            8400
+          ],
+          "candidate_shape": [
+            1,
+            7,
+            8400
+          ],
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "relative_l2_error": 0.0
+        },
+        "detections": {
+          "count_equal": true,
+          "reference_count": 30,
+          "candidate_count": 30,
+          "classes_equal": true,
+          "max_box_abs_error": 0.0,
+          "max_confidence_abs_error": 0.0
+        },
+        "gates": {
+          "shape_and_finite": true,
+          "max_abs": true,
+          "mean_abs": true,
+          "relative_l2": true,
+          "detection_count": true,
+          "classes": true,
+          "boxes": true,
+          "confidence": true
+        }
+      }
+    },
+    {
+      "index": 2,
+      "result": "PASS",
+      "return_codes": {
+        "runtime": 0,
+        "comparison": 0
+      },
+      "output_sha256": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+      "host_total_ms": {
+        "mean": 6.61885532,
+        "p50": 6.6094515,
+        "p95": 8.7596224,
+        "p99": 10.61985504,
+        "min": 4.932783,
+        "max": 10.639783
+      },
+      "cuda_total_ms": {
+        "mean": 6.603030729,
+        "p50": 6.594111919,
+        "p95": 8.741499138,
+        "p99": 10.6020302,
+        "min": 4.921152115,
+        "max": 10.62294388
+      },
+      "comparison": {
+        "experiment": "Exp09 C++ vs Python TensorRT output consistency",
+        "result": "PASS",
+        "configuration": {
+          "shape": [
+            1,
+            7,
+            8400
+          ],
+          "confidence": 0.25,
+          "nms_iou": 0.7
+        },
+        "thresholds": {
+          "max_abs": 0.001,
+          "mean_abs": 1e-05,
+          "relative_l2": 1e-05,
+          "box_max_abs": 0.1,
+          "confidence_max_abs": 0.001
+        },
+        "sha256": {
+          "reference": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+          "candidate": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d"
+        },
+        "raw_tensor": {
+          "shape_equal": true,
+          "reference_shape": [
+            1,
+            7,
+            8400
+          ],
+          "candidate_shape": [
+            1,
+            7,
+            8400
+          ],
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "relative_l2_error": 0.0
+        },
+        "detections": {
+          "count_equal": true,
+          "reference_count": 30,
+          "candidate_count": 30,
+          "classes_equal": true,
+          "max_box_abs_error": 0.0,
+          "max_confidence_abs_error": 0.0
+        },
+        "gates": {
+          "shape_and_finite": true,
+          "max_abs": true,
+          "mean_abs": true,
+          "relative_l2": true,
+          "detection_count": true,
+          "classes": true,
+          "boxes": true,
+          "confidence": true
+        }
+      }
+    },
+    {
+      "index": 3,
+      "result": "PASS",
+      "return_codes": {
+        "runtime": 0,
+        "comparison": 0
+      },
+      "output_sha256": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+      "host_total_ms": {
+        "mean": 6.638301485,
+        "p50": 6.6657785,
+        "p95": 8.8241012,
+        "p99": 9.96948179,
+        "min": 4.970517,
+        "max": 9.990595
+      },
+      "cuda_total_ms": {
+        "mean": 6.623320646,
+        "p50": 6.649071932,
+        "p95": 8.807220507,
+        "p99": 9.953692188,
+        "min": 4.960192204,
+        "max": 9.973183632
+      },
+      "comparison": {
+        "experiment": "Exp09 C++ vs Python TensorRT output consistency",
+        "result": "PASS",
+        "configuration": {
+          "shape": [
+            1,
+            7,
+            8400
+          ],
+          "confidence": 0.25,
+          "nms_iou": 0.7
+        },
+        "thresholds": {
+          "max_abs": 0.001,
+          "mean_abs": 1e-05,
+          "relative_l2": 1e-05,
+          "box_max_abs": 0.1,
+          "confidence_max_abs": 0.001
+        },
+        "sha256": {
+          "reference": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+          "candidate": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d"
+        },
+        "raw_tensor": {
+          "shape_equal": true,
+          "reference_shape": [
+            1,
+            7,
+            8400
+          ],
+          "candidate_shape": [
+            1,
+            7,
+            8400
+          ],
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "relative_l2_error": 0.0
+        },
+        "detections": {
+          "count_equal": true,
+          "reference_count": 30,
+          "candidate_count": 30,
+          "classes_equal": true,
+          "max_box_abs_error": 0.0,
+          "max_confidence_abs_error": 0.0
+        },
+        "gates": {
+          "shape_and_finite": true,
+          "max_abs": true,
+          "mean_abs": true,
+          "relative_l2": true,
+          "detection_count": true,
+          "classes": true,
+          "boxes": true,
+          "confidence": true
+        }
+      }
+    }
+  ],
+  "cross_process": {
+    "output_sha256": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+    "host_mean_ms_min": 6.60620008,
+    "host_mean_ms_max": 6.638301485,
+    "cuda_mean_ms_min": 6.591960161,
+    "cuda_mean_ms_max": 6.623320646
+  },
+  "gates": {
+    "process_count": true,
+    "all_processes": true,
+    "identical_output_sha256": true,
+    "matches_python_reference_sha256": true
+  }
+}

@@ -1,0 +1,5 @@
+cmake -S runtime -B <build_dir> -DCMAKE_BUILD_TYPE=Release
+cmake --build <build_dir> --parallel 2
+python tools/exp09_prepare_reference.py --engine <engine> --image <image> --report-dir <reference>
+for process in 1 2 3: exp09_trt_infer --warmup 20 --iterations 200; compare_outputs.py
+python tools/exp09_collect_formal.py --report-dir <report_dir> --processes 3

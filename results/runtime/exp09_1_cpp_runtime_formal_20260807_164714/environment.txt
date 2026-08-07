@@ -1,0 +1,19 @@
+experiment=Exp09.1 TensorRT C++ Runtime formal
+timestamp=20260807_164714
+hostname=nvidia-desktop
+git_branch=exp/09-trt-cpp-runtime
+git_commit=dc28b20046788fe7ad9854b8c52341e94f832a44
+engine_sha256=88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83
+probe_image_sha256=39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e
+independent_processes=3
+warmup_per_process=20
+iterations_per_process=200
+timing_scope=H2D_ENQUEUE_D2H_SYNCHRONIZE
+host_memory=PAGEABLE_STD_VECTOR
+jetson_clocks=NOT_CHECKED_NON_ROOT
+NV Power Mode: 25W
+1
+Build cuda_12.6.r12.6/compiler.34714021_0
+libnvinfer10	10.3.0.30-1+cuda12.5
+cmake version 3.22.1
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0

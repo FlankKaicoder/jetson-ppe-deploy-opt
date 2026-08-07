@@ -1,0 +1,59 @@
+{
+  "experiment": "Exp09 C++ vs Python TensorRT output consistency",
+  "result": "PASS",
+  "configuration": {
+    "shape": [
+      1,
+      7,
+      8400
+    ],
+    "confidence": 0.25,
+    "nms_iou": 0.7
+  },
+  "thresholds": {
+    "max_abs": 0.001,
+    "mean_abs": 1e-05,
+    "relative_l2": 1e-05,
+    "box_max_abs": 0.1,
+    "confidence_max_abs": 0.001
+  },
+  "sha256": {
+    "reference": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+    "candidate": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d"
+  },
+  "raw_tensor": {
+    "shape_equal": true,
+    "reference_shape": [
+      1,
+      7,
+      8400
+    ],
+    "candidate_shape": [
+      1,
+      7,
+      8400
+    ],
+    "finite": true,
+    "max_abs_error": 0.0,
+    "mean_abs_error": 0.0,
+    "relative_l2_error": 0.0
+  },
+  "detections": {
+    "count_equal": true,
+    "reference_count": 30,
+    "candidate_count": 30,
+    "classes_equal": true,
+    "max_box_abs_error": 0.0,
+    "max_confidence_abs_error": 0.0
+  },
+  "gates": {
+    "shape_and_finite": true,
+    "max_abs": true,
+    "mean_abs": true,
+    "relative_l2": true,
+    "detection_count": true,
+    "classes": true,
+    "boxes": true,
+    "confidence": true
+  }
+}

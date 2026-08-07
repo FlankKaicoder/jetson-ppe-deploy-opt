@@ -1,0 +1,6 @@
+result=PASS
+configure_return_code=0
+build_return_code=0
+reference_return_code=0
+collector_return_code=0
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/runtime/exp09_1_cpp_runtime_formal_20260807_164714

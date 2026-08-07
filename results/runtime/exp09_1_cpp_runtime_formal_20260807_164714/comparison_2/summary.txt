@@ -1,0 +1,10 @@
+result=PASS
+reference_sha256=29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d
+candidate_sha256=29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d
+raw_max_abs_error=0.0
+raw_mean_abs_error=0.0
+raw_relative_l2_error=0.0
+detection_count=30
+classes_equal=True
+box_max_abs_error=0.0
+confidence_max_abs_error=0.0
