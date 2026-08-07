@@ -1,0 +1,7 @@
+result=PASS
+fixture_return_code=0
+configure_return_code=0
+build_return_code=0
+step_failure=0
+collector_return_code=0
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/cuda_preprocess/exp10_1_cuda_preprocess_formal_20260807_173638

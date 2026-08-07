@@ -1,0 +1,12 @@
+result=PASS
+fixture_count=5
+cpu_mean_ms=2.282123815
+cuda_kernel_mean_ms=0.2007607996
+cuda_total_mean_ms=1.883068644
+kernel_mean_reduction=0.912028962547766
+minimum_kernel_reduction=0.3
+square=result:PASS,max_abs:0.0,mean_abs:0.0,relative_l2:0.0,p99_abs:0.0,padding_abs:0.0
+wide=result:PASS,max_abs:0.0,mean_abs:0.0,relative_l2:0.0,p99_abs:0.0,padding_abs:0.0
+tall=result:PASS,max_abs:0.0,mean_abs:0.0,relative_l2:0.0,p99_abs:0.0,padding_abs:0.0
+hd_wide=result:PASS,max_abs:0.0,mean_abs:0.0,relative_l2:0.0,p99_abs:0.0,padding_abs:0.0
+small_tall=result:PASS,max_abs:0.0,mean_abs:0.0,relative_l2:0.0,p99_abs:0.0,padding_abs:0.0
