@@ -1,0 +1,53 @@
+{
+  "result": "PASS",
+  "source": "/home/nvidia/models/jetson-ppe/exp06/probe_train__image784.jpg",
+  "source_sha256": "39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e",
+  "generation": {
+    "wide": "source[140:500, :]",
+    "tall": "source[:, 140:500]",
+    "hd_wide": "resize(wide, 1280x720, INTER_LINEAR)",
+    "small_tall": "resize(tall, 240x480, INTER_LINEAR)"
+  },
+  "fixtures": [
+    {
+      "name": "square",
+      "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/cuda_preprocess/exp10_1_cuda_preprocess_formal_20260807_172728/fixtures/square.png",
+      "height": 640,
+      "width": 640,
+      "bytes": 490606,
+      "sha256": "978eb9a210193df5ab2d3bd84b477ac0e340e0c8ae0db8b5d065d59f110d55fb"
+    },
+    {
+      "name": "wide",
+      "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/cuda_preprocess/exp10_1_cuda_preprocess_formal_20260807_172728/fixtures/wide.png",
+      "height": 360,
+      "width": 640,
+      "bytes": 393865,
+      "sha256": "092a0aa713b46d4f1ae77d4e7f0b07f6bf638f46c3c6febd87f3d9a831b4a954"
+    },
+    {
+      "name": "tall",
+      "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/cuda_preprocess/exp10_1_cuda_preprocess_formal_20260807_172728/fixtures/tall.png",
+      "height": 640,
+      "width": 360,
+      "bytes": 277739,
+      "sha256": "2449063dae90926bdfb7a8f6efcbe2704fa67b2f04d60af57277c22c0bdf6eab"
+    },
+    {
+      "name": "hd_wide",
+      "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/cuda_preprocess/exp10_1_cuda_preprocess_formal_20260807_172728/fixtures/hd_wide.png",
+      "height": 720,
+      "width": 1280,
+      "bytes": 1136151,
+      "sha256": "2af65839744f53522ed146f27a0de39695b8b4249d349d7fb252995020635537"
+    },
+    {
+      "name": "small_tall",
+      "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/cuda_preprocess/exp10_1_cuda_preprocess_formal_20260807_172728/fixtures/small_tall.png",
+      "height": 480,
+      "width": 240,
+      "bytes": 153554,
+      "sha256": "d163ca8d2712d6ff156734be7df8ef037eed13de9189f13d393ac4f31fd8d6bd"
+    }
+  ]
+}

@@ -2,8 +2,8 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp08 复盘、设备重连
-SOP、Exp08 复盘和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp10 复盘、设备重连
+SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
 | 实验 | 名称 | 状态 | 文档 |
@@ -18,7 +18,7 @@ SOP、Exp08 复盘和后续实验预先规划。后续每次实验都先在该�
 | Exp07 | Jetson TensorRT FP32 / FP16 | PASS | `07_YOLO11n基线TensorRT_FP32_FP16部署与验证总结.md` |
 | Exp08 | INT8 PTQ 与精度—性能比较 | REJECT | `08_YOLO11n基线INT8_PTQ部署与验证总结.md` |
 | Exp09 | TensorRT C++ Runtime | PASS | `09_TensorRT_CPP_Runtime部署与验证总结.md` |
-| Exp10 | CUDA 融合预处理 | IN_PROGRESS | `10_CUDA融合预处理与验证总结.md` |
+| Exp10 | CUDA 融合预处理 | PASS | `10_CUDA融合预处理与验证总结.md` |
 | Exp11 | 视频/摄像头端到端推理 | PLANNED | 待创建 |
 | Exp12 | Jetson 性能、功耗、温度与稳定性测试 | PLANNED | 待创建 |
 | Exp13 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |

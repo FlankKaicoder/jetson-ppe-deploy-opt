@@ -380,6 +380,7 @@ Exp06 PyTorch → ONNX 导出与一致性验证
 Exp07 Jetson TensorRT FP32 / FP16 Engine 构建与验证
 Exp08 INT8 PTQ 构建、精度—性能比较与候选决策
 Exp09 TensorRT C++ Runtime 与三进程生命周期验证
+Exp10 CUDA 融合预处理与五形状正确性/性能验证
 ```
 
 当前模型决策：
@@ -417,7 +418,8 @@ Exp03、Exp04、Exp05 均具有工程学习价值，但没有满足替换原始�
 Exp06、Exp07 已通过各自验收。Exp08 工程链路已完成，但 INT8 因 mAP50-95 和
 tiny+small recall 超过预冻结退化门槛而 REJECT；运行时主线保留 FP16。
 Exp09 已通过 C++ Runtime 编译、原始输出一致性和三独立进程生命周期验收。
-当前下一项实验为 Exp10 CUDA 融合预处理。
+Exp10 已通过五种输入形状逐元素一致性和 CUDA kernel-only 性能验收。
+当前下一项实验为 Exp11 视频/摄像头端到端推理。
 
 Codex 不得擅自重新选择模型主线。
 
@@ -1279,7 +1281,7 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. 后续 Exp10 推荐工作流；
+8. 后续 Exp11 推荐工作流；
 9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
 
 最后只输出检查结果和建议，不执行修改。
@@ -1292,7 +1294,7 @@ BLOCKED
 ```text
 当前工作环境应为 AutoDL 训练服务器。
 
-请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、Exp06～Exp09 总结，
+请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、Exp06～Exp10 总结，
 检查当前分支与 git 状态。
 
 不要修改代码，不要提交，不要推送。
@@ -1304,7 +1306,7 @@ BLOCKED
 4. 数据集 YAML；
 5. Exp06 ONNX 文件及 SHA256 是否与冻结记录一致；
 6. Exp08 INT8 为何被 REJECT，且不得改写为运行时主线；
-7. Exp10 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
+7. Exp11 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
 
 先给出执行计划和风险，不要直接开始。
 ```
@@ -1317,7 +1319,7 @@ BLOCKED
 当前工作环境应为 Jetson Orin Nano Super。
 
 请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、docs/01_environment.md、
-Exp06～Exp09 总结和当前部署相关文档。
+Exp06～Exp10 总结和当前部署相关文档。
 
 不要修改代码，不要提交，不要推送。
 
@@ -1329,7 +1331,7 @@ Exp06～Exp09 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. 后续 Exp10 CUDA 融合预处理的最小执行计划。
+8. 后续 Exp11 视频/摄像头端到端推理的最小执行计划。
 
 先输出检查结果，不执行构建。
 ```
@@ -1355,10 +1357,10 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-拉取 main，创建 Exp10 CUDA 融合预处理分支
+拉取 main，创建 Exp11 视频/摄像头推理分支
         ↓
 Jetson
-以 CPU Reference 为基准实现并验证 CUDA 融合预处理
+连接 GStreamer/视频帧、CUDA 预处理、TensorRT C++ Runtime 与后处理
         ↓
 ChatGPT
 分析指标并决定下一实验

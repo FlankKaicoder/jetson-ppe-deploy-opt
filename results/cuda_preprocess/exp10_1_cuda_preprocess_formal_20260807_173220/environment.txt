@@ -1,0 +1,18 @@
+experiment=Exp10.1 CUDA fused preprocess formal
+timestamp=20260807_173220
+hostname=nvidia-desktop
+git_branch=exp/10-cuda-preprocess
+git_commit=0583edd5b3f335d28b9f4283db930d8786c0f94d
+source_image_sha256=39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e
+correctness_fixtures=square,wide,tall,hd_wide,small_tall
+correctness_warmup=2
+correctness_iterations=5
+performance_fixture=hd_wide
+performance_warmup=20
+performance_iterations=200
+jetson_clocks=not_locked
+timing_scope=CPU_vs_KERNEL_ONLY_vs_PAGEABLE_TRANSFERS
+Build cuda_12.6.r12.6/compiler.34714021_0
+4.10.0
+cmake version 3.22.1
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0

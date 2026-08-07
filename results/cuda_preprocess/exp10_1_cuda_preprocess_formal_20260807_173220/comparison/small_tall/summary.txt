@@ -1,0 +1,9 @@
+result=FAIL
+max_abs_error=0.003921598196029663
+mean_abs_error=0.0001415409290276178
+relative_l2_error=0.0017037026178472498
+p99_abs_error=0.003921568393707275
+padding_max_abs_error=0.0
+cpu_mean_ms=3.343626
+cuda_kernel_mean_ms=0.2387840003
+cuda_total_mean_ms=1.614803195

@@ -1,0 +1,14 @@
+experiment=Exp10.0 CUDA fused preprocess smoke
+timestamp=20260807_171417
+hostname=nvidia-desktop
+git_branch=exp/10-cuda-preprocess
+git_commit=d4921af48aa13c98a32ba9319bf5a992420a120d
+source_image_sha256=39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e
+fixture=hd_wide_720x1280
+warmup=2
+iterations=5
+timing_scope=CPU_vs_KERNEL_ONLY_vs_PAGEABLE_TRANSFERS
+Build cuda_12.6.r12.6/compiler.34714021_0
+4.10.0
+cmake version 3.22.1
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
