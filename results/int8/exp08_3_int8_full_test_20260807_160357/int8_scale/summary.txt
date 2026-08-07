@@ -1,0 +1,33 @@
+============================================================
+ Exp02.8 Baseline Error and Size Audit
+============================================================
+result=PASS
+weights=/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine
+data_yaml=/home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/construction_ppe3_jetson_test.yaml
+image_count=219
+confidence_threshold=0.25
+matching_iou=0.5
+
+========== overall ==========
+gt=840
+tp=671
+fp=88
+fn=169
+precision_at_conf_0_25=0.88405797
+recall_at_conf_0_25=0.79880952
+
+========== per class ==========
+person: gt=337 tp=281 fp=53 fn=56 P=0.84131737 R=0.83382789
+helmet: gt=259 tp=197 fp=12 fn=62 P=0.94258373 R=0.76061776
+safety_vest: gt=244 tp=193 fp=23 fn=51 P=0.89351852 R=0.79098361
+
+========== per size ==========
+tiny: gt=29 tp=7 fn=22 R=0.24137931
+small: gt=114 tp=63 fn=51 R=0.55263158
+medium: gt=222 tp=182 fn=40 R=0.81981982
+large: gt=475 tp=419 fn=56 R=0.88210526
+
+NOTE: These precision/recall values use a fixed confidence threshold of 0.25 and class-aware IoU matching at 0.50. They are an error audit, not a replacement for Ultralytics mAP metrics.
+
+worst_visual_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_3_int8_full_test_20260807_160357/int8_scale/worst_visuals
+exp02_8_baseline_error_size_audit=PASS

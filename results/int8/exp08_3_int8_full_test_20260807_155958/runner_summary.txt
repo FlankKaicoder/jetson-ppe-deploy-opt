@@ -1,0 +1,7 @@
+result=FAIL
+fp16_backend_return_code=0
+int8_backend_return_code=0
+fp16_scale_return_code=1
+int8_scale_return_code=1
+collector_return_code=99
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_3_int8_full_test_20260807_155958

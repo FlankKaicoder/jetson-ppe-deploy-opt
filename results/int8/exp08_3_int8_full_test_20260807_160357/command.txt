@@ -1,0 +1,4 @@
+Separate backend processes; same Jetson runtime
+AP: split=test imgsz=640 batch=1 rect=false workers=2
+Scale: serial static engine, conf=0.25 NMS_IoU=0.70 match_IoU=0.50 max_visuals=0
+Frozen gates: mAP50-95 -0.010, mAP50 -0.015, tiny+small recall -0.050

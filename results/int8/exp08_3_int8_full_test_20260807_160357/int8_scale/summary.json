@@ -1,0 +1,88 @@
+{
+  "experiment": "Exp02.8 baseline error and object-size audit",
+  "result": "PASS",
+  "weights": "/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine",
+  "data_yaml": "/home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/construction_ppe3_jetson_test.yaml",
+  "image_count": 219,
+  "confidence_threshold": 0.25,
+  "nms_iou": 0.7,
+  "matching_iou": 0.5,
+  "serial_static_engine": true,
+  "size_definition": {
+    "tiny": "area_ratio < 0.0025",
+    "small": "0.0025 <= area_ratio < 0.01",
+    "medium": "0.01 <= area_ratio < 0.04",
+    "large": "area_ratio >= 0.04"
+  },
+  "overall": {
+    "gt": 840,
+    "tp": 671,
+    "fp": 88,
+    "fn": 169,
+    "precision_at_conf_0_25": 0.8840579710144928,
+    "recall_at_conf_0_25": 0.7988095238095239
+  },
+  "per_class": [
+    {
+      "class_id": 0,
+      "class_name": "person",
+      "gt": 337,
+      "tp": 281,
+      "fp": 53,
+      "fn": 56,
+      "precision_at_conf_0_25": 0.8413173652694611,
+      "recall_at_conf_0_25": 0.8338278931750742
+    },
+    {
+      "class_id": 1,
+      "class_name": "helmet",
+      "gt": 259,
+      "tp": 197,
+      "fp": 12,
+      "fn": 62,
+      "precision_at_conf_0_25": 0.9425837320574163,
+      "recall_at_conf_0_25": 0.7606177606177607
+    },
+    {
+      "class_id": 2,
+      "class_name": "safety_vest",
+      "gt": 244,
+      "tp": 193,
+      "fp": 23,
+      "fn": 51,
+      "precision_at_conf_0_25": 0.8935185185185185,
+      "recall_at_conf_0_25": 0.7909836065573771
+    }
+  ],
+  "per_size": [
+    {
+      "size_group": "tiny",
+      "gt": 29,
+      "tp": 7,
+      "fn": 22,
+      "recall_at_conf_0_25": 0.2413793103448276
+    },
+    {
+      "size_group": "small",
+      "gt": 114,
+      "tp": 63,
+      "fn": 51,
+      "recall_at_conf_0_25": 0.5526315789473685
+    },
+    {
+      "size_group": "medium",
+      "gt": 222,
+      "tp": 182,
+      "fn": 40,
+      "recall_at_conf_0_25": 0.8198198198198198
+    },
+    {
+      "size_group": "large",
+      "gt": 475,
+      "tp": 419,
+      "fn": 56,
+      "recall_at_conf_0_25": 0.8821052631578947
+    }
+  ],
+  "worst_visual_count": 0
+}

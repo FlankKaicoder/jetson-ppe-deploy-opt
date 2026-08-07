@@ -1,0 +1,5 @@
+result=PASS
+fp16_return_code=0
+int8_return_code=0
+collector_return_code=0
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_4_int8_benchmark_20260807_160526
