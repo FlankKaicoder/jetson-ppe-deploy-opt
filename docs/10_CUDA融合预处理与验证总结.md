@@ -76,7 +76,7 @@ PNG 只保存在时间戳结果目录，不提交 Git；manifest 记录来源、
 
 ## 预冻结执行与性能口径
 
-- Smoke Test：`wide`，warmup=2、iterations=5；
+- Smoke Test：`hd_wide`，warmup=2、iterations=5；
 - 正式正确性：全部 5 个夹具；
 - 正式性能：`hd_wide`，CPU/CUDA warmup=20、iterations=200；
 - CPU：OpenCV resize + border + BGR/RGB + normalize + HWC/CHW；
