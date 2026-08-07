@@ -1,0 +1,6 @@
+python tools/exp10_make_fixtures.py --source <image> --output-dir <fixtures>
+cmake -S cuda -B <build> -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc
+cmake --build <build> --parallel 2
+exp10_preprocess --image <fixture> --warmup <2|20> --iterations <5|200>
+python tools/exp10_compare_preprocess.py --cpu <cpu.bin> --cuda <cuda.bin>
+python tools/exp10_collect_formal.py --run-dir <report_dir>

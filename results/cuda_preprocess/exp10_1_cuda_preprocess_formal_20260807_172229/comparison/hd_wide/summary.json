@@ -1,0 +1,67 @@
+{
+  "experiment": "Exp10 CPU OpenCV vs CUDA fused preprocess",
+  "result": "PASS",
+  "geometry": {
+    "source_width": 1280,
+    "source_height": 720,
+    "target_size": 640,
+    "resized_width": 640,
+    "resized_height": 360,
+    "padding_left": 0,
+    "padding_right": 0,
+    "padding_top": 140,
+    "padding_bottom": 140
+  },
+  "thresholds": {
+    "max_abs": 0.00784323725490196,
+    "mean_abs": 0.0005,
+    "relative_l2": 0.001,
+    "p99_abs": 0.003921668627450981,
+    "padding_abs": 1e-07,
+    "require_exact": false
+  },
+  "metrics": {
+    "finite": true,
+    "max_abs_error": 0.0,
+    "mean_abs_error": 0.0,
+    "relative_l2_error": 0.0,
+    "p99_abs_error": 0.0,
+    "padding_max_abs_error": 0.0
+  },
+  "timing_ms": {
+    "cpu": {
+      "mean": 2.304330325,
+      "p50": 2.339137,
+      "p95": 2.3600292,
+      "p99": 2.3768366,
+      "min": 2.107927,
+      "max": 2.406276
+    },
+    "cuda_kernel": {
+      "mean": 0.2698886395,
+      "p50": 0.2777760029,
+      "p95": 0.2813551962,
+      "p99": 0.2834915176,
+      "min": 0.1340799928,
+      "max": 0.2902719975
+    },
+    "cuda_total": {
+      "mean": 1.845888482,
+      "p50": 1.904528022,
+      "p95": 1.974569607,
+      "p99": 1.998032662,
+      "min": 1.512832046,
+      "max": 2.484064102
+    }
+  },
+  "gates": {
+    "shape": true,
+    "finite": true,
+    "max_abs": true,
+    "mean_abs": true,
+    "relative_l2": true,
+    "p99_abs": true,
+    "padding": true,
+    "exact_when_required": true
+  }
+}
