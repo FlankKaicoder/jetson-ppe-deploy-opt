@@ -31,7 +31,7 @@
 |---|---|---|
 | Exp09 | TensorRT C++ Runtime | PASS |
 | Exp10 | CUDA 融合预处理 | PASS |
-| Exp11 | 视频/摄像头端到端推理 | IN_PROGRESS |
+| Exp11 | 视频/摄像头端到端推理 | PASS |
 
 ## M3：板端验证与项目发布
 

@@ -19,7 +19,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp08 | INT8 PTQ 与精度—性能比较 | REJECT | `08_YOLO11n基线INT8_PTQ部署与验证总结.md` |
 | Exp09 | TensorRT C++ Runtime | PASS | `09_TensorRT_CPP_Runtime部署与验证总结.md` |
 | Exp10 | CUDA 融合预处理 | PASS | `10_CUDA融合预处理与验证总结.md` |
-| Exp11 | 视频/摄像头端到端推理 | IN_PROGRESS | `11_视频摄像头端到端推理总结.md` |
+| Exp11 | 视频/摄像头端到端推理 | PASS | `11_视频摄像头端到端推理总结.md` |
 | Exp12 | Jetson 性能、功耗、温度与稳定性测试 | PLANNED | 待创建 |
 | Exp13 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 

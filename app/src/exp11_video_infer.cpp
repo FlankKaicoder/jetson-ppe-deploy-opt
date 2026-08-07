@@ -1,0 +1,508 @@
+#include "cuda_preprocess.hpp"
+#include "trt_runtime.hpp"
+
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/videoio.hpp>
+
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <numeric>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+namespace {
+
+struct Detection {
+    int class_id{};
+    int candidate_index{};
+    float confidence{};
+    float x1{};
+    float y1{};
+    float x2{};
+    float y2{};
+};
+
+struct Stats {
+    double mean{};
+    double p50{};
+    double p95{};
+    double p99{};
+    double minimum{};
+    double maximum{};
+};
+
+std::map<std::string, std::string> parse_args(int argc, char** argv) {
+    std::map<std::string, std::string> args;
+    for (int index = 1; index < argc; index += 2) {
+        if (index + 1 >= argc || std::string(argv[index]).rfind("--", 0) != 0) {
+            throw std::runtime_error("arguments must be --key value pairs");
+        }
+        args[argv[index]] = argv[index + 1];
+    }
+    for (const auto* required : {"--engine", "--source-type", "--output-dir"}) {
+        if (!args.count(required)) {
+            throw std::runtime_error(std::string("missing argument: ") + required);
+        }
+    }
+    if (args.at("--source-type") == "file" && !args.count("--source")) {
+        throw std::runtime_error("file input requires --source");
+    }
+    if (args.at("--source-type") != "file" &&
+        args.at("--source-type") != "camera") {
+        throw std::runtime_error("--source-type must be file or camera");
+    }
+    return args;
+}
+
+int integer_arg(
+    const std::map<std::string, std::string>& args,
+    const std::string& key,
+    int fallback) {
+    return args.count(key) ? std::stoi(args.at(key)) : fallback;
+}
+
+double double_arg(
+    const std::map<std::string, std::string>& args,
+    const std::string& key,
+    double fallback) {
+    return args.count(key) ? std::stod(args.at(key)) : fallback;
+}
+
+std::string camera_pipeline(int sensor, int width, int height, int fps) {
+    std::ostringstream stream;
+    stream << "nvarguscamerasrc sensor-id=" << sensor
+           << " ! video/x-raw(memory:NVMM),width=" << width
+           << ",height=" << height << ",framerate=" << fps
+           << "/1,format=NV12 ! nvvidconv ! video/x-raw,format=BGRx"
+           << " ! videoconvert ! video/x-raw,format=BGR"
+           << " ! appsink max-buffers=1 drop=true sync=false";
+    return stream.str();
+}
+
+std::string gst_quote(const std::string& value) {
+    std::string escaped = "\"";
+    for (const char character : value) {
+        if (character == '\\' || character == '"') {
+            escaped.push_back('\\');
+        }
+        escaped.push_back(character);
+    }
+    escaped.push_back('"');
+    return escaped;
+}
+
+std::string file_pipeline(const std::filesystem::path& source) {
+    return "filesrc location=" + gst_quote(source.string()) +
+           " ! qtdemux ! queue ! h264parse ! nvv4l2decoder ! nvvidconv"
+           " ! video/x-raw,format=BGRx ! videoconvert"
+           " ! video/x-raw,format=BGR"
+           " ! appsink max-buffers=1 drop=false sync=false";
+}
+
+double percentile(const std::vector<double>& sorted, double quantile) {
+    const double position = quantile * static_cast<double>(sorted.size() - 1);
+    const auto lower = static_cast<std::size_t>(std::floor(position));
+    const auto upper = static_cast<std::size_t>(std::ceil(position));
+    const double fraction = position - static_cast<double>(lower);
+    return sorted[lower] * (1.0 - fraction) + sorted[upper] * fraction;
+}
+
+Stats summarize(std::vector<double> values) {
+    if (values.empty()) {
+        throw std::runtime_error("cannot summarize empty timing vector");
+    }
+    std::sort(values.begin(), values.end());
+    return {
+        std::accumulate(values.begin(), values.end(), 0.0) /
+            static_cast<double>(values.size()),
+        percentile(values, 0.50),
+        percentile(values, 0.95),
+        percentile(values, 0.99),
+        values.front(),
+        values.back()};
+}
+
+float intersection_over_union(const Detection& left, const Detection& right) {
+    const float x1 = std::max(left.x1, right.x1);
+    const float y1 = std::max(left.y1, right.y1);
+    const float x2 = std::min(left.x2, right.x2);
+    const float y2 = std::min(left.y2, right.y2);
+    const float intersection = std::max(0.0F, x2 - x1) *
+                               std::max(0.0F, y2 - y1);
+    const float left_area = (left.x2 - left.x1) * (left.y2 - left.y1);
+    const float right_area = (right.x2 - right.x1) * (right.y2 - right.y1);
+    const float union_area = left_area + right_area - intersection;
+    return union_area > 0.0F ? intersection / union_area : 0.0F;
+}
+
+std::vector<Detection> decode_detections(
+    const std::vector<float>& output,
+    const ppe::LetterboxGeometry& geometry,
+    float confidence_threshold,
+    float nms_threshold) {
+    constexpr int candidates = 8400;
+    constexpr int classes = 3;
+    constexpr int channels = 7;
+    if (output.size() != static_cast<std::size_t>(channels * candidates)) {
+        throw std::runtime_error("unexpected YOLO11 output element count");
+    }
+    std::vector<Detection> decoded;
+    decoded.reserve(256);
+    for (int index = 0; index < candidates; ++index) {
+        int class_id = 0;
+        float confidence = output[4 * candidates + index];
+        for (int category = 1; category < classes; ++category) {
+            const float value = output[(4 + category) * candidates + index];
+            if (value > confidence) {
+                confidence = value;
+                class_id = category;
+            }
+        }
+        if (!std::isfinite(confidence) || confidence < confidence_threshold) {
+            continue;
+        }
+        const float center_x = output[index];
+        const float center_y = output[candidates + index];
+        const float width = output[2 * candidates + index];
+        const float height = output[3 * candidates + index];
+        if (!std::isfinite(center_x) || !std::isfinite(center_y) ||
+            !std::isfinite(width) || !std::isfinite(height) ||
+            width <= 0.0F || height <= 0.0F) {
+            continue;
+        }
+        Detection detection;
+        detection.class_id = class_id;
+        detection.candidate_index = index;
+        detection.confidence = confidence;
+        detection.x1 = std::clamp(
+            (center_x - width * 0.5F - geometry.padding_left) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_width));
+        detection.y1 = std::clamp(
+            (center_y - height * 0.5F - geometry.padding_top) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_height));
+        detection.x2 = std::clamp(
+            (center_x + width * 0.5F - geometry.padding_left) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_width));
+        detection.y2 = std::clamp(
+            (center_y + height * 0.5F - geometry.padding_top) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_height));
+        if (detection.x2 > detection.x1 && detection.y2 > detection.y1) {
+            decoded.push_back(detection);
+        }
+    }
+    std::sort(
+        decoded.begin(), decoded.end(),
+        [](const Detection& left, const Detection& right) {
+            if (left.confidence != right.confidence) {
+                return left.confidence > right.confidence;
+            }
+            return left.candidate_index < right.candidate_index;
+        });
+    std::vector<Detection> kept;
+    kept.reserve(decoded.size());
+    for (const auto& candidate : decoded) {
+        bool suppressed = false;
+        for (const auto& accepted : kept) {
+            if (candidate.class_id == accepted.class_id &&
+                intersection_over_union(candidate, accepted) > nms_threshold) {
+                suppressed = true;
+                break;
+            }
+        }
+        if (!suppressed) {
+            kept.push_back(candidate);
+        }
+    }
+    return kept;
+}
+
+cv::Mat annotate(const cv::Mat& frame, const std::vector<Detection>& detections) {
+    static const std::vector<std::string> names = {
+        "person", "helmet", "safety_vest"};
+    static const cv::Scalar colors[] = {
+        cv::Scalar(0, 255, 255), cv::Scalar(0, 255, 0), cv::Scalar(255, 128, 0)};
+    cv::Mat result = frame.clone();
+    for (const auto& detection : detections) {
+        const cv::Rect rectangle(
+            cv::Point(
+                static_cast<int>(std::round(detection.x1)),
+                static_cast<int>(std::round(detection.y1))),
+            cv::Point(
+                static_cast<int>(std::round(detection.x2)),
+                static_cast<int>(std::round(detection.y2))));
+        cv::rectangle(result, rectangle, colors[detection.class_id], 2);
+        std::ostringstream label;
+        label << names[detection.class_id] << ' ' << std::fixed
+              << std::setprecision(2) << detection.confidence;
+        cv::putText(
+            result, label.str(),
+            cv::Point(rectangle.x, std::max(20, rectangle.y - 4)),
+            cv::FONT_HERSHEY_SIMPLEX, 0.6, colors[detection.class_id], 2);
+    }
+    return result;
+}
+
+void write_stats(std::ostream& stream, const std::string& name, const Stats& stats) {
+    stream << "    \"" << name << "\": {\"mean\": " << stats.mean
+           << ", \"p50\": " << stats.p50
+           << ", \"p95\": " << stats.p95
+           << ", \"p99\": " << stats.p99
+           << ", \"min\": " << stats.minimum
+           << ", \"max\": " << stats.maximum << "}";
+}
+
+std::string json_escape(const std::string& value) {
+    std::string escaped;
+    for (const char character : value) {
+        if (character == '\\' || character == '"') {
+            escaped.push_back('\\');
+        }
+        escaped.push_back(character);
+    }
+    return escaped;
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+    try {
+        const auto args = parse_args(argc, argv);
+        const std::string source_type = args.at("--source-type");
+        const int max_frames = integer_arg(args, "--max-frames", 0);
+        const int warmup = integer_arg(args, "--warmup", 2);
+        const float confidence = static_cast<float>(
+            double_arg(args, "--confidence", 0.25));
+        const float nms_iou = static_cast<float>(
+            double_arg(args, "--nms-iou", 0.70));
+        if (max_frames < 0 || warmup < 0 || confidence < 0.0F ||
+            confidence > 1.0F || nms_iou < 0.0F || nms_iou > 1.0F) {
+            throw std::runtime_error("invalid numeric arguments");
+        }
+        const std::filesystem::path output_dir(args.at("--output-dir"));
+        std::filesystem::create_directories(output_dir);
+
+        cv::VideoCapture capture;
+        std::string source_description;
+        if (source_type == "file") {
+            const std::filesystem::path source(args.at("--source"));
+            if (!std::filesystem::is_regular_file(source)) {
+                throw std::runtime_error("video file does not exist: " + source.string());
+            }
+            source_description = file_pipeline(source);
+            capture.open(source_description, cv::CAP_GSTREAMER);
+        } else {
+            const int sensor = integer_arg(args, "--sensor-id", 0);
+            const int width = integer_arg(args, "--width", 1920);
+            const int height = integer_arg(args, "--height", 1080);
+            const int fps = integer_arg(args, "--fps", 30);
+            source_description = camera_pipeline(sensor, width, height, fps);
+            capture.open(source_description, cv::CAP_GSTREAMER);
+        }
+        if (!capture.isOpened()) {
+            throw std::runtime_error("GStreamer VideoCapture open failed");
+        }
+
+        cv::Mat frame;
+        const auto first_capture_start = std::chrono::steady_clock::now();
+        if (!capture.read(frame) || frame.empty()) {
+            throw std::runtime_error("failed to acquire first frame");
+        }
+        const auto first_capture_end = std::chrono::steady_clock::now();
+        if (frame.type() != CV_8UC3) {
+            throw std::runtime_error("captured frame is not CV_8UC3 BGR");
+        }
+        if (!frame.isContinuous()) {
+            frame = frame.clone();
+        }
+        const auto geometry = ppe::make_letterbox_geometry(frame.cols, frame.rows, 640);
+        ppe::TrtRuntime runtime(args.at("--engine"));
+        ppe::CudaPreprocessor preprocessor(geometry);
+        for (int index = 0; index < warmup; ++index) {
+            const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+            const auto inferred = runtime.infer_device(
+                prepared.device_output, preprocessor.stream());
+            if (!std::all_of(
+                    inferred.output.begin(), inferred.output.end(),
+                    [](float value) { return std::isfinite(value); })) {
+                throw std::runtime_error("warmup output contains NaN or Inf");
+            }
+        }
+
+        std::ofstream detections_csv(output_dir / "detections.csv");
+        std::ofstream frames_csv(output_dir / "frames.csv");
+        if (!detections_csv || !frames_csv) {
+            throw std::runtime_error("cannot open CSV outputs");
+        }
+        detections_csv << "frame_index,detection_index,class_id,class_name,confidence,x1,y1,x2,y2\n";
+        frames_csv << "frame_index,detection_count,capture_ms,preprocess_host_ms,"
+                      "preprocess_cuda_ms,inference_host_ms,inference_cuda_ms,"
+                      "postprocess_ms,end_to_end_ms\n";
+        detections_csv << std::fixed << std::setprecision(9);
+        frames_csv << std::fixed << std::setprecision(9);
+        const std::vector<std::string> class_names = {
+            "person", "helmet", "safety_vest"};
+        std::vector<double> capture_times;
+        std::vector<double> preprocess_host_times;
+        std::vector<double> preprocess_cuda_times;
+        std::vector<double> inference_host_times;
+        std::vector<double> inference_cuda_times;
+        std::vector<double> postprocess_times;
+        std::vector<double> end_to_end_times;
+        std::size_t total_detections = 0;
+        int frame_index = 0;
+        double current_capture_ms = std::chrono::duration<double, std::milli>(
+            first_capture_end - first_capture_start).count();
+        cv::Mat first_annotated;
+        cv::Mat last_annotated;
+
+        while (true) {
+            const auto frame_start = std::chrono::steady_clock::now();
+            const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+            const auto inferred = runtime.infer_device(
+                prepared.device_output, preprocessor.stream());
+            const bool finite = std::all_of(
+                inferred.output.begin(), inferred.output.end(),
+                [](float value) { return std::isfinite(value); });
+            if (!finite) {
+                throw std::runtime_error("inference output contains NaN or Inf");
+            }
+            const auto post_start = std::chrono::steady_clock::now();
+            const auto detections = decode_detections(
+                inferred.output, geometry, confidence, nms_iou);
+            const auto post_end = std::chrono::steady_clock::now();
+            const auto frame_end = post_end;
+            const double post_ms = std::chrono::duration<double, std::milli>(
+                post_end - post_start).count();
+            const double end_to_end_ms = current_capture_ms +
+                std::chrono::duration<double, std::milli>(
+                    frame_end - frame_start).count();
+
+            for (std::size_t index = 0; index < detections.size(); ++index) {
+                const auto& detection = detections[index];
+                if (detection.class_id < 0 || detection.class_id >= 3 ||
+                    detection.confidence < confidence ||
+                    detection.confidence > 1.0F ||
+                    detection.x1 < 0.0F || detection.y1 < 0.0F ||
+                    detection.x2 > frame.cols || detection.y2 > frame.rows ||
+                    detection.x2 <= detection.x1 || detection.y2 <= detection.y1) {
+                    throw std::runtime_error("invalid decoded detection");
+                }
+                detections_csv << frame_index << ',' << index << ','
+                    << detection.class_id << ',' << class_names[detection.class_id]
+                    << ',' << detection.confidence << ',' << detection.x1 << ','
+                    << detection.y1 << ',' << detection.x2 << ',' << detection.y2
+                    << '\n';
+            }
+            frames_csv << frame_index << ',' << detections.size() << ','
+                << current_capture_ms << ',' << prepared.host_total_ms << ','
+                << prepared.cuda_total_ms << ',' << inferred.host_total_ms << ','
+                << inferred.cuda_total_ms << ',' << post_ms << ','
+                << end_to_end_ms << '\n';
+            total_detections += detections.size();
+            capture_times.push_back(current_capture_ms);
+            preprocess_host_times.push_back(prepared.host_total_ms);
+            preprocess_cuda_times.push_back(prepared.cuda_total_ms);
+            inference_host_times.push_back(inferred.host_total_ms);
+            inference_cuda_times.push_back(inferred.cuda_total_ms);
+            postprocess_times.push_back(post_ms);
+            end_to_end_times.push_back(end_to_end_ms);
+            last_annotated = annotate(frame, detections);
+            if (frame_index == 0) {
+                first_annotated = last_annotated.clone();
+            }
+            ++frame_index;
+            if (max_frames > 0 && frame_index >= max_frames) {
+                break;
+            }
+            const auto capture_start = std::chrono::steady_clock::now();
+            const bool acquired = capture.read(frame);
+            const auto capture_end = std::chrono::steady_clock::now();
+            if (!acquired || frame.empty()) {
+                if (source_type == "camera") {
+                    throw std::runtime_error("camera frame acquisition ended early");
+                }
+                break;
+            }
+            if (frame.type() != CV_8UC3 || frame.cols != geometry.source_width ||
+                frame.rows != geometry.source_height) {
+                throw std::runtime_error("frame format or dimensions changed");
+            }
+            if (!frame.isContinuous()) {
+                frame = frame.clone();
+            }
+            current_capture_ms = std::chrono::duration<double, std::milli>(
+                capture_end - capture_start).count();
+        }
+        if (frame_index <= 0 ||
+            (source_type == "camera" && max_frames > 0 && frame_index != max_frames)) {
+            throw std::runtime_error("processed frame count failed acceptance");
+        }
+        detections_csv.close();
+        frames_csv.close();
+        if (!cv::imwrite((output_dir / "first_annotated.jpg").string(), first_annotated) ||
+            !cv::imwrite((output_dir / "last_annotated.jpg").string(), last_annotated)) {
+            throw std::runtime_error("cannot write annotated evidence frames");
+        }
+
+        const auto capture_stats = summarize(capture_times);
+        const auto preprocess_host_stats = summarize(preprocess_host_times);
+        const auto preprocess_cuda_stats = summarize(preprocess_cuda_times);
+        const auto inference_host_stats = summarize(inference_host_times);
+        const auto inference_cuda_stats = summarize(inference_cuda_times);
+        const auto postprocess_stats = summarize(postprocess_times);
+        const auto end_to_end_stats = summarize(end_to_end_times);
+        const double elapsed_seconds = std::accumulate(
+            end_to_end_times.begin(), end_to_end_times.end(), 0.0) / 1000.0;
+        const double effective_fps = static_cast<double>(frame_index) / elapsed_seconds;
+        std::ofstream summary(output_dir / "summary.json");
+        if (!summary) {
+            throw std::runtime_error("cannot open summary.json");
+        }
+        summary << std::fixed << std::setprecision(9)
+                << "{\n"
+                << "  \"result\": \"PASS\",\n"
+                << "  \"source_type\": \"" << source_type << "\",\n"
+                << "  \"source\": \"" << json_escape(source_description) << "\",\n"
+                << "  \"engine\": \"" << json_escape(args.at("--engine")) << "\",\n"
+                << "  \"frame_width\": " << geometry.source_width << ",\n"
+                << "  \"frame_height\": " << geometry.source_height << ",\n"
+                << "  \"processed_frames\": " << frame_index << ",\n"
+                << "  \"total_detections\": " << total_detections << ",\n"
+                << "  \"warmup_iterations\": " << warmup << ",\n"
+                << "  \"confidence_threshold\": " << confidence << ",\n"
+                << "  \"nms_iou_threshold\": " << nms_iou << ",\n"
+                << "  \"effective_fps\": " << effective_fps << ",\n"
+                << "  \"timing_scope\": \"capture+H2D+CUDA_preprocess+TensorRT+D2H+NMS\",\n"
+                << "  \"timings_ms\": {\n";
+        write_stats(summary, "capture", capture_stats); summary << ",\n";
+        write_stats(summary, "preprocess_host", preprocess_host_stats); summary << ",\n";
+        write_stats(summary, "preprocess_cuda", preprocess_cuda_stats); summary << ",\n";
+        write_stats(summary, "inference_host", inference_host_stats); summary << ",\n";
+        write_stats(summary, "inference_cuda", inference_cuda_stats); summary << ",\n";
+        write_stats(summary, "postprocess", postprocess_stats); summary << ",\n";
+        write_stats(summary, "end_to_end", end_to_end_stats); summary << "\n";
+        summary << "  }\n}\n";
+        std::cout << std::fixed << std::setprecision(3)
+                  << "result=PASS source_type=" << source_type
+                  << " frames=" << frame_index
+                  << " detections=" << total_detections
+                  << " e2e_p95_ms=" << end_to_end_stats.p95
+                  << " effective_fps=" << effective_fps << '\n';
+        return 0;
+    } catch (const std::exception& error) {
+        std::cerr << "ERROR: " << error.what() << '\n';
+        return 1;
+    }
+}

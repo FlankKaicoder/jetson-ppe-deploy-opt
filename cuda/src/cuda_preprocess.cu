@@ -3,6 +3,7 @@
 #include <cuda_runtime_api.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -76,12 +77,12 @@ double percentile(const std::vector<double>& sorted, double quantile) {
     return sorted[lower] * (1.0 - fraction) + sorted[upper] * fraction;
 }
 
-TimingStats summarize(std::vector<double> values) {
+PreprocessTimingStats summarize(std::vector<double> values) {
     if (values.empty()) {
         throw std::runtime_error("no CUDA timing values");
     }
     std::sort(values.begin(), values.end());
-    TimingStats result;
+    PreprocessTimingStats result;
     result.mean_ms =
         std::accumulate(values.begin(), values.end(), 0.0) /
         static_cast<double>(values.size());
@@ -232,6 +233,81 @@ double elapsed_ms(const CudaEvent& start, const CudaEvent& end) {
 }
 
 }  // namespace
+
+class CudaPreprocessor::Impl {
+public:
+    explicit Impl(const LetterboxGeometry& geometry)
+        : geometry_(geometry),
+          input_(
+              static_cast<std::size_t>(geometry.source_width) *
+              static_cast<std::size_t>(geometry.source_height) * 3),
+          output_(
+              static_cast<std::size_t>(geometry.target_size) *
+              static_cast<std::size_t>(geometry.target_size) * 3 * sizeof(float)) {
+        const auto checked = make_letterbox_geometry(
+            geometry.source_width, geometry.source_height, geometry.target_size);
+        if (checked.resized_width != geometry.resized_width ||
+            checked.resized_height != geometry.resized_height ||
+            checked.padding_left != geometry.padding_left ||
+            checked.padding_right != geometry.padding_right ||
+            checked.padding_top != geometry.padding_top ||
+            checked.padding_bottom != geometry.padding_bottom) {
+            throw std::runtime_error("inconsistent persistent preprocess geometry");
+        }
+    }
+
+    DevicePreprocessResult process(const std::uint8_t* host_bgr) {
+        if (host_bgr == nullptr) {
+            throw std::runtime_error("null BGR frame");
+        }
+        const std::size_t input_bytes =
+            static_cast<std::size_t>(geometry_.source_width) *
+            static_cast<std::size_t>(geometry_.source_height) * 3;
+        CudaEvent start;
+        CudaEvent end;
+        const auto host_start = std::chrono::steady_clock::now();
+        check_cuda(
+            cudaEventRecord(start.get(), stream_.get()),
+            "device preprocess start event");
+        check_cuda(
+            cudaMemcpyAsync(
+                input_.data(), host_bgr, input_bytes,
+                cudaMemcpyHostToDevice, stream_.get()),
+            "device preprocess cudaMemcpyAsync H2D");
+        launch(input_, output_, geometry_, stream_.get());
+        check_cuda(
+            cudaEventRecord(end.get(), stream_.get()),
+            "device preprocess end event");
+        check_cuda(
+            cudaEventSynchronize(end.get()),
+            "device preprocess event synchronize");
+        const auto host_end = std::chrono::steady_clock::now();
+        return {
+            static_cast<const float*>(output_.data()),
+            std::chrono::duration<double, std::milli>(
+                host_end - host_start).count(),
+            elapsed_ms(start, end)};
+    }
+
+    LetterboxGeometry geometry_;
+    DeviceBuffer input_;
+    DeviceBuffer output_;
+    CudaStream stream_;
+};
+
+CudaPreprocessor::CudaPreprocessor(const LetterboxGeometry& geometry)
+    : impl_(std::make_unique<Impl>(geometry)) {}
+CudaPreprocessor::~CudaPreprocessor() = default;
+CudaPreprocessor::CudaPreprocessor(CudaPreprocessor&&) noexcept = default;
+CudaPreprocessor& CudaPreprocessor::operator=(CudaPreprocessor&&) noexcept = default;
+const LetterboxGeometry& CudaPreprocessor::geometry() const {
+    return impl_->geometry_;
+}
+cudaStream_t CudaPreprocessor::stream() const { return impl_->stream_.get(); }
+DevicePreprocessResult CudaPreprocessor::process(
+    const std::uint8_t* host_bgr) {
+    return impl_->process(host_bgr);
+}
 
 LetterboxGeometry make_letterbox_geometry(
     int source_width,
