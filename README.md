@@ -14,7 +14,8 @@ INT8 Engine 构建、219 张 test 精度/尺度审计和 GPU-only benchmark；IN
 25.44%、缩小 Engine 39.82%，但 mAP50-95 下降 0.01391、tiny+small recall 下降
 0.30070，超过预冻结门槛，因此候选 `REJECT`，运行时主线继续使用 FP16。Exp09 已完成
 TensorRT 10.3 C++ Runtime、Python/C++ 原始输出一致性和三独立进程生命周期验证；三份输出
-与 Python TensorRT 参考逐字节一致。下一实验为 Exp10 CUDA 融合预处理。
+与 Python TensorRT 参考逐字节一致。Exp10 CUDA 融合预处理已进入 OpenCV Reference、数值误差和
+CPU/kernel-only/传输总耗时口径冻结阶段，尚未产生 CUDA Kernel 结果。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 

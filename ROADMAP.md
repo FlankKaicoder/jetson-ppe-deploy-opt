@@ -30,7 +30,7 @@
 | 实验 | 内容 | 状态 |
 |---|---|---|
 | Exp09 | TensorRT C++ Runtime | PASS |
-| Exp10 | CUDA 融合预处理 | PLANNED |
+| Exp10 | CUDA 融合预处理 | IN_PROGRESS |
 | Exp11 | 视频/摄像头端到端推理 | PLANNED |
 
 ## M3：板端验证与项目发布
