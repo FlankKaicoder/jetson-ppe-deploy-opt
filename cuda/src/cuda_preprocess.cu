@@ -129,15 +129,18 @@ __device__ int interpolate_channel_opencv_u8(
     const int ax0 = coefficient_scale - ax1;
     const int ay1 = __float2int_rn(wy * coefficient_scale);
     const int ay0 = coefficient_scale - ay1;
-    const int value =
-        static_cast<int>(image[(y0 * width + x0) * 3 + channel]) * ax0 * ay0 +
-        static_cast<int>(image[(y0 * width + x1) * 3 + channel]) * ax1 * ay0 +
-        static_cast<int>(image[(y1 * width + x0) * 3 + channel]) * ax0 * ay1 +
-        static_cast<int>(image[(y1 * width + x1) * 3 + channel]) * ax1 * ay1;
-    // Jetson OpenCV 4.10 INTER_LINEAR resolves exact half-way CV_8U
-    // accumulations downward, so subtract one from the usual half-up bias.
-    return (value + (1 << (coefficient_bits * 2 - 1)) - 1) >>
-        (coefficient_bits * 2);
+    const int horizontal_top =
+        static_cast<int>(image[(y0 * width + x0) * 3 + channel]) * ax0 +
+        static_cast<int>(image[(y0 * width + x1) * 3 + channel]) * ax1;
+    const int horizontal_bottom =
+        static_cast<int>(image[(y1 * width + x0) * 3 + channel]) * ax0 +
+        static_cast<int>(image[(y1 * width + x1) * 3 + channel]) * ax1;
+    // Match OpenCV 4.10's specialized CV_8U VResizeLinear path exactly:
+    // it discards four horizontal fractional bits, takes each signed high
+    // product independently, then rounds the remaining two fractional bits.
+    const int vertical_top = (ay0 * (horizontal_top >> 4)) >> 16;
+    const int vertical_bottom = (ay1 * (horizontal_bottom >> 4)) >> 16;
+    return (vertical_top + vertical_bottom + 2) >> 2;
 }
 
 __global__ void fused_preprocess_kernel(
