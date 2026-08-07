@@ -1,0 +1,14 @@
+experiment=Exp09.0 TensorRT C++ Runtime smoke
+timestamp=20260807_164202
+hostname=nvidia-desktop
+git_branch=exp/09-trt-cpp-runtime
+git_commit=b7175dc05009662fb0556bb0f0ade96a9183fdc8
+engine_sha256=88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83
+probe_image_sha256=39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e
+warmup=2
+iterations=5
+timing_scope=H2D_ENQUEUE_D2H_SYNCHRONIZE
+Build cuda_12.6.r12.6/compiler.34714021_0
+libnvinfer10	10.3.0.30-1+cuda12.5
+cmake version 3.22.1
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0

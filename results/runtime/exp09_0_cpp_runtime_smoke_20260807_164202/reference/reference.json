@@ -1,0 +1,76 @@
+{
+  "result": "PASS",
+  "engine_sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83",
+  "image_sha256": "39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e",
+  "input": {
+    "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/runtime/exp09_0_cpp_runtime_smoke_20260807_164202/reference/input_fp32_nchw.bin",
+    "shape": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "dtype": "float32",
+    "bytes": 4915200,
+    "sha256": "963a674701c7bc3bcf26b121646fd7754e1e87d7db5f14eb8d24fe07984fe90f"
+  },
+  "output": {
+    "path": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/runtime/exp09_0_cpp_runtime_smoke_20260807_164202/reference/python_trt_output_fp32.bin",
+    "name": "output0",
+    "shape": [
+      1,
+      7,
+      8400
+    ],
+    "dtype": "float32",
+    "bytes": 235200,
+    "sha256": "29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d",
+    "finite": true
+  },
+  "preprocess": {
+    "original_height": 640,
+    "original_width": 640,
+    "resize_ratio": 1.0,
+    "resized_height": 640,
+    "resized_width": 640,
+    "padding_left": 0,
+    "padding_right": 0,
+    "padding_top": 0,
+    "padding_bottom": 0,
+    "input_shape": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "input_dtype": "float32",
+    "input_min": 0.0,
+    "input_max": 1.0
+  },
+  "engine_io": {
+    "tensors": [
+      {
+        "name": "images",
+        "mode": "TensorIOMode.INPUT",
+        "engine_shape": [
+          1,
+          3,
+          640,
+          640
+        ],
+        "dtype": "DataType.FLOAT"
+      },
+      {
+        "name": "output0",
+        "mode": "TensorIOMode.OUTPUT",
+        "engine_shape": [
+          1,
+          7,
+          8400
+        ],
+        "dtype": "DataType.FLOAT"
+      }
+    ]
+  },
+  "python_trt_forward_seconds": 0.011924174999876413
+}
