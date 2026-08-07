@@ -1,0 +1,20 @@
+experiment=Exp08.4 FP16 vs INT8 diagnostic benchmark
+timestamp=20260807_160526
+hostname=nvidia-desktop
+git_branch=exp/08-int8-ptq
+git_commit=57b28d925b03cfe2a261bfdc5eff64f3a275e795
+fp16_sha256=88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83
+int8_sha256=5787fb3bae4dbd00909c1762efc9263566044bc4dc35a836c950312e85895f26
+scope=GPU_COMPUTE_ONLY_NO_H2D_D2H_NOT_END_TO_END
+warmup_ms=500
+iterations=200
+duration_seconds=0
+cuda_graph=true
+spin_wait=true
+jetson_clocks=NOT_CHECKED_NON_ROOT
+min_latency_reduction=0.05
+min_size_reduction=0.10
+NV Power Mode: 25W
+1
+dpkg-query: no packages found matching nvinfer-bin
+libnvinfer10	10.3.0.30-1+cuda12.5

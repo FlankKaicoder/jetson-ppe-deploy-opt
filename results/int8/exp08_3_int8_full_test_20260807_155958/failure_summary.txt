@@ -1,0 +1,168 @@
+result=FAIL
+fp16_backend_return_code=0
+int8_backend_return_code=0
+fp16_scale_return_code=1
+int8_scale_return_code=1
+collector_return_code=99
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_3_int8_full_test_20260807_155958
+last_log_lines:
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  50%|█████     | 110/219 [00:03<00:03, 31.99it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  52%|█████▏    | 114/219 [00:03<00:03, 32.33it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  54%|█████▍    | 118/219 [00:03<00:03, 32.35it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  56%|█████▌    | 122/219 [00:04<00:03, 32.29it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  58%|█████▊    | 126/219 [00:04<00:02, 32.08it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  59%|█████▉    | 130/219 [00:04<00:02, 32.01it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  61%|██████    | 134/219 [00:04<00:02, 31.99it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  63%|██████▎   | 138/219 [00:04<00:02, 31.97it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  65%|██████▍   | 142/219 [00:04<00:02, 32.05it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  67%|██████▋   | 146/219 [00:04<00:02, 31.99it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  68%|██████▊   | 150/219 [00:04<00:02, 31.88it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  70%|███████   | 154/219 [00:05<00:02, 31.83it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  72%|███████▏  | 158/219 [00:05<00:01, 31.77it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  74%|███████▍  | 162/219 [00:05<00:01, 31.80it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  76%|███████▌  | 166/219 [00:05<00:01, 31.77it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  78%|███████▊  | 170/219 [00:05<00:01, 31.83it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  79%|███████▉  | 174/219 [00:05<00:01, 31.81it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  81%|████████▏ | 178/219 [00:05<00:01, 31.87it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  83%|████████▎ | 182/219 [00:06<00:01, 31.87it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  85%|████████▍ | 186/219 [00:06<00:01, 31.88it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  87%|████████▋ | 190/219 [00:06<00:00, 31.88it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  89%|████████▊ | 194/219 [00:06<00:00, 31.93it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  90%|█████████ | 198/219 [00:06<00:00, 32.48it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  92%|█████████▏| 202/219 [00:06<00:00, 32.96it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  94%|█████████▍| 206/219 [00:06<00:00, 32.83it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  96%|█████████▌| 210/219 [00:06<00:00, 32.72it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  98%|█████████▊| 214/219 [00:06<00:00, 32.40it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|█████████▉| 218/219 [00:07<00:00, 32.34it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 219/219 [00:07<00:00, 30.66it/s]
+                   all        219        840      0.907      0.814      0.884      0.522
+Speed: 1.4ms preprocess, 12.0ms inference, 0.0ms loss, 7.5ms postprocess per image
+{"precision": 0.9068424815192405, "recall": 0.8143740660108642, "map50": 0.884373548440543, "map50_95": 0.5219288063799808}
+Ultralytics 8.3.159 🚀 Python-3.10.12 torch-2.5.0a0+872d972e41.nv24.08 CUDA:0 (Orin, 7620MiB)
+Loading /home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine for TensorRT inference...
+[08/07/2026-16:00:18] [TRT] [I] Loaded engine size: 5 MiB
+[08/07/2026-16:00:18] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +7, now: CPU 0, GPU 9 (MiB)
+WARNING ⚠️ Metadata not found for 'model=/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine'
+[34m[1mval: [0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1027.6±293.1 MB/s, size: 210.1 KB)
+
+[34m[1mval: [0mScanning /home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/labels/test.cache... 219 images, 1 backgrounds, 0 corrupt: 100%|██████████| 219/219 [00:00<?, ?it/s]
+[34m[1mval: [0mScanning /home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/labels/test.cache... 219 images, 1 backgrounds, 0 corrupt: 100%|██████████| 219/219 [00:00<?, ?it/s]
+
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   0%|          | 0/219 [00:00<?, ?it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   0%|          | 1/219 [00:00<00:53,  4.04it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   2%|▏         | 5/219 [00:00<00:12, 17.18it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   4%|▍         | 9/219 [00:00<00:08, 23.93it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   6%|▌         | 13/219 [00:00<00:07, 27.18it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):   8%|▊         | 17/219 [00:00<00:06, 29.24it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  10%|▉         | 21/219 [00:00<00:06, 30.61it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  11%|█▏        | 25/219 [00:00<00:06, 31.42it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  13%|█▎        | 29/219 [00:01<00:05, 31.86it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  15%|█▌        | 33/219 [00:01<00:05, 32.23it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  17%|█▋        | 37/219 [00:01<00:05, 33.14it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  19%|█▊        | 41/219 [00:01<00:05, 33.65it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  21%|██        | 45/219 [00:01<00:04, 34.97it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  22%|██▏       | 49/219 [00:01<00:04, 36.12it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  24%|██▍       | 53/219 [00:01<00:04, 36.53it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  26%|██▋       | 58/219 [00:01<00:04, 37.68it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  28%|██▊       | 62/219 [00:01<00:04, 37.97it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  31%|███       | 67/219 [00:02<00:03, 39.01it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  32%|███▏      | 71/219 [00:02<00:03, 38.58it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  34%|███▍      | 75/219 [00:02<00:03, 38.33it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  36%|███▌      | 79/219 [00:02<00:03, 37.54it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  38%|███▊      | 83/219 [00:02<00:03, 37.00it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  40%|███▉      | 87/219 [00:02<00:03, 36.50it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  42%|████▏     | 91/219 [00:02<00:03, 36.13it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  43%|████▎     | 95/219 [00:02<00:03, 35.51it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  45%|████▌     | 99/219 [00:02<00:03, 35.48it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  47%|████▋     | 103/219 [00:03<00:03, 35.00it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  49%|████▉     | 107/219 [00:03<00:03, 35.02it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  51%|█████     | 111/219 [00:03<00:03, 35.36it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  53%|█████▎    | 115/219 [00:03<00:02, 35.41it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  54%|█████▍    | 119/219 [00:03<00:02, 35.43it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  56%|█████▌    | 123/219 [00:03<00:02, 35.48it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  58%|█████▊    | 127/219 [00:03<00:02, 35.27it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  60%|█████▉    | 131/219 [00:03<00:02, 35.33it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  62%|██████▏   | 135/219 [00:03<00:02, 35.36it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  63%|██████▎   | 139/219 [00:04<00:02, 35.42it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  65%|██████▌   | 143/219 [00:04<00:02, 35.63it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  67%|██████▋   | 147/219 [00:04<00:02, 35.59it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  69%|██████▉   | 151/219 [00:04<00:01, 35.70it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  71%|███████   | 155/219 [00:04<00:01, 35.52it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  73%|███████▎  | 159/219 [00:04<00:01, 35.31it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  74%|███████▍  | 163/219 [00:04<00:01, 35.24it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  76%|███████▋  | 167/219 [00:04<00:01, 35.19it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  78%|███████▊  | 171/219 [00:05<00:01, 35.15it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  80%|███████▉  | 175/219 [00:05<00:01, 35.15it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  82%|████████▏ | 179/219 [00:05<00:01, 35.13it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  84%|████████▎ | 183/219 [00:05<00:01, 35.19it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  85%|████████▌ | 187/219 [00:05<00:00, 35.21it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  87%|████████▋ | 191/219 [00:05<00:00, 35.12it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  89%|████████▉ | 195/219 [00:05<00:00, 35.55it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  91%|█████████ | 199/219 [00:05<00:00, 36.24it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  93%|█████████▎| 203/219 [00:05<00:00, 36.48it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  95%|█████████▍| 207/219 [00:06<00:00, 36.04it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  96%|█████████▋| 211/219 [00:06<00:00, 35.81it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95):  98%|█████████▊| 215/219 [00:06<00:00, 35.44it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 219/219 [00:06<00:00, 35.32it/s]
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 219/219 [00:06<00:00, 34.44it/s]
+                   all        219        840      0.867       0.82      0.878      0.508
+Speed: 1.5ms preprocess, 9.5ms inference, 0.0ms loss, 6.0ms postprocess per image
+{"precision": 0.8672150962966, "recall": 0.8197729432223766, "map50": 0.8780458648765591, "map50_95": 0.5080148280549838}
+========== Exp02.8 configuration ==========
+python=/usr/bin/python3
+weights=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine
+data_yaml=/home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/construction_ppe3_jetson_test.yaml
+image_count=219
+imgsz=640
+batch=1
+conf=0.25
+nms_iou=0.7
+match_iou=0.5
+output_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_3_int8_full_test_20260807_155958/fp16_scale
+Loading /home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine for TensorRT inference...
+[08/07/2026-16:00:31] [TRT] [I] Loaded engine size: 8 MiB
+[08/07/2026-16:00:31] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +9, now: CPU 0, GPU 14 (MiB)
+WARNING ⚠️ Metadata not found for 'model=/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine'
+Traceback (most recent call last):
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp02_8_baseline_error_size_audit.py", line 884, in <module>
+    raise SystemExit(main())
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp02_8_baseline_error_size_audit.py", line 479, in main
+    for index, (image_path, result) in enumerate(
+  File "/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py", line 36, in generator_context
+    response = gen.send(None)
+  File "/usr/local/lib/python3.10/dist-packages/ultralytics/engine/predictor.py", line 308, in stream_inference
+    self.model.warmup(
+  File "/usr/local/lib/python3.10/dist-packages/ultralytics/nn/autobackend.py", line 856, in warmup
+    self.forward(im)  # warmup
+  File "/usr/local/lib/python3.10/dist-packages/ultralytics/nn/autobackend.py", line 715, in forward
+    assert im.shape == s, f"input size {im.shape} {'>' if self.dynamic else 'not equal to'} max model size {s}"
+AssertionError: input size torch.Size([219, 3, 640, 640]) not equal to max model size (1, 3, 640, 640)
+========== Exp02.8 configuration ==========
+python=/usr/bin/python3
+weights=/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine
+data_yaml=/home/nvidia/datasets/jetson-ppe-exp07/construction_ppe3_test_v1/construction_ppe3_jetson_test.yaml
+image_count=219
+imgsz=640
+batch=1
+conf=0.25
+nms_iou=0.7
+match_iou=0.5
+output_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_3_int8_full_test_20260807_155958/int8_scale
+Loading /home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine for TensorRT inference...
+[08/07/2026-16:00:41] [TRT] [I] Loaded engine size: 5 MiB
+[08/07/2026-16:00:41] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +7, now: CPU 0, GPU 9 (MiB)
+WARNING ⚠️ Metadata not found for 'model=/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine'
+Traceback (most recent call last):
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp02_8_baseline_error_size_audit.py", line 884, in <module>
+    raise SystemExit(main())
+  File "/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp02_8_baseline_error_size_audit.py", line 479, in main
+    for index, (image_path, result) in enumerate(
+  File "/usr/local/lib/python3.10/dist-packages/torch/utils/_contextlib.py", line 36, in generator_context
+    response = gen.send(None)
+  File "/usr/local/lib/python3.10/dist-packages/ultralytics/engine/predictor.py", line 308, in stream_inference
+    self.model.warmup(
+  File "/usr/local/lib/python3.10/dist-packages/ultralytics/nn/autobackend.py", line 856, in warmup
+    self.forward(im)  # warmup
+  File "/usr/local/lib/python3.10/dist-packages/ultralytics/nn/autobackend.py", line 715, in forward
+    assert im.shape == s, f"input size {im.shape} {'>' if self.dynamic else 'not equal to'} max model size {s}"
+AssertionError: input size torch.Size([219, 3, 640, 640]) not equal to max model size (1, 3, 640, 640)

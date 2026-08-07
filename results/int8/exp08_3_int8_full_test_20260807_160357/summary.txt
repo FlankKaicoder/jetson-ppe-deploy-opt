@@ -1,0 +1,17 @@
+result=FAIL
+fp16_precision=0.906842481519
+fp16_recall=0.814374066011
+fp16_map50=0.884373548441
+fp16_map50_95=0.52192880638
+int8_precision=0.867215096297
+int8_recall=0.819772943222
+int8_map50=0.878045864877
+int8_map50_95=0.508014828055
+map50_delta=-0.00632768356398
+map50_95_delta=-0.013913978325
+fp16_tiny_small_recall=0.79020979021
+int8_tiny_small_recall=0.48951048951
+tiny_small_recall_delta=-0.300699300699
+map50_gate=PASS
+map50_95_gate=FAIL
+tiny_small_gate=FAIL

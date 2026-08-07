@@ -1,0 +1,90 @@
+{
+  "experiment": "Exp08 FP16 vs INT8 full-test and scale consistency",
+  "result": "FAIL",
+  "configuration": {
+    "split": "test",
+    "images": 219,
+    "instances": 840,
+    "imgsz": 640,
+    "batch": 1,
+    "rect": false,
+    "scale_confidence": 0.25,
+    "scale_nms_iou": 0.7,
+    "scale_match_iou": 0.5
+  },
+  "thresholds": {
+    "map50_95_max_drop": 0.01,
+    "map50_max_drop": 0.015,
+    "tiny_small_recall_max_drop": 0.05
+  },
+  "same_run_metrics": {
+    "fp16": {
+      "precision": 0.9068424815192405,
+      "recall": 0.8143740660108642,
+      "map50": 0.884373548440543,
+      "map50_95": 0.5219288063799808
+    },
+    "int8": {
+      "precision": 0.8672150962966,
+      "recall": 0.8197729432223766,
+      "map50": 0.8780458648765591,
+      "map50_95": 0.5080148280549838
+    }
+  },
+  "exp07_reference_metrics": {
+    "pytorch": {
+      "precision": 0.907342787930693,
+      "recall": 0.8136932277751318,
+      "map50": 0.8842958532958175,
+      "map50_95": 0.5218951915947916
+    },
+    "tensorrt_fp32": {
+      "precision": 0.8901264899625886,
+      "recall": 0.8310865981279436,
+      "map50": 0.8843209291810156,
+      "map50_95": 0.5216040614898421
+    },
+    "tensorrt_fp16": {
+      "precision": 0.9068424815192405,
+      "recall": 0.8143740660108642,
+      "map50": 0.884373548440543,
+      "map50_95": 0.5219288063799808
+    }
+  },
+  "scale_metrics": {
+    "fp16_tiny_small": {
+      "gt": 143,
+      "tp": 113,
+      "recall": 0.7902097902097902
+    },
+    "int8_tiny_small": {
+      "gt": 143,
+      "tp": 70,
+      "recall": 0.48951048951048953
+    }
+  },
+  "int8_minus_fp16": {
+    "precision": -0.03962738522264053,
+    "recall": 0.005398877211512443,
+    "map50": -0.0063276835639838325,
+    "map50_95": -0.013913978324997078,
+    "tiny_small_recall": -0.3006993006993007
+  },
+  "gates": {
+    "map50_95": false,
+    "map50": true,
+    "tiny_small_recall": false
+  },
+  "engines": {
+    "fp16": {
+      "path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+      "bytes": 8951540,
+      "sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83"
+    },
+    "int8": {
+      "path": "/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine",
+      "bytes": 5387244,
+      "sha256": "5787fb3bae4dbd00909c1762efc9263566044bc4dc35a836c950312e85895f26"
+    }
+  }
+}

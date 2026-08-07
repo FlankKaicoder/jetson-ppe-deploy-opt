@@ -1,0 +1,4 @@
+/usr/bin/python3 tools/exp08_build_int8.py --limit 16 --batch-size 1
+/usr/bin/python3 tools/exp08_int8_smoke.py --imgsz 640 --confidence 0.25 --nms-iou 0.70
+Smoke gate: build succeeds, output shape [1,7,8400], all outputs finite
+Raw/NMS deltas are diagnostic and do not replace formal full-test gates

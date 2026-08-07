@@ -1,0 +1,27 @@
+{
+  "model_path": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+  "device": "0",
+  "batch": 1,
+  "workers": 2,
+  "rect": false,
+  "elapsed_seconds": 9.081944454999757,
+  "metrics": {
+    "precision": 0.9068424815192405,
+    "recall": 0.8143740660108642,
+    "map50": 0.884373548440543,
+    "map50_95": 0.5219288063799808
+  },
+  "all_results": {
+    "metrics/precision(B)": 0.9068424815192405,
+    "metrics/recall(B)": 0.8143740660108642,
+    "metrics/mAP50(B)": 0.884373548440543,
+    "metrics/mAP50-95(B)": 0.5219288063799808,
+    "fitness": 0.5581732805860371
+  },
+  "speed_ms_per_image": {
+    "preprocess": 1.4408605707664208,
+    "inference": 11.9592048356304,
+    "loss": 0.030396872139405607,
+    "postprocess": 7.199848922372436
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "experiment": "Exp08 INT8 execution smoke",
+  "result": "PASS",
+  "onnx_sha256": "305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8",
+  "engine_sha256": "5787fb3bae4dbd00909c1762efc9263566044bc4dc35a836c950312e85895f26",
+  "probe_image_sha256": "39a263dd6931e7ca70b85348cdd35c3fed9ca5c938c391023d438b24fbe8910e",
+  "preprocess": {
+    "original_height": 640,
+    "original_width": 640,
+    "resize_ratio": 1.0,
+    "resized_height": 640,
+    "resized_width": 640,
+    "padding_left": 0,
+    "padding_right": 0,
+    "padding_top": 0,
+    "padding_bottom": 0,
+    "input_shape": [
+      1,
+      3,
+      640,
+      640
+    ],
+    "input_dtype": "float32",
+    "input_min": 0.0,
+    "input_max": 1.0
+  },
+  "output_name": "output0",
+  "output_shape": [
+    1,
+    7,
+    8400
+  ],
+  "finite": true,
+  "engine_io": {
+    "tensors": [
+      {
+        "name": "images",
+        "mode": "TensorIOMode.INPUT",
+        "engine_shape": [
+          1,
+          3,
+          640,
+          640
+        ],
+        "dtype": "DataType.FLOAT"
+      },
+      {
+        "name": "output0",
+        "mode": "TensorIOMode.OUTPUT",
+        "engine_shape": [
+          1,
+          7,
+          8400
+        ],
+        "dtype": "DataType.FLOAT"
+      }
+    ]
+  },
+  "raw_tensor_diagnostic": {
+    "shape_equal": true,
+    "reference_shape": [
+      1,
+      7,
+      8400
+    ],
+    "candidate_shape": [
+      1,
+      7,
+      8400
+    ],
+    "finite": true,
+    "max_abs_error": 181.67601013183594,
+    "mean_abs_error": 1.9848981446225424,
+    "relative_l2_error": 0.026360952790391266
+  },
+  "nms_diagnostic": {
+    "confidence": 0.25,
+    "iou": 0.7,
+    "onnx_detection_count": 30,
+    "int8_detection_count": 15
+  },
+  "tensorrt_single_forward_seconds": 0.009340087000055064,
+  "note": "Raw/NMS deltas are diagnostic only; full-test gates are frozen separately."
+}

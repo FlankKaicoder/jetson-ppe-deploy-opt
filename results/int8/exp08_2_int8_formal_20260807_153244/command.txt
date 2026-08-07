@@ -1,0 +1,5 @@
+/usr/bin/python3 tools/exp08_build_int8.py --batch-size 1 --limit 0
+/usr/bin/python3 tools/exp08_int8_smoke.py --imgsz 640 --confidence 0.25 --nms-iou 0.70
+Formal build uses all 256 train-only images and a fresh cache
+Build gate: engine/cache exist and summaries PASS
+Execution gate: output [1,7,8400] and finite

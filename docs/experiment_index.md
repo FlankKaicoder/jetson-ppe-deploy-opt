@@ -2,8 +2,8 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp07 复盘、设备重连
-SOP 和 Exp08 预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp08 复盘、设备重连
+SOP、Exp08 复盘和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
 | 实验 | 名称 | 状态 | 文档 |
@@ -16,7 +16,7 @@ SOP 和 Exp08 预先规划。后续每次实验都先在该文件末尾追加计
 | Exp05 | 轻量注意力与 Focal 损失消融 | REJECT | `05_YOLO11n轻量注意力与Focal损失消融总结.md` |
 | Exp06 | PyTorch → ONNX 导出与一致性验证 | PASS | `06_YOLO11n基线ONNX导出与一致性验证总结.md` |
 | Exp07 | Jetson TensorRT FP32 / FP16 | PASS | `07_YOLO11n基线TensorRT_FP32_FP16部署与验证总结.md` |
-| Exp08 | INT8 PTQ 与精度—性能比较 | IN_PROGRESS | `08_YOLO11n基线INT8_PTQ部署与验证总结.md` |
+| Exp08 | INT8 PTQ 与精度—性能比较 | REJECT | `08_YOLO11n基线INT8_PTQ部署与验证总结.md` |
 | Exp09 | TensorRT C++ Runtime | PLANNED | 待创建 |
 | Exp10 | CUDA 融合预处理 | PLANNED | 待创建 |
 | Exp11 | 视频/摄像头端到端推理 | PLANNED | 待创建 |

@@ -1,0 +1,7 @@
+result=FAIL
+build_return_code=1
+execution_return_code=99
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_1_int8_smoke_20260807_151314
+artifact_dir=/home/nvidia/models/jetson-ppe/exp08/exp08_1_int8_smoke_20260807_151314
+engine_sha256=3822ff3e1dda76de80daaaeebae34a25a223c5e26f991f660129c7b73d687def
+cache_sha256=f6f1651d36cd03927fc335b683c6065a1561430e868bd0b976fb981ac25cd375

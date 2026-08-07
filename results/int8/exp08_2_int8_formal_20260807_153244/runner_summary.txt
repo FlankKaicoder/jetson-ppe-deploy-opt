@@ -1,0 +1,9 @@
+result=PASS
+build_return_code=0
+execution_return_code=0
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_2_int8_formal_20260807_153244
+artifact_dir=/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244
+engine_bytes=5387244
+engine_sha256=5787fb3bae4dbd00909c1762efc9263566044bc4dc35a836c950312e85895f26
+cache_bytes=15647
+cache_sha256=f9196435eea6f65f1b530d93fa8bf4f048881bcc9a0485bf48676f32a9103465

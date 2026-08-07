@@ -1,0 +1,28 @@
+experiment=Exp08.1 INT8 smoke
+timestamp=20260807_151314
+hostname=nvidia-desktop
+whoami=nvidia
+uname=Linux nvidia-desktop 5.15.148-tegra #1 SMP PREEMPT Tue Jan 7 17:14:38 PST 2025 aarch64 aarch64 aarch64 GNU/Linux
+git_branch=exp/08-int8-ptq
+git_commit=536fddd2ca9d94979f9206d0cc8a1b768057aec4
+python=/usr/bin/python3
+Python 3.10.12
+tensorrt=10.3.0
+torch=2.5.0a0+872d972e41.nv24.08
+opencv=4.10.0
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Wed_Aug_14_10:14:07_PDT_2024
+Cuda compilation tools, release 12.6, V12.6.68
+Build cuda_12.6.r12.6/compiler.34714021_0
+NV Power Mode: 25W
+1
+onnx_sha256=305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8
+manifest_sha256=75b0c94f49aafc133402a43793dea40a7ca76131959b04043c87e69b44bd6d1d
+calibration_images=16_SMOKE_ONLY_NOT_FORMAL
+calibration_batch=1
+int8=true
+fp16_fallback=true
+tf32=false
+workspace_mib=1024
+builder_optimization_level=3
