@@ -335,7 +335,13 @@ def main() -> int:
         ),
         encoding="utf-8",
     )
-    print(json.dumps(summary, ensure_ascii=False))
+    print(
+        "result=PASS "
+        f"engine_sha256={summary['engine']['sha256']} "
+        f"engine_bytes={summary['engine']['bytes']} "
+        f"build_seconds={build_seconds:.6f}",
+        flush=True,
+    )
     return 0
 
 

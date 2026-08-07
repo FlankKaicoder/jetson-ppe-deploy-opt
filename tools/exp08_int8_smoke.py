@@ -107,7 +107,14 @@ def main() -> int:
         ),
         encoding="utf-8",
     )
-    print(json.dumps(summary, ensure_ascii=False))
+    print(
+        f"result={summary['result']} "
+        f"output_shape={summary['output_shape']} "
+        f"finite={summary['finite']} "
+        f"onnx_detections={ort_detections.shape[0]} "
+        f"int8_detections={trt_detections.shape[0]}",
+        flush=True,
+    )
     return 0 if passed else 1
 
 
