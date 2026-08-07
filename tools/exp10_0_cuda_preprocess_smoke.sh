@@ -52,7 +52,7 @@ esac
 
 printf '%s\n' \
     "python tools/exp10_make_fixtures.py --source <image> --output-dir <fixtures>" \
-    "cmake -S cuda -B <build> -DCMAKE_BUILD_TYPE=Release" \
+    "cmake -S cuda -B <build> -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" \
     "cmake --build <build> --parallel 2" \
     "exp10_preprocess --image <hd_wide.png> --warmup 2 --iterations 5" \
     "python tools/exp10_compare_preprocess.py --cpu <cpu.bin> --cuda <cuda.bin>" \
@@ -68,7 +68,10 @@ if [ "$fixture_code" -ne 0 ]; then
     fail_early "fixture generation failed"
 fi
 
-cmake -S cuda -B "$build_dir" -DCMAKE_BUILD_TYPE=Release 2>&1 | tee -a "$run_log"
+cmake -S cuda -B "$build_dir" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+    2>&1 | tee -a "$run_log"
 configure_code=${PIPESTATUS[0]}
 printf '%s\n' "$configure_code" > "$report_dir/configure_return_code.txt"
 if [ "$configure_code" -ne 0 ]; then
