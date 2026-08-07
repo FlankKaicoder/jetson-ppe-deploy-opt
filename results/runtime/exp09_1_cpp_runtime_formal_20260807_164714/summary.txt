@@ -1,0 +1,10 @@
+result=PASS
+independent_processes=3
+output_sha256=29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d
+host_mean_ms_min=6.60620008
+host_mean_ms_max=6.638301485
+cuda_mean_ms_min=6.591960161
+cuda_mean_ms_max=6.623320646
+all_processes_pass=True
+identical_output_sha256=True
+matches_python_reference_sha256=True

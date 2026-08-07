@@ -29,7 +29,7 @@
 
 | 实验 | 内容 | 状态 |
 |---|---|---|
-| Exp09 | TensorRT C++ Runtime | IN_PROGRESS |
+| Exp09 | TensorRT C++ Runtime | PASS |
 | Exp10 | CUDA 融合预处理 | PLANNED |
 | Exp11 | 视频/摄像头端到端推理 | PLANNED |
 

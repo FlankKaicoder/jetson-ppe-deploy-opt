@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 完成 Exp09 TensorRT 10.3 C++ Runtime、CMake 构建、I/O/显存/Stream RAII 管理、
+  Python/C++ 原始输出一致性和三独立进程生命周期验证；下一阶段为 Exp10 CUDA 融合预处理。
 - 完成 Exp08 INT8 PTQ 构建、219 张 test 精度/尺度审计和同口径 GPU-only benchmark；
   性能与尺寸门槛通过，但 mAP50-95 和 tiny+small recall 门槛失败，候选 `REJECT`。
 - 运行时部署主线保留 Exp07 FP16，下一阶段更新为 Exp09 TensorRT C++ Runtime。
