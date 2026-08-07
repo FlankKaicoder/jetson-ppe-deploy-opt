@@ -71,7 +71,7 @@ esac
 {
     echo "Separate backend processes; same Jetson runtime"
     echo "AP: split=test imgsz=640 batch=1 rect=false workers=2"
-    echo "Scale: conf=0.25 NMS_IoU=0.70 match_IoU=0.50 max_visuals=0"
+    echo "Scale: serial static engine, conf=0.25 NMS_IoU=0.70 match_IoU=0.50 max_visuals=0"
     echo "Frozen gates: mAP50-95 -0.010, mAP50 -0.015, tiny+small recall -0.050"
 } > "$report_dir/command.txt"
 
@@ -105,6 +105,7 @@ run_scale() {
         --nms-iou 0.70 \
         --match-iou 0.50 \
         --max-visuals 0 \
+        --serial-static-engine \
         2>&1 | tee -a "$run_log"
     return ${PIPESTATUS[0]}
 }

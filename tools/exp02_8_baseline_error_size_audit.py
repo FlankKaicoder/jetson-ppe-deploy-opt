@@ -408,6 +408,11 @@ def main() -> int:
     parser.add_argument("--nms-iou", type=float, default=0.70)
     parser.add_argument("--match-iou", type=float, default=0.50)
     parser.add_argument("--max-visuals", type=int, default=30)
+    parser.add_argument(
+        "--serial-static-engine",
+        action="store_true",
+        help="Run one image per predict call for static batch-1 engines.",
+    )
 
     args = parser.parse_args()
 
@@ -437,6 +442,7 @@ def main() -> int:
     print(f"conf={args.conf}")
     print(f"nms_iou={args.nms_iou}")
     print(f"match_iou={args.match_iou}")
+    print(f"serial_static_engine={args.serial_static_engine}")
     print(f"output_dir={output_dir}")
 
     if not images:
@@ -464,17 +470,39 @@ def main() -> int:
     image_records: list[dict[str, Any]] = []
     detailed_records: list[dict[str, Any]] = []
 
-    results = model.predict(
-        source=[str(path) for path in images],
-        imgsz=args.imgsz,
-        batch=args.batch,
-        conf=args.conf,
-        iou=args.nms_iou,
-        device=0,
-        stream=True,
-        verbose=False,
-        save=False,
-    )
+    if args.serial_static_engine:
+        def serial_results():
+            for path in images:
+                prediction = model.predict(
+                    source=str(path),
+                    imgsz=args.imgsz,
+                    batch=1,
+                    conf=args.conf,
+                    iou=args.nms_iou,
+                    device=0,
+                    stream=False,
+                    verbose=False,
+                    save=False,
+                )
+                if len(prediction) != 1:
+                    raise RuntimeError(
+                        f"expected one serial result, got {len(prediction)}"
+                    )
+                yield prediction[0]
+
+        results = serial_results()
+    else:
+        results = model.predict(
+            source=[str(path) for path in images],
+            imgsz=args.imgsz,
+            batch=args.batch,
+            conf=args.conf,
+            iou=args.nms_iou,
+            device=0,
+            stream=True,
+            verbose=False,
+            save=False,
+        )
 
     for index, (image_path, result) in enumerate(
         zip(images, results),
@@ -777,6 +805,7 @@ def main() -> int:
         "confidence_threshold": args.conf,
         "nms_iou": args.nms_iou,
         "matching_iou": args.match_iou,
+        "serial_static_engine": args.serial_static_engine,
         "size_definition": {
             "tiny": "area_ratio < 0.0025",
             "small": "0.0025 <= area_ratio < 0.01",
