@@ -23,7 +23,7 @@
 |---|---|---|
 | Exp06 | PyTorch → ONNX 导出与一致性验证 | PASS |
 | Exp07 | Jetson TensorRT FP32 / FP16 Engine | PASS |
-| Exp08 | INT8 PTQ 与精度—性能比较 | IN_PROGRESS |
+| Exp08 | INT8 PTQ 与精度—性能比较 | REJECT |
 
 ## M2：C++ Runtime 与 CUDA 优化
 
@@ -46,7 +46,7 @@
 Exp02 YOLO11n baseline best.pt
 → Exp06 ONNX
 → Exp07 TensorRT FP32 / FP16
-→ Exp08 INT8
+→ Exp08 INT8（候选 REJECT，保留 FP16）
 → Exp09 C++ Runtime
 → Exp10 CUDA 预处理
 → Exp11 摄像头

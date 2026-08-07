@@ -378,6 +378,7 @@ Exp04 部署可重参数化结构消融
 Exp05 轻量注意力与 Focal 分类损失消融
 Exp06 PyTorch → ONNX 导出与一致性验证
 Exp07 Jetson TensorRT FP32 / FP16 Engine 构建与验证
+Exp08 INT8 PTQ 构建、精度—性能比较与候选决策
 ```
 
 当前模型决策：
@@ -412,7 +413,9 @@ tiny+small recall  = 0.79020979
 
 Exp03、Exp04、Exp05 均具有工程学习价值，但没有满足替换原始基线的综合验收条件。
 
-Exp06、Exp07 已通过各自验收；当前下一项实验为 Exp08 INT8 PTQ 与精度—性能比较。
+Exp06、Exp07 已通过各自验收。Exp08 工程链路已完成，但 INT8 因 mAP50-95 和
+tiny+small recall 超过预冻结退化门槛而 REJECT；运行时主线保留 FP16。
+当前下一项实验为 Exp09 TensorRT C++ Runtime。
 
 Codex 不得擅自重新选择模型主线。
 
@@ -1274,7 +1277,7 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. 后续 Exp08 推荐工作流；
+8. 后续 Exp09 推荐工作流；
 9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
 
 最后只输出检查结果和建议，不执行修改。
@@ -1287,7 +1290,7 @@ BLOCKED
 ```text
 当前工作环境应为 AutoDL 训练服务器。
 
-请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、Exp06、Exp07 总结，
+请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、Exp06～Exp08 总结，
 检查当前分支与 git 状态。
 
 不要修改代码，不要提交，不要推送。
@@ -1298,8 +1301,8 @@ BLOCKED
 3. baseline SHA256；
 4. 数据集 YAML；
 5. Exp06 ONNX 文件及 SHA256 是否与冻结记录一致；
-6. Exp08 校准集只能来自训练集且不得泄漏 test；
-7. Exp08 需要创建的脚本、配置、测试和结果文件。
+6. Exp08 INT8 为何被 REJECT，且不得改写为运行时主线；
+7. Exp09 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
 
 先给出执行计划和风险，不要直接开始。
 ```
@@ -1312,7 +1315,7 @@ BLOCKED
 当前工作环境应为 Jetson Orin Nano Super。
 
 请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、docs/01_environment.md、
-Exp06、Exp07 总结和当前部署相关文档。
+Exp06～Exp08 总结和当前部署相关文档。
 
 不要修改代码，不要提交，不要推送。
 
@@ -1322,8 +1325,9 @@ Exp06、Exp07 总结和当前部署相关文档。
 3. 当前仓库分支和状态；
 4. 是否已经获得经过校验的 ONNX；
 5. TensorRT Engine 是否需要在本机重新构建；
-6. FP32/FP16 参考 Engine、哈希和验证结果是否可用；
-7. 后续 INT8 PTQ 实验的最小执行计划。
+6. FP16 主线 Engine、哈希和验证结果是否可用；
+7. Exp08 INT8 REJECT 结论是否与记录一致；
+8. 后续 Exp09 TensorRT C++ Runtime 的最小执行计划。
 
 先输出检查结果，不执行构建。
 ```
@@ -1337,7 +1341,7 @@ ChatGPT
 负责实验设计、验收条件和结果解释
         ↓
 AutoDL Codex
-审计并准备 Exp08 校准数据清单、冻结输入与参考结果
+维护冻结模型、ONNX 与数据侧参考结果
         ↓
 GitHub 实验分支
 同步代码、配置和小型结果
@@ -1349,10 +1353,10 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-拉取 main，创建 Exp08 INT8 PTQ 部署分支
+拉取 main，创建 Exp09 TensorRT C++ Runtime 分支
         ↓
 Jetson
-构建 INT8 Engine，完成正确性、精度和诊断性能验证
+基于冻结 FP16 Engine 实现并验证 C++ Runtime
         ↓
 ChatGPT
 分析指标并决定下一实验

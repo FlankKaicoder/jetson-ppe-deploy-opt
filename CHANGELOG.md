@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- 完成 Exp08 INT8 PTQ 构建、219 张 test 精度/尺度审计和同口径 GPU-only benchmark；
+  性能与尺寸门槛通过，但 mAP50-95 和 tiny+small recall 门槛失败，候选 `REJECT`。
+- 运行时部署主线保留 Exp07 FP16，下一阶段更新为 Exp09 TensorRT C++ Runtime。
 - 启动 Exp08 INT8 PTQ，冻结 train-only 校准集选择规则和候选采用门槛；AutoDL
   256 张校准集分布审计通过。
 - 新增 `docs/项目全流程快速学习手册.md`，汇总 Exp00～Exp07 学习主线并预先记录 Exp08 计划。
