@@ -91,6 +91,26 @@ std::string camera_pipeline(int sensor, int width, int height, int fps) {
     return stream.str();
 }
 
+std::string gst_quote(const std::string& value) {
+    std::string escaped = "\"";
+    for (const char character : value) {
+        if (character == '\\' || character == '"') {
+            escaped.push_back('\\');
+        }
+        escaped.push_back(character);
+    }
+    escaped.push_back('"');
+    return escaped;
+}
+
+std::string file_pipeline(const std::filesystem::path& source) {
+    return "filesrc location=" + gst_quote(source.string()) +
+           " ! qtdemux ! queue ! h264parse ! nvv4l2decoder ! nvvidconv"
+           " ! video/x-raw,format=BGRx ! videoconvert"
+           " ! video/x-raw,format=BGR"
+           " ! appsink max-buffers=1 drop=false sync=false";
+}
+
 double percentile(const std::vector<double>& sorted, double quantile) {
     const double position = quantile * static_cast<double>(sorted.size() - 1);
     const auto lower = static_cast<std::size_t>(std::floor(position));
@@ -280,8 +300,8 @@ int main(int argc, char** argv) {
             if (!std::filesystem::is_regular_file(source)) {
                 throw std::runtime_error("video file does not exist: " + source.string());
             }
-            source_description = source.string();
-            capture.open(source.string(), cv::CAP_GSTREAMER);
+            source_description = file_pipeline(source);
+            capture.open(source_description, cv::CAP_GSTREAMER);
         } else {
             const int sensor = integer_arg(args, "--sensor-id", 0);
             const int width = integer_arg(args, "--width", 1920);
