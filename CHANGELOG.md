@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- 完成 Exp10 CUDA 融合预处理；5 种输入形状与 Jetson OpenCV 4.10 Reference 逐元素一致，
+  `hd_wide` kernel-only 平均耗时由 CPU 2.28212 ms 降至 0.200761 ms（下降 91.20%）。
+- 保留 Exp10 CMake CUDA 路径失败、非整数缩放误差及两次错误舍入假设的负向结果；最终按
+  OpenCV 4.10 CV_8U 专用纵向 resize 路径复现定点语义。
 - 完成 Exp09 TensorRT 10.3 C++ Runtime、CMake 构建、I/O/显存/Stream RAII 管理、
   Python/C++ 原始输出一致性和三独立进程生命周期验证；下一阶段为 Exp10 CUDA 融合预处理。
 - 完成 Exp08 INT8 PTQ 构建、219 张 test 精度/尺度审计和同口径 GPU-only benchmark；

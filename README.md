@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-07，Exp00～Exp08 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-07，Exp00～Exp10 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -14,8 +14,10 @@ INT8 Engine 构建、219 张 test 精度/尺度审计和 GPU-only benchmark；IN
 25.44%、缩小 Engine 39.82%，但 mAP50-95 下降 0.01391、tiny+small recall 下降
 0.30070，超过预冻结门槛，因此候选 `REJECT`，运行时主线继续使用 FP16。Exp09 已完成
 TensorRT 10.3 C++ Runtime、Python/C++ 原始输出一致性和三独立进程生命周期验证；三份输出
-与 Python TensorRT 参考逐字节一致。Exp10 CUDA 融合预处理已进入 OpenCV Reference、数值误差和
-CPU/kernel-only/传输总耗时口径冻结阶段，尚未产生 CUDA Kernel 结果。
+与 Python TensorRT 参考逐字节一致。Exp10 已完成 CUDA 融合 letterbox、padding、BGR→RGB、
+归一化和 NCHW 转换；5 种输入形状均与 Jetson OpenCV 4.10 Reference 逐元素一致。正式
+`hd_wide` 计时中 CPU/kernel-only/含 pageable 传输总耗时分别为 2.28212/0.200761/1.88307 ms，
+kernel-only 平均耗时下降 91.20%。下一阶段为 Exp11 视频/摄像头端到端推理。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
