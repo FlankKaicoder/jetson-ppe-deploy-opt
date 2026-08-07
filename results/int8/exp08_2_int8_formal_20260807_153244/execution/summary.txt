@@ -1,0 +1,9 @@
+result=PASS
+engine_sha256=5787fb3bae4dbd00909c1762efc9263566044bc4dc35a836c950312e85895f26
+output_shape=[1, 7, 8400]
+finite=True
+raw_max_abs_error=181.67601013183594
+raw_mean_abs_error=1.9848981446225424
+raw_relative_l2_error=0.026360952790391266
+onnx_detection_count=30
+int8_detection_count=15

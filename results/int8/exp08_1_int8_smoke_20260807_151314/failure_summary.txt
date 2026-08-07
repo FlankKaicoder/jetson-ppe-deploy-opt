@@ -1,0 +1,70 @@
+result=FAIL
+build_return_code=1
+execution_return_code=99
+report_dir=/home/nvidia/projects/jetson-ppe-deploy-opt/results/int8/exp08_1_int8_smoke_20260807_151314
+artifact_dir=/home/nvidia/models/jetson-ppe/exp08/exp08_1_int8_smoke_20260807_151314
+engine_sha256=3822ff3e1dda76de80daaaeebae34a25a223c5e26f991f660129c7b73d687def
+cache_sha256=f6f1651d36cd03927fc335b683c6065a1561430e868bd0b976fb981ac25cd375
+last_log_lines:
+[08/07/2026-15:13:20] [TRT] [I] [MemUsageChange] Init CUDA: CPU +13, GPU +0, now: CPU 123, GPU 3131 (MiB)
+[08/07/2026-15:13:23] [TRT] [I] [MemUsageChange] Init builder kernel library: CPU +928, GPU +606, now: CPU 1094, GPU 3782 (MiB)
+/home/nvidia/projects/jetson-ppe-deploy-opt/tools/exp08_build_int8.py:231: DeprecationWarning: Use Deprecated in TensorRT 10.1. Superseded by explicit quantization. instead.
+  config.int8_calibrator = calibrator
+[08/07/2026-15:13:23] [TRT] [I] Perform graph optimization on calibration graph.
+[08/07/2026-15:13:23] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[08/07/2026-15:13:30] [TRT] [I] Detected 1 inputs and 3 output network tensors.
+[08/07/2026-15:13:33] [TRT] [I] Total Host Persistent Memory: 446736
+[08/07/2026-15:13:33] [TRT] [I] Total Device Persistent Memory: 1189376
+[08/07/2026-15:13:33] [TRT] [I] Total Scratch Memory: 4608
+[08/07/2026-15:13:33] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 352 steps to complete.
+[08/07/2026-15:13:33] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 68.8085ms to assign 14 blocks to 352 nodes requiring 25711104 bytes.
+[08/07/2026-15:13:33] [TRT] [I] Total Activation Memory: 25711104
+[08/07/2026-15:13:33] [TRT] [I] Total Weights Memory: 12939780
+[08/07/2026-15:13:33] [TRT] [I] Engine generation completed in 10.0055 seconds.
+[08/07/2026-15:13:33] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +25, now: CPU 0, GPU 42 (MiB)
+[08/07/2026-15:13:33] [TRT] [I] Starting Calibration.
+calibration_batch=1 images=1/16
+[08/07/2026-15:13:34] [TRT] [I]   Calibrated batch 0 in 0.477634 seconds.
+calibration_batch=2 images=2/16
+[08/07/2026-15:13:34] [TRT] [I]   Calibrated batch 1 in 0.458885 seconds.
+calibration_batch=3 images=3/16
+[08/07/2026-15:13:35] [TRT] [I]   Calibrated batch 2 in 0.460446 seconds.
+calibration_batch=4 images=4/16
+[08/07/2026-15:13:35] [TRT] [I]   Calibrated batch 3 in 0.516059 seconds.
+calibration_batch=5 images=5/16
+[08/07/2026-15:13:36] [TRT] [I]   Calibrated batch 4 in 0.488898 seconds.
+calibration_batch=6 images=6/16
+[08/07/2026-15:13:36] [TRT] [I]   Calibrated batch 5 in 0.538379 seconds.
+calibration_batch=7 images=7/16
+[08/07/2026-15:13:37] [TRT] [I]   Calibrated batch 6 in 0.470714 seconds.
+calibration_batch=8 images=8/16
+[08/07/2026-15:13:37] [TRT] [I]   Calibrated batch 7 in 0.456513 seconds.
+calibration_batch=9 images=9/16
+[08/07/2026-15:13:38] [TRT] [I]   Calibrated batch 8 in 0.449519 seconds.
+calibration_batch=10 images=10/16
+[08/07/2026-15:13:38] [TRT] [I]   Calibrated batch 9 in 0.436261 seconds.
+calibration_batch=11 images=11/16
+[08/07/2026-15:13:39] [TRT] [I]   Calibrated batch 10 in 0.48656 seconds.
+calibration_batch=12 images=12/16
+[08/07/2026-15:13:39] [TRT] [I]   Calibrated batch 11 in 0.559629 seconds.
+calibration_batch=13 images=13/16
+[08/07/2026-15:13:40] [TRT] [I]   Calibrated batch 12 in 0.420446 seconds.
+calibration_batch=14 images=14/16
+[08/07/2026-15:13:40] [TRT] [I]   Calibrated batch 13 in 0.471784 seconds.
+calibration_batch=15 images=15/16
+[08/07/2026-15:13:41] [TRT] [I]   Calibrated batch 14 in 0.433301 seconds.
+calibration_batch=16 images=16/16
+[08/07/2026-15:13:41] [TRT] [I]   Calibrated batch 15 in 0.47271 seconds.
+[08/07/2026-15:14:46] [TRT] [I]   Post Processing Calibration data in 64.7352 seconds.
+[08/07/2026-15:14:46] [TRT] [I] Calibration completed in 82.848 seconds.
+[08/07/2026-15:14:46] [TRT] [I] Writing Calibration Cache for calibrator: TRT-100300-EntropyCalibration2
+calibration_cache_written_bytes=15647
+[08/07/2026-15:14:46] [TRT] [I] Local timing cache in use. Profiling results in this builder pass will not be stored.
+[08/07/2026-15:25:09] [TRT] [I] Detected 1 inputs and 3 output network tensors.
+[08/07/2026-15:25:55] [TRT] [I] Total Host Persistent Memory: 496016
+[08/07/2026-15:25:55] [TRT] [I] Total Device Persistent Memory: 0
+[08/07/2026-15:25:55] [TRT] [I] Total Scratch Memory: 0
+[08/07/2026-15:25:55] [TRT] [I] [BlockAssignment] Started assigning block shifts. This will take 140 steps to complete.
+[08/07/2026-15:25:55] [TRT] [I] [BlockAssignment] Algorithm ShiftNTopDown took 19.1239ms to assign 9 blocks to 140 nodes requiring 7168512 bytes.
+[08/07/2026-15:25:55] [TRT] [I] Total Activation Memory: 7168000
+[08/07/2026-15:25:55] [TRT] [I] Total Weights Memory: 2866180

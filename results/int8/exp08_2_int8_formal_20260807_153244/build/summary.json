@@ -1,0 +1,69 @@
+{
+  "experiment": "Exp08 TensorRT INT8 build",
+  "result": "PASS",
+  "versions": {
+    "python": "3.10.12",
+    "tensorrt": "10.3.0",
+    "torch": "2.5.0a0+872d972e41.nv24.08",
+    "opencv": "4.10.0",
+    "numpy": "1.23.5",
+    "cuda_device": "Orin"
+  },
+  "onnx": {
+    "path": "/home/nvidia/models/jetson-ppe/exp06/yolo11n_baseline_exp06_b1_640_opset17.onnx",
+    "sha256": "305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8",
+    "bytes": 10566605
+  },
+  "manifest": {
+    "path": "/home/nvidia/models/jetson-ppe/exp08/calibration_20260807_145356/calibration/calibration_manifest.json",
+    "sha256": "75b0c94f49aafc133402a43793dea40a7ca76131959b04043c87e69b44bd6d1d",
+    "source_split": "train",
+    "available_images": 256,
+    "used_images": 256,
+    "batch_size": 1,
+    "calibration_batches": 256
+  },
+  "builder": {
+    "int8": true,
+    "fp16_fallback": true,
+    "tf32": false,
+    "workspace_mib": 1024,
+    "optimization_level": 3,
+    "platform_has_fast_int8": true,
+    "allow_cache_read": false,
+    "build_seconds": 890.5481282800001
+  },
+  "engine": {
+    "path": "/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_b1_640_int8.engine",
+    "sha256": "5787fb3bae4dbd00909c1762efc9263566044bc4dc35a836c950312e85895f26",
+    "bytes": 5387244,
+    "io_tensors": [
+      {
+        "name": "images",
+        "mode": "TensorIOMode.INPUT",
+        "shape": [
+          1,
+          3,
+          640,
+          640
+        ],
+        "dtype": "DataType.FLOAT"
+      },
+      {
+        "name": "output0",
+        "mode": "TensorIOMode.OUTPUT",
+        "shape": [
+          1,
+          7,
+          8400
+        ],
+        "dtype": "DataType.FLOAT"
+      }
+    ]
+  },
+  "calibration_cache": {
+    "path": "/home/nvidia/models/jetson-ppe/exp08/exp08_2_int8_formal_20260807_153244/yolo11n_baseline_exp08_int8.cache",
+    "sha256": "f9196435eea6f65f1b530d93fa8bf4f048881bcc9a0485bf48676f32a9103465",
+    "bytes": 15647
+  }
+}
