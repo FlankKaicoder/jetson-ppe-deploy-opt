@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-07，Exp00～Exp10 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-07，Exp00～Exp11 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -17,7 +17,8 @@ TensorRT 10.3 C++ Runtime、Python/C++ 原始输出一致性和三独立进程�
 与 Python TensorRT 参考逐字节一致。Exp10 已完成 CUDA 融合 letterbox、padding、BGR→RGB、
 归一化和 NCHW 转换；5 种输入形状均与 Jetson OpenCV 4.10 Reference 逐元素一致。正式
 `hd_wide` 计时中 CPU/kernel-only/含 pageable 传输总耗时分别为 2.28212/0.200761/1.88307 ms，
-kernel-only 平均耗时下降 91.20%。下一阶段为 Exp11 视频/摄像头端到端推理。
+kernel-only 平均耗时下降 91.20%。Exp11 已完成文件视频三进程确定性和 IMX219
+300 帧端到端功能验收；下一阶段为 Exp12 性能、功耗、温度与稳定性测试。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
@@ -67,6 +68,12 @@ CUDA Graph、spin wait 且关闭 H2D/D2H；未锁定 `jetson_clocks`，不是端
 | Jetson PyTorch FP32 | 0.52189519 |
 | TensorRT FP32 | 0.52160406 |
 | TensorRT FP16 | 0.52192881 |
+
+Exp11 已完成文件视频与 IMX219 端到端 C++ 推理。文件视频三个独立进程均处理
+150 帧、151 个检测，检测 CSV SHA256 一致；IMX219 1920×1080@30 正式运行处理
+300/300 帧，端到端 mean/P95 为 31.832/34.190 ms，有效处理率 31.415 FPS。
+该数字是未锁频、带取帧/H2D/CUDA/TensorRT/D2H/NMS 的短时功能基线；功耗、温度、
+资源占用、丢帧和长稳态结论留给 Exp12。
 
 ## 项目主线
 
