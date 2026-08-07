@@ -9,7 +9,8 @@ CUDA 推理优化项目。
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
-测试集一致性验证和 GPU-only 诊断 benchmark。下一阶段为 Exp08：INT8 PTQ。
+测试集一致性验证和 GPU-only 诊断 benchmark。Exp08 INT8 PTQ 已进入校准数据准备阶段，
+尚未产生 INT8 Engine、精度或性能结论。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
