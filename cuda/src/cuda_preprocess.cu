@@ -93,28 +93,49 @@ TimingStats summarize(std::vector<double> values) {
     return result;
 }
 
-__device__ float interpolate_channel(
+__device__ int interpolate_channel_opencv_u8(
     const std::uint8_t* image,
     int width,
     int height,
-    float source_x,
-    float source_y,
+    double source_x,
+    double source_y,
     int channel) {
-    source_x = fminf(fmaxf(source_x, 0.0F), static_cast<float>(width - 1));
-    source_y = fminf(fmaxf(source_y, 0.0F), static_cast<float>(height - 1));
-    const int x0 = static_cast<int>(floorf(source_x));
-    const int y0 = static_cast<int>(floorf(source_y));
+    int x0 = static_cast<int>(floor(source_x));
+    int y0 = static_cast<int>(floor(source_y));
+    double wx = source_x - static_cast<double>(x0);
+    double wy = source_y - static_cast<double>(y0);
+    if (x0 < 0) {
+        x0 = 0;
+        wx = 0.0;
+    } else if (x0 >= width - 1) {
+        x0 = width - 1;
+        wx = 0.0;
+    }
+    if (y0 < 0) {
+        y0 = 0;
+        wy = 0.0;
+    } else if (y0 >= height - 1) {
+        y0 = height - 1;
+        wy = 0.0;
+    }
     const int x1 = min(x0 + 1, width - 1);
     const int y1 = min(y0 + 1, height - 1);
-    const float wx = source_x - static_cast<float>(x0);
-    const float wy = source_y - static_cast<float>(y0);
-    const float top =
-        static_cast<float>(image[(y0 * width + x0) * 3 + channel]) * (1.0F - wx) +
-        static_cast<float>(image[(y0 * width + x1) * 3 + channel]) * wx;
-    const float bottom =
-        static_cast<float>(image[(y1 * width + x0) * 3 + channel]) * (1.0F - wx) +
-        static_cast<float>(image[(y1 * width + x1) * 3 + channel]) * wx;
-    return top * (1.0F - wy) + bottom * wy;
+
+    // OpenCV's CV_8U INTER_LINEAR path quantizes both interpolation
+    // coefficient tables to 11 bits and rounds the 22-bit accumulated value.
+    constexpr int coefficient_bits = 11;
+    constexpr int coefficient_scale = 1 << coefficient_bits;
+    const int ax1 = __double2int_rn(wx * coefficient_scale);
+    const int ax0 = coefficient_scale - ax1;
+    const int ay1 = __double2int_rn(wy * coefficient_scale);
+    const int ay0 = coefficient_scale - ay1;
+    const int value =
+        static_cast<int>(image[(y0 * width + x0) * 3 + channel]) * ax0 * ay0 +
+        static_cast<int>(image[(y0 * width + x1) * 3 + channel]) * ax1 * ay0 +
+        static_cast<int>(image[(y1 * width + x0) * 3 + channel]) * ax0 * ay1 +
+        static_cast<int>(image[(y1 * width + x1) * 3 + channel]) * ax1 * ay1;
+    return (value + (1 << (coefficient_bits * 2 - 1))) >>
+        (coefficient_bits * 2);
 }
 
 __global__ void fused_preprocess_kernel(
@@ -145,26 +166,20 @@ __global__ void fused_preprocess_kernel(
 
     const int resized_x = x - padding_left;
     const int resized_y = y - padding_top;
-    const float source_x =
-        (static_cast<float>(resized_x) + 0.5F) *
-            static_cast<float>(source_width) / static_cast<float>(resized_width) -
-        0.5F;
-    const float source_y =
-        (static_cast<float>(resized_y) + 0.5F) *
-            static_cast<float>(source_height) / static_cast<float>(resized_height) -
-        0.5F;
-    const float blue = floorf(
-        interpolate_channel(
-            input, source_width, source_height, source_x, source_y, 0) +
-        0.5F);
-    const float green = floorf(
-        interpolate_channel(
-            input, source_width, source_height, source_x, source_y, 1) +
-        0.5F);
-    const float red = floorf(
-        interpolate_channel(
-            input, source_width, source_height, source_x, source_y, 2) +
-        0.5F);
+    const double source_x =
+        (static_cast<double>(resized_x) + 0.5) *
+            static_cast<double>(source_width) / static_cast<double>(resized_width) -
+        0.5;
+    const double source_y =
+        (static_cast<double>(resized_y) + 0.5) *
+            static_cast<double>(source_height) / static_cast<double>(resized_height) -
+        0.5;
+    const float blue = static_cast<float>(interpolate_channel_opencv_u8(
+        input, source_width, source_height, source_x, source_y, 0));
+    const float green = static_cast<float>(interpolate_channel_opencv_u8(
+        input, source_width, source_height, source_x, source_y, 1));
+    const float red = static_cast<float>(interpolate_channel_opencv_u8(
+        input, source_width, source_height, source_x, source_y, 2));
     output[output_index] = red / 255.0F;
     output[plane + output_index] = green / 255.0F;
     output[2 * plane + output_index] = blue / 255.0F;
