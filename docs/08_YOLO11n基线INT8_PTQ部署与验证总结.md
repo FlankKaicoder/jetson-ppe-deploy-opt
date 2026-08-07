@@ -58,7 +58,7 @@ IN_PROGRESS
 
 ## 尚待执行
 
-- [ ] AutoDL 校准集生成与分布审计；
+- [x] AutoDL 校准集生成与分布审计；
 - [ ] 校准归档传输及双端 SHA256；
 - [ ] Jetson INT8 smoke build；
 - [ ] Jetson INT8 正式 build 与校准缓存；
@@ -66,3 +66,65 @@ IN_PROGRESS
 - [ ] 219 张独立 test 精度与尺度召回；
 - [ ] 同口径 GPU-only benchmark；
 - [ ] 最终决策与学习复盘。
+
+## Exp08.0 AutoDL 校准集准备结果
+
+执行分支与提交：
+
+```text
+branch : exp/08-int8-calibration
+commit : 703bc2d
+run    : exp08_0_prepare_calibration_20260807_145356
+status : PASS
+```
+
+结果目录：
+
+```text
+/root/autodl-tmp/jetson-ppe-deploy-opt/
+results/int8/exp08_0_prepare_calibration_20260807_145356
+```
+
+大型归档目录（不进入 Git）：
+
+```text
+/root/autodl-tmp/jetson-ppe-artifacts/exp08/
+exp08_0_prepare_calibration_20260807_145356/
+construction_ppe3_train_calibration_256.tar.gz
+```
+
+| 项目 | 结果 |
+|---|---:|
+| 完整 train 图像 | 980 |
+| 校准图像 | 256 |
+| 完整 train 实例 | 3,922 |
+| 校准集实例 | 996 |
+| 背景图 | 2 |
+| 基础 seed | 42 |
+| 最终候选 seed | 639 |
+| 候选数量 | 1,024 |
+| 最大绝对分布偏差 | 0.0053134517 |
+| 代表性门槛 | 0.0200000000 |
+| 归档大小 | 32,384,828 bytes |
+
+校准集类别实例为 person=401、helmet=306、safety_vest=289；尺寸实例为
+tiny=28、small=139、medium=270、large=559，覆盖全部强制分组。归档 SHA256：
+
+```text
+a3056d1e1852bc55f10455a32e493cfcf4ebcaaad6558d1811a90b20e21bed72
+```
+
+校准 manifest SHA256：
+
+```text
+75b0c94f49aafc133402a43793dea40a7ca76131959b04043c87e69b44bd6d1d
+```
+
+### 预提交 Smoke Test 经验
+
+最初使用 16 张/16 候选进行最小诊断时，脚本语法和归档生成正常，但样本没有覆盖背景图和
+tiny 目标，因此代表性检查按预期返回 FAIL。没有放宽检查，而是使用已经预定的正式
+256 张/1,024 候选配置重新验证，最终覆盖全部分组并通过 0.02 门槛。
+
+这说明校准 smoke 不能只检查“是否能生成压缩包”，还必须检查样本是否覆盖模型将遇到的
+激活分布；过小的 smoke 校准集不进入正式 INT8 构建。
