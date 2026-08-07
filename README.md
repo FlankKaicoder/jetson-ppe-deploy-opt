@@ -12,7 +12,8 @@ Focal 分类损失均完成公平消融，但未满足替换基线的综合验�
 测试集一致性验证和 GPU-only 诊断 benchmark。Exp08 完成 train-only 校准、目标 Jetson
 INT8 Engine 构建、219 张 test 精度/尺度审计和 GPU-only benchmark；INT8 虽降低延迟
 25.44%、缩小 Engine 39.82%，但 mAP50-95 下降 0.01391、tiny+small recall 下降
-0.30070，超过预冻结门槛，因此候选 `REJECT`，运行时主线继续使用 FP16。下一实验为 Exp09。
+0.30070，超过预冻结门槛，因此候选 `REJECT`，运行时主线继续使用 FP16。Exp09 TensorRT
+C++ Runtime 已进入接口、正确性和生命周期验收条件冻结阶段，尚未产生 C++ 运行结果。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
