@@ -5,11 +5,20 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-06，Exp00～Exp07 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-07，Exp00～Exp07 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
 测试集一致性验证和 GPU-only 诊断 benchmark。下一阶段为 Exp08：INT8 PTQ。
+
+快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
+
+```text
+docs/项目全流程快速学习手册.md
+```
+
+AutoDL 和 Jetson 均允许在不用时关机；重新开机后必须先按学习手册和 `AGENTS.md`
+执行 SSH 重连、机器身份、Git、环境和输入哈希检查，再继续实验。
 
 冻结基线：
 
@@ -83,7 +92,8 @@ Windows 上的保存或静态检查不能替代 AutoDL/Jetson 上的真实实验
 - Smoke Test、正式结果、异常和最终决策；
 - 小型日志摘要、JSON/CSV、产物大小与 SHA256。
 
-详细协作规范见 `AGENTS.md`，实验状态见 `docs/experiment_index.md`。
+详细协作规范见 `AGENTS.md`，实验状态见 `docs/experiment_index.md`，项目学习主线见
+`docs/项目全流程快速学习手册.md`。
 
 ## 仓库内容边界
 
