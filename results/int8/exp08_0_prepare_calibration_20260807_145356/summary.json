@@ -1,0 +1,159 @@
+{
+  "experiment": "Exp08.0 train-only INT8 calibration set preparation",
+  "result": "PASS",
+  "dataset_root": "/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104",
+  "source_split": "train",
+  "dataset_image_count": 980,
+  "sample_count": 256,
+  "base_seed": 42,
+  "selected_seed": 639,
+  "candidate_count": 1024,
+  "max_proportion_delta_threshold": 0.02,
+  "full_distribution": {
+    "image_count": 980,
+    "background_image_count": 6,
+    "background_image_fraction": 0.006122448979591836,
+    "instance_count": 3922,
+    "class_counts": {
+      "safety_vest": 1142,
+      "person": 1566,
+      "helmet": 1214
+    },
+    "class_proportions": {
+      "person": 0.39928607853136155,
+      "helmet": 0.309535951045385,
+      "safety_vest": 0.29117797042325344
+    },
+    "size_counts": {
+      "medium": 1067,
+      "large": 2188,
+      "small": 539,
+      "tiny": 128
+    },
+    "size_proportions": {
+      "tiny": 0.03263640999490056,
+      "small": 0.13742988271290157,
+      "medium": 0.2720550739418664,
+      "large": 0.5578786333503315
+    },
+    "class_size_counts": {
+      "safety_vest/medium": 305,
+      "person/large": 1381,
+      "helmet/small": 416,
+      "safety_vest/large": 725,
+      "helmet/medium": 598,
+      "safety_vest/small": 103,
+      "person/medium": 164,
+      "helmet/tiny": 118,
+      "person/small": 20,
+      "helmet/large": 82,
+      "person/tiny": 1,
+      "safety_vest/tiny": 9
+    },
+    "class_size_proportions": {
+      "person/tiny": 0.00025497195308516065,
+      "person/small": 0.005099439061703213,
+      "person/medium": 0.041815400305966345,
+      "person/large": 0.35211626721060685,
+      "helmet/tiny": 0.030086690464048955,
+      "helmet/small": 0.10606833248342683,
+      "helmet/medium": 0.15247322794492607,
+      "helmet/large": 0.020907700152983173,
+      "safety_vest/tiny": 0.0022947475777664456,
+      "safety_vest/small": 0.026262111167771544,
+      "safety_vest/medium": 0.07776644569097399,
+      "safety_vest/large": 0.18485466598674147
+    }
+  },
+  "selected_distribution": {
+    "image_count": 256,
+    "background_image_count": 2,
+    "background_image_fraction": 0.0078125,
+    "instance_count": 996,
+    "class_counts": {
+      "person": 401,
+      "safety_vest": 289,
+      "helmet": 306
+    },
+    "class_proportions": {
+      "person": 0.4026104417670683,
+      "helmet": 0.3072289156626506,
+      "safety_vest": 0.2901606425702811
+    },
+    "size_counts": {
+      "large": 559,
+      "small": 139,
+      "medium": 270,
+      "tiny": 28
+    },
+    "size_proportions": {
+      "tiny": 0.028112449799196786,
+      "small": 0.1395582329317269,
+      "medium": 0.2710843373493976,
+      "large": 0.5612449799196787
+    },
+    "class_size_counts": {
+      "person/large": 356,
+      "safety_vest/large": 184,
+      "helmet/small": 107,
+      "helmet/medium": 153,
+      "safety_vest/medium": 79,
+      "person/medium": 38,
+      "helmet/tiny": 27,
+      "safety_vest/small": 25,
+      "person/small": 7,
+      "helmet/large": 19,
+      "safety_vest/tiny": 1
+    },
+    "class_size_proportions": {
+      "person/tiny": 0.0,
+      "person/small": 0.007028112449799197,
+      "person/medium": 0.03815261044176707,
+      "person/large": 0.357429718875502,
+      "helmet/tiny": 0.02710843373493976,
+      "helmet/small": 0.10742971887550201,
+      "helmet/medium": 0.1536144578313253,
+      "helmet/large": 0.019076305220883535,
+      "safety_vest/tiny": 0.001004016064257028,
+      "safety_vest/small": 0.025100401606425703,
+      "safety_vest/medium": 0.07931726907630522,
+      "safety_vest/large": 0.18473895582329317
+    }
+  },
+  "distribution_deltas": {
+    "class_proportions": {
+      "person": 0.0033243632357067288,
+      "helmet": -0.0023070353827344126,
+      "safety_vest": -0.0010173278529723162
+    },
+    "size_proportions": {
+      "tiny": -0.004523960195703777,
+      "small": 0.00212835021882532,
+      "medium": -0.0009707365924688238,
+      "large": 0.0033663465693472006
+    },
+    "class_size_proportions": {
+      "person/tiny": -0.00025497195308516065,
+      "person/small": 0.0019286733880959838,
+      "person/medium": -0.0036627898641992743,
+      "person/large": 0.0053134516648951635,
+      "helmet/tiny": -0.002978256729109195,
+      "helmet/small": 0.001361386392075184,
+      "helmet/medium": 0.0011412298863992254,
+      "helmet/large": -0.0018313949320996371,
+      "safety_vest/tiny": -0.0012907315135094175,
+      "safety_vest/small": -0.0011617095613458417,
+      "safety_vest/medium": 0.001550823385331232,
+      "safety_vest/large": -0.00011571016344830154
+    },
+    "background_image_fraction": 0.0016900510204081636,
+    "max_abs_proportion_delta": 0.0053134516648951635,
+    "sum_abs_proportion_delta": 0.04191930050176036
+  },
+  "manifest": "/root/autodl-tmp/jetson-ppe-deploy-opt/results/int8/exp08_0_prepare_calibration_20260807_145356/calibration_manifest.json",
+  "manifest_sha256": "75b0c94f49aafc133402a43793dea40a7ca76131959b04043c87e69b44bd6d1d",
+  "archive": "/root/autodl-tmp/jetson-ppe-artifacts/exp08/exp08_0_prepare_calibration_20260807_145356/construction_ppe3_train_calibration_256.tar.gz",
+  "archive_bytes": 32384828,
+  "archive_sha256": "a3056d1e1852bc55f10455a32e493cfcf4ebcaaad6558d1811a90b20e21bed72",
+  "test_split_used": false
+}

@@ -1,0 +1,19 @@
+experiment=Exp08.0 train-only INT8 calibration preparation
+timestamp=20260807_145356
+hostname=autodl-container-st7df777ls-67bd2e51
+whoami=root
+uname=Linux autodl-container-st7df777ls-67bd2e51 5.15.0-78-generic #85-Ubuntu SMP Fri Jul 7 15:25:09 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+repo_dir=/root/autodl-tmp/jetson-ppe-deploy-opt
+git_branch=exp/08-int8-calibration
+git_commit=b71f5f92420e7e2a2f5c7a5bb8543cd911de74eb
+python=/root/autodl-tmp/jetson-ppe-deploy-opt/.venv-autodl/bin/python
+Python 3.12.3
+dataset_root=/root/autodl-tmp/datasets/derived/construction_ppe3_final_split_v1_20260804_175104
+source_split=train
+train_image_count=980
+train_label_count=980
+sample_count=256
+seed=42
+candidate_count=1024
+max_proportion_delta=0.02
+test_split_used=false
