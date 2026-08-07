@@ -3,10 +3,11 @@
 ## 当前状态
 
 ```text
-IN_PROGRESS
+PASS
 ```
 
-本文档先冻结实验边界与验收条件。尚未执行的结果不得表述为完成。
+Exp09 已完成 CMake/G++ 编译、TensorRT 10.3 C++ Runtime、Python/C++ 一致性、三独立
+进程生命周期和诊断计时验证。图像预处理与后处理仍不属于本实验。
 
 ## 实验目标
 
@@ -112,12 +113,90 @@ tools/exp09_1_cpp_runtime_formal.sh
 
 Smoke Test 失败时保留目录、命令、返回码和失败摘要，不进入正式运行。
 
-## 尚待执行
+## 执行清单
 
-- [ ] Windows 规划审查并合并；
-- [ ] Jetson 创建 `exp/09-trt-cpp-runtime`；
-- [ ] C++ Runtime 与参考/比较工具实现；
-- [ ] CMake configure/build；
-- [ ] Smoke Test；
-- [ ] 正式正确性、三进程生命周期与诊断计时；
-- [ ] 文档、学习复盘与三端 Git 收口。
+- [x] Windows 规划审查并合并；
+- [x] Jetson 创建 `exp/09-trt-cpp-runtime`；
+- [x] C++ Runtime 与参考/比较工具实现；
+- [x] CMake configure/build；
+- [x] Smoke Test；
+- [x] 正式正确性、三进程生命周期与诊断计时；
+- [x] 文档与学习复盘。
+
+## 实现结果
+
+核心实现：
+
+- `runtime/src/trt_runtime.cpp`：Engine 反序列化、I/O 元数据、Device Buffer、CUDA Stream/Event、
+  `setTensorAddress`、`enqueueV3` 和异常传播；
+- `runtime/src/exp09_infer.cpp`：严格的 binary 输入大小检查、重复执行、有限值检查、原始输出写盘；
+- `tools/exp09_prepare_reference.py`：复用 Exp07 letterbox，生成固定输入与 Python TensorRT 参考；
+- `tools/exp09_compare_outputs.py`：raw tensor 与统一 Python NMS 检查；
+- `tools/exp09_0_cpp_runtime_smoke.sh` / `exp09_1_cpp_runtime_formal.sh`：非覆盖运行与返回码收集。
+
+Runtime 仅接受 FP32 I/O tensor，要求恰好一个输入和一个输出，并强制静态维度
+`images=[1,3,640,640]`、`output0=[1,7,8400]`。Engine 内部仍是 FP16 优化，FP32 是 Engine
+外部 I/O 类型，两者不能混淆。
+
+## Smoke Test
+
+正式 smoke 目录：
+
+```text
+results/runtime/exp09_0_cpp_runtime_smoke_20260807_164202
+```
+
+结果：CMake configure、build、参考生成、C++ 执行和比较器返回码全部为 0；warmup=2、
+iterations=5。输入 binary 为 4,915,200 bytes，SHA256：
+
+```text
+963a674701c7bc3bcf26b121646fd7754e1e87d7db5f14eb8d24fe07984fe90f
+```
+
+Python/C++ 输出均为 235,200 bytes，SHA256 完全相同：
+
+```text
+29ae405ef3ca01c826e01982d3469848eaa17d5325d89d2380732a127bd62c5d
+```
+
+raw max/mean/relative-L2 均为 0；NMS 后 30 个检测，类别、框和置信度误差均为 0。
+5 次小样本的 host mean 为 10.3266 ms，因样本数过少且包含 pageable H2D/D2H，仅用于放行正式测试。
+
+## 正式三进程验证
+
+正式目录：
+
+```text
+results/runtime/exp09_1_cpp_runtime_formal_20260807_164714
+```
+
+配置：3 个独立进程；每个 warmup=20、iterations=200；每次重新创建并销毁 Runtime、Engine、
+Context、Stream、Event 与 Device Buffer。全部进程返回 0，输出 SHA256 相同且与 Python 参考一致。
+
+| 进程 | host mean | host P50 | host P95 | host P99 | CUDA total mean |
+|---|---:|---:|---:|---:|---:|
+| 1 | 6.606200 ms | 6.612337 ms | 8.364161 ms | 9.915610 ms | 6.591960 ms |
+| 2 | 6.618855 ms | 6.609452 ms | 8.759622 ms | 10.619855 ms | 6.603031 ms |
+| 3 | 6.638301 ms | 6.665779 ms | 8.824101 ms | 9.969482 ms | 6.623321 ms |
+
+三个进程的 host mean 范围为 6.606200～6.638301 ms。计时包含 pageable host memory 的
+H2D、`enqueueV3`、D2H 和同步；Exp07 的 3.479713 ms 关闭 H2D/D2H 且只统计 GPU compute，
+因此两者不能直接用来声称 C++ 变慢或变快。
+
+## 验收结论
+
+| 验收项 | 结果 |
+|---|---|
+| CMake/G++ 编译 | PASS，无编译警告 |
+| Engine/I/O/形状/类型检查 | PASS |
+| 输出 `[1,7,8400]` 与有限值 | PASS |
+| raw tensor 全部误差门槛 | PASS，实际为 0 |
+| NMS 后检测数、类别、框、置信度 | PASS，实际误差为 0 |
+| 三独立进程与输出 SHA256 | PASS |
+| 诊断分位数记录 | PASS |
+
+Exp09 状态为 `PASS`。已证实 C++ Runtime 能正确、可重复地执行冻结 FP16 Engine；尚未证实
+图像预处理、C++ NMS、摄像头端到端、功耗温度和长时间稳定性。
+
+下一步进入 Exp10：用 CPU OpenCV/Exp07 Python 预处理作为 Reference，实现并验证 CUDA 融合
+letterbox、padding、BGR→RGB、归一化和 HWC→CHW，输出直接供本 Runtime 使用。
