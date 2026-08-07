@@ -1,0 +1,5 @@
+result=PASS
+python_return_code=0
+report_dir=/root/autodl-tmp/jetson-ppe-deploy-opt/results/int8/exp08_0_prepare_calibration_20260807_145356
+artifact_dir=/root/autodl-tmp/jetson-ppe-artifacts/exp08/exp08_0_prepare_calibration_20260807_145356
+archive_sha256=a3056d1e1852bc55f10455a32e493cfcf4ebcaaad6558d1811a90b20e21bed72
