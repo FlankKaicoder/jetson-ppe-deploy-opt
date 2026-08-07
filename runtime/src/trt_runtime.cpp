@@ -258,6 +258,10 @@ public:
             throw std::runtime_error("invalid iteration counts");
         }
         std::vector<float> output(output_.elements);
+        if (!context_->setTensorAddress(input_.name.c_str(), device_input_->data()) ||
+            !context_->setTensorAddress(output_.name.c_str(), device_output_->data())) {
+            throw std::runtime_error("setTensorAddress for host inference failed");
+        }
         const auto execute_once = [&]() {
             check_cuda(
                 cudaMemcpyAsync(
@@ -322,6 +326,53 @@ public:
         return {std::move(output), summarize(host_values), summarize(cuda_values)};
     }
 
+    DeviceInferenceResult infer_device(
+        const float* device_input,
+        cudaStream_t stream) {
+        if (device_input == nullptr || stream == nullptr) {
+            throw std::runtime_error("invalid external device input or CUDA stream");
+        }
+        std::vector<float> output(output_.elements);
+        if (!context_->setTensorAddress(
+                input_.name.c_str(), const_cast<float*>(device_input)) ||
+            !context_->setTensorAddress(
+                output_.name.c_str(), device_output_->data())) {
+            throw std::runtime_error("setTensorAddress for device inference failed");
+        }
+        CudaEvent start_event;
+        CudaEvent end_event;
+        const auto host_start = std::chrono::steady_clock::now();
+        check_cuda(
+            cudaEventRecord(start_event.get(), stream),
+            "device inference start event");
+        if (!context_->enqueueV3(stream)) {
+            throw std::runtime_error("enqueueV3 with external device input returned false");
+        }
+        check_cuda(
+            cudaMemcpyAsync(
+                output.data(), device_output_->data(), output_.bytes,
+                cudaMemcpyDeviceToHost, stream),
+            "device inference cudaMemcpyAsync D2H");
+        check_cuda(
+            cudaEventRecord(end_event.get(), stream),
+            "device inference end event");
+        check_cuda(
+            cudaEventSynchronize(end_event.get()),
+            "device inference event synchronize");
+        const auto host_end = std::chrono::steady_clock::now();
+        float cuda_ms = 0.0F;
+        check_cuda(
+            cudaEventElapsedTime(
+                &cuda_ms, start_event.get(), end_event.get()),
+            "device inference elapsed time");
+        check_cuda(cudaGetLastError(), "CUDA post-device-inference status");
+        return {
+            std::move(output),
+            std::chrono::duration<double, std::milli>(
+                host_end - host_start).count(),
+            static_cast<double>(cuda_ms)};
+    }
+
     TrtLogger logger_;
     std::unique_ptr<nvinfer1::IRuntime> runtime_;
     std::unique_ptr<nvinfer1::ICudaEngine> engine_;
@@ -345,6 +396,11 @@ InferenceResult TrtRuntime::infer(
     int warmup_iterations,
     int timed_iterations) {
     return impl_->infer(input, warmup_iterations, timed_iterations);
+}
+DeviceInferenceResult TrtRuntime::infer_device(
+    const float* device_input,
+    cudaStream_t stream) {
+    return impl_->infer_device(device_input, stream);
 }
 
 }  // namespace ppe

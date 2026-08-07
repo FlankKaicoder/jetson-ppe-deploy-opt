@@ -44,9 +44,9 @@ double percentile(const std::vector<double>& sorted, double quantile) {
     return sorted[lower] * (1.0 - fraction) + sorted[upper] * fraction;
 }
 
-ppe::TimingStats summarize(std::vector<double> values) {
+ppe::PreprocessTimingStats summarize(std::vector<double> values) {
     std::sort(values.begin(), values.end());
-    ppe::TimingStats result;
+    ppe::PreprocessTimingStats result;
     result.mean_ms =
         std::accumulate(values.begin(), values.end(), 0.0) /
         static_cast<double>(values.size());
@@ -110,7 +110,7 @@ void write_floats(const std::string& path, const std::vector<float>& values) {
 void write_stats(
     std::ostream& stream,
     const std::string& prefix,
-    const ppe::TimingStats& stats) {
+    const ppe::PreprocessTimingStats& stats) {
     stream << prefix << "_mean_ms=" << stats.mean_ms << '\n'
            << prefix << "_p50_ms=" << stats.p50_ms << '\n'
            << prefix << "_p95_ms=" << stats.p95_ms << '\n'

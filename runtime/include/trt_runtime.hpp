@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cuda_runtime_api.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -31,6 +32,12 @@ struct InferenceResult {
     TimingStats cuda_total;
 };
 
+struct DeviceInferenceResult {
+    std::vector<float> output;
+    double host_total_ms{};
+    double cuda_total_ms{};
+};
+
 class TrtRuntime {
 public:
     explicit TrtRuntime(const std::string& engine_path);
@@ -47,6 +54,9 @@ public:
         const std::vector<float>& input,
         int warmup_iterations,
         int timed_iterations);
+    DeviceInferenceResult infer_device(
+        const float* device_input,
+        cudaStream_t stream);
 
 private:
     class Impl;

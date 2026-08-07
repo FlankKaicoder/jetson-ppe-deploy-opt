@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <cuda_runtime_api.h>
+#include <memory>
 #include <vector>
 
 namespace ppe {
@@ -18,7 +20,7 @@ struct LetterboxGeometry {
     float ratio{};
 };
 
-struct TimingStats {
+struct PreprocessTimingStats {
     double mean_ms{};
     double p50_ms{};
     double p95_ms{};
@@ -29,8 +31,33 @@ struct TimingStats {
 
 struct CudaPreprocessResult {
     std::vector<float> output;
-    TimingStats kernel_only;
-    TimingStats total_with_transfers;
+    PreprocessTimingStats kernel_only;
+    PreprocessTimingStats total_with_transfers;
+};
+
+struct DevicePreprocessResult {
+    const float* device_output{};
+    double host_total_ms{};
+    double cuda_total_ms{};
+};
+
+class CudaPreprocessor {
+public:
+    explicit CudaPreprocessor(const LetterboxGeometry& geometry);
+    ~CudaPreprocessor();
+
+    CudaPreprocessor(const CudaPreprocessor&) = delete;
+    CudaPreprocessor& operator=(const CudaPreprocessor&) = delete;
+    CudaPreprocessor(CudaPreprocessor&&) noexcept;
+    CudaPreprocessor& operator=(CudaPreprocessor&&) noexcept;
+
+    const LetterboxGeometry& geometry() const;
+    cudaStream_t stream() const;
+    DevicePreprocessResult process(const std::uint8_t* host_bgr);
+
+private:
+    class Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 LetterboxGeometry make_letterbox_geometry(
