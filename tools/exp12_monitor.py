@@ -7,6 +7,7 @@ import signal
 import subprocess
 import sys
 import time
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -153,6 +154,7 @@ def main() -> int:
         app_return_code = application.wait(timeout=15)
     except Exception as error:  # preserve the concrete monitor failure in JSON
         monitor_error = f"{type(error).__name__}: {error}"
+        monitor_traceback = traceback.format_exc()
         if application is not None:
             stop_process(application)
             app_return_code = application.returncode
@@ -177,6 +179,7 @@ def main() -> int:
         "temperature_stop_c": args.temperature_stop_c,
         "max_observed_temperature_c": max_observed_temperature,
         "monitor_error": monitor_error,
+        "monitor_traceback": locals().get("monitor_traceback"),
     }
     monitor_summary_path.write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
