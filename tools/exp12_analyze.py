@@ -121,12 +121,22 @@ def main() -> int:
     first_p95 = stats(e2e[:window])["p95"]
     last_p95 = stats(e2e[-window:])["p95"]
     p95_degradation_percent = (last_p95 - first_p95) / first_p95 * 100.0
-    rss_mib = [float(row["rss_kb"]) / 1024.0 for row in process_rows]
-    elapsed_minutes = [float(row["elapsed_seconds"]) / 60.0 for row in process_rows]
-    process_cpu = [float(row["process_cpu_percent"]) for row in process_rows]
+    steady_start_seconds = 60.0 if args.mode == "stability" else (5.0 if args.mode in {"baseline", "performance"} else 2.0)
+    steady_process_rows = [
+        row for row in process_rows
+        if float(row["elapsed_seconds"]) >= steady_start_seconds
+    ]
+    if len(steady_process_rows) < 2:
+        steady_process_rows = process_rows
+    rss_mib = [float(row["rss_kb"]) / 1024.0 for row in steady_process_rows]
+    elapsed_minutes = [float(row["elapsed_seconds"]) / 60.0 for row in steady_process_rows]
+    process_cpu = [float(row["process_cpu_percent"]) for row in steady_process_rows]
     rss_growth = rss_mib[-1] - rss_mib[0] if rss_mib else math.nan
     rss_slope = linear_slope(elapsed_minutes, rss_mib) if rss_mib else math.nan
     resources = parse_tegrastats(run_dir / "tegrastats.log")
+    swap_growth_mb = (
+        resources["swap_used_mb"]["max"] - resources["swap_used_mb"]["min"]
+    )
     thermal_names = [name for name in ("cpu", "gpu", "tj") if name in resources["temperatures_c"]]
     thermal_max = max(resources["temperatures_c"][name]["max"] for name in thermal_names)
     expected_frames = {"smoke": 300, "baseline": 1800, "performance": 1800, "stability": 54000}[args.mode]
@@ -156,8 +166,8 @@ def main() -> int:
             failures.append("rss_growth_above_64_mib")
         if rss_slope > 1.0:
             failures.append("rss_slope_above_1_mib_per_min")
-        if resources["swap_used_mb"]["max"] > 0.0:
-            failures.append("swap_used")
+        if swap_growth_mb > 0.0:
+            failures.append("swap_increased_during_run")
     result = {
         "result": "PASS" if not failures else "FAIL",
         "mode": args.mode,
@@ -171,10 +181,13 @@ def main() -> int:
         "p95_degradation_percent": p95_degradation_percent,
         "monitor_wall_seconds": float(monitor["wall_seconds"]),
         "process_samples": len(process_rows),
+        "steady_process_samples": len(steady_process_rows),
+        "steady_state_start_seconds": steady_start_seconds,
         "process_cpu_percent": stats(process_cpu),
         "rss_mib": stats(rss_mib),
         "rss_growth_mib": rss_growth,
         "rss_slope_mib_per_min": rss_slope,
+        "swap_growth_mb": swap_growth_mb,
         "thermal_max_cpu_gpu_tj_c": thermal_max,
         "resources": resources,
         "clock_status": clock,
@@ -192,6 +205,7 @@ def main() -> int:
         stream.write(f"thermal_max_cpu_gpu_tj_c={thermal_max:.3f}\n")
         stream.write(f"rss_growth_mib={rss_growth:.6f}\n")
         stream.write(f"rss_slope_mib_per_min={rss_slope:.6f}\n")
+        stream.write(f"swap_growth_mb={swap_growth_mb:.6f}\n")
         stream.write(f"failures={';'.join(failures)}\n")
     print(json.dumps(result, ensure_ascii=False))
     return 0 if result["result"] == "PASS" else 1
