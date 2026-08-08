@@ -18,7 +18,7 @@ TensorRT 10.3 C++ Runtime、Python/C++ 原始输出一致性和三独立进程�
 归一化和 NCHW 转换；5 种输入形状均与 Jetson OpenCV 4.10 Reference 逐元素一致。正式
 `hd_wide` 计时中 CPU/kernel-only/含 pageable 传输总耗时分别为 2.28212/0.200761/1.88307 ms，
 kernel-only 平均耗时下降 91.20%。Exp11 已完成文件视频三进程确定性和 IMX219
-300 帧端到端功能验收；下一阶段为 Exp12 性能、功耗、温度与稳定性测试。
+300 帧端到端功能验收；Exp12 性能、功耗、温度与稳定性测试现为 `IN_PROGRESS`。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
