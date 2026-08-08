@@ -34,7 +34,7 @@ def read_max_temperature_c() -> float:
     for zone in Path("/sys/class/thermal").glob("thermal_zone*"):
         try:
             temperatures.append(int((zone / "temp").read_text().strip()) / 1000.0)
-        except (OSError, ValueError):
+        except (OSError, TypeError, ValueError):
             continue
     return max(temperatures) if temperatures else float("nan")
 
@@ -177,7 +177,11 @@ def main() -> int:
         "application_return_code": app_return_code,
         "safety_stop": safety_stop,
         "temperature_stop_c": args.temperature_stop_c,
-        "max_observed_temperature_c": max_observed_temperature,
+        "max_observed_temperature_c": (
+            max_observed_temperature
+            if max_observed_temperature == max_observed_temperature
+            else None
+        ),
         "monitor_error": monitor_error,
         "monitor_traceback": locals().get("monitor_traceback"),
     }
