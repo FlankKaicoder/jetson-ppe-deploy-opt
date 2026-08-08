@@ -1,4 +1,5 @@
 #include "cuda_preprocess.hpp"
+#include "ppe_nvtx.hpp"
 
 #include <cuda_runtime_api.h>
 
@@ -270,17 +271,26 @@ public:
             cudaEventRecord(start.get(), stream_.get()),
             "device preprocess start event");
         check_cuda(
-            cudaMemcpyAsync(
-                input_.data(), host_bgr, input_bytes,
-                cudaMemcpyHostToDevice, stream_.get()),
+            [&]() {
+                PPE_NVTX_RANGE("h2d");
+                return cudaMemcpyAsync(
+                    input_.data(), host_bgr, input_bytes,
+                    cudaMemcpyHostToDevice, stream_.get());
+            }(),
             "device preprocess cudaMemcpyAsync H2D");
-        launch(input_, output_, geometry_, stream_.get());
+        {
+            PPE_NVTX_RANGE("preprocess_kernel");
+            launch(input_, output_, geometry_, stream_.get());
+        }
         check_cuda(
             cudaEventRecord(end.get(), stream_.get()),
             "device preprocess end event");
-        check_cuda(
-            cudaEventSynchronize(end.get()),
-            "device preprocess event synchronize");
+        {
+            PPE_NVTX_RANGE("preprocess_sync");
+            check_cuda(
+                cudaEventSynchronize(end.get()),
+                "device preprocess event synchronize");
+        }
         const auto host_end = std::chrono::steady_clock::now();
         return {
             static_cast<const float*>(output_.data()),

@@ -1,4 +1,5 @@
 #include "cuda_preprocess.hpp"
+#include "ppe_nvtx.hpp"
 #include "trt_runtime.hpp"
 
 #include <opencv2/imgcodecs.hpp>
@@ -160,69 +161,75 @@ std::vector<Detection> decode_detections(
     }
     std::vector<Detection> decoded;
     decoded.reserve(256);
-    for (int index = 0; index < candidates; ++index) {
-        int class_id = 0;
-        float confidence = output[4 * candidates + index];
-        for (int category = 1; category < classes; ++category) {
-            const float value = output[(4 + category) * candidates + index];
-            if (value > confidence) {
-                confidence = value;
-                class_id = category;
+    {
+        PPE_NVTX_RANGE("decode");
+        for (int index = 0; index < candidates; ++index) {
+            int class_id = 0;
+            float confidence = output[4 * candidates + index];
+            for (int category = 1; category < classes; ++category) {
+                const float value = output[(4 + category) * candidates + index];
+                if (value > confidence) {
+                    confidence = value;
+                    class_id = category;
+                }
             }
-        }
-        if (!std::isfinite(confidence) || confidence < confidence_threshold) {
-            continue;
-        }
-        const float center_x = output[index];
-        const float center_y = output[candidates + index];
-        const float width = output[2 * candidates + index];
-        const float height = output[3 * candidates + index];
-        if (!std::isfinite(center_x) || !std::isfinite(center_y) ||
-            !std::isfinite(width) || !std::isfinite(height) ||
-            width <= 0.0F || height <= 0.0F) {
-            continue;
-        }
-        Detection detection;
-        detection.class_id = class_id;
-        detection.candidate_index = index;
-        detection.confidence = confidence;
-        detection.x1 = std::clamp(
-            (center_x - width * 0.5F - geometry.padding_left) / geometry.ratio,
-            0.0F, static_cast<float>(geometry.source_width));
-        detection.y1 = std::clamp(
-            (center_y - height * 0.5F - geometry.padding_top) / geometry.ratio,
-            0.0F, static_cast<float>(geometry.source_height));
-        detection.x2 = std::clamp(
-            (center_x + width * 0.5F - geometry.padding_left) / geometry.ratio,
-            0.0F, static_cast<float>(geometry.source_width));
-        detection.y2 = std::clamp(
-            (center_y + height * 0.5F - geometry.padding_top) / geometry.ratio,
-            0.0F, static_cast<float>(geometry.source_height));
-        if (detection.x2 > detection.x1 && detection.y2 > detection.y1) {
-            decoded.push_back(detection);
+            if (!std::isfinite(confidence) || confidence < confidence_threshold) {
+                continue;
+            }
+            const float center_x = output[index];
+            const float center_y = output[candidates + index];
+            const float width = output[2 * candidates + index];
+            const float height = output[3 * candidates + index];
+            if (!std::isfinite(center_x) || !std::isfinite(center_y) ||
+                !std::isfinite(width) || !std::isfinite(height) ||
+                width <= 0.0F || height <= 0.0F) {
+                continue;
+            }
+            Detection detection;
+            detection.class_id = class_id;
+            detection.candidate_index = index;
+            detection.confidence = confidence;
+            detection.x1 = std::clamp(
+                (center_x - width * 0.5F - geometry.padding_left) / geometry.ratio,
+                0.0F, static_cast<float>(geometry.source_width));
+            detection.y1 = std::clamp(
+                (center_y - height * 0.5F - geometry.padding_top) / geometry.ratio,
+                0.0F, static_cast<float>(geometry.source_height));
+            detection.x2 = std::clamp(
+                (center_x + width * 0.5F - geometry.padding_left) / geometry.ratio,
+                0.0F, static_cast<float>(geometry.source_width));
+            detection.y2 = std::clamp(
+                (center_y + height * 0.5F - geometry.padding_top) / geometry.ratio,
+                0.0F, static_cast<float>(geometry.source_height));
+            if (detection.x2 > detection.x1 && detection.y2 > detection.y1) {
+                decoded.push_back(detection);
+            }
         }
     }
-    std::sort(
-        decoded.begin(), decoded.end(),
-        [](const Detection& left, const Detection& right) {
-            if (left.confidence != right.confidence) {
-                return left.confidence > right.confidence;
-            }
-            return left.candidate_index < right.candidate_index;
-        });
     std::vector<Detection> kept;
-    kept.reserve(decoded.size());
-    for (const auto& candidate : decoded) {
-        bool suppressed = false;
-        for (const auto& accepted : kept) {
-            if (candidate.class_id == accepted.class_id &&
-                intersection_over_union(candidate, accepted) > nms_threshold) {
-                suppressed = true;
-                break;
+    {
+        PPE_NVTX_RANGE("nms");
+        std::sort(
+            decoded.begin(), decoded.end(),
+            [](const Detection& left, const Detection& right) {
+                if (left.confidence != right.confidence) {
+                    return left.confidence > right.confidence;
+                }
+                return left.candidate_index < right.candidate_index;
+            });
+        kept.reserve(decoded.size());
+        for (const auto& candidate : decoded) {
+            bool suppressed = false;
+            for (const auto& accepted : kept) {
+                if (candidate.class_id == accepted.class_id &&
+                    intersection_over_union(candidate, accepted) > nms_threshold) {
+                    suppressed = true;
+                    break;
+                }
             }
-        }
-        if (!suppressed) {
-            kept.push_back(candidate);
+            if (!suppressed) {
+                kept.push_back(candidate);
+            }
         }
     }
     return kept;
@@ -316,8 +323,11 @@ int main(int argc, char** argv) {
 
         cv::Mat frame;
         const auto first_capture_start = std::chrono::steady_clock::now();
-        if (!capture.read(frame) || frame.empty()) {
-            throw std::runtime_error("failed to acquire first frame");
+        {
+            PPE_NVTX_RANGE("capture");
+            if (!capture.read(frame) || frame.empty()) {
+                throw std::runtime_error("failed to acquire first frame");
+            }
         }
         const auto first_capture_end = std::chrono::steady_clock::now();
         if (frame.type() != CV_8UC3) {
@@ -368,6 +378,7 @@ int main(int argc, char** argv) {
         cv::Mat last_annotated;
 
         while (true) {
+            PPE_NVTX_RANGE("frame_total");
             const auto frame_start = std::chrono::steady_clock::now();
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
             const auto inferred = runtime.infer_device(
@@ -389,45 +400,53 @@ int main(int argc, char** argv) {
                 std::chrono::duration<double, std::milli>(
                     frame_end - frame_start).count();
 
-            for (std::size_t index = 0; index < detections.size(); ++index) {
-                const auto& detection = detections[index];
-                if (detection.class_id < 0 || detection.class_id >= 3 ||
-                    detection.confidence < confidence ||
-                    detection.confidence > 1.0F ||
-                    detection.x1 < 0.0F || detection.y1 < 0.0F ||
-                    detection.x2 > frame.cols || detection.y2 > frame.rows ||
-                    detection.x2 <= detection.x1 || detection.y2 <= detection.y1) {
-                    throw std::runtime_error("invalid decoded detection");
+            {
+                PPE_NVTX_RANGE("output");
+                for (std::size_t index = 0; index < detections.size(); ++index) {
+                    const auto& detection = detections[index];
+                    if (detection.class_id < 0 || detection.class_id >= 3 ||
+                        detection.confidence < confidence ||
+                        detection.confidence > 1.0F ||
+                        detection.x1 < 0.0F || detection.y1 < 0.0F ||
+                        detection.x2 > frame.cols || detection.y2 > frame.rows ||
+                        detection.x2 <= detection.x1 ||
+                        detection.y2 <= detection.y1) {
+                        throw std::runtime_error("invalid decoded detection");
+                    }
+                    detections_csv << frame_index << ',' << index << ','
+                        << detection.class_id << ',' << class_names[detection.class_id]
+                        << ',' << detection.confidence << ',' << detection.x1 << ','
+                        << detection.y1 << ',' << detection.x2 << ',' << detection.y2
+                        << '\n';
                 }
-                detections_csv << frame_index << ',' << index << ','
-                    << detection.class_id << ',' << class_names[detection.class_id]
-                    << ',' << detection.confidence << ',' << detection.x1 << ','
-                    << detection.y1 << ',' << detection.x2 << ',' << detection.y2
-                    << '\n';
-            }
-            frames_csv << frame_index << ',' << detections.size() << ','
-                << current_capture_ms << ',' << prepared.host_total_ms << ','
-                << prepared.cuda_total_ms << ',' << inferred.host_total_ms << ','
-                << inferred.cuda_total_ms << ',' << post_ms << ','
-                << end_to_end_ms << '\n';
-            total_detections += detections.size();
-            capture_times.push_back(current_capture_ms);
-            preprocess_host_times.push_back(prepared.host_total_ms);
-            preprocess_cuda_times.push_back(prepared.cuda_total_ms);
-            inference_host_times.push_back(inferred.host_total_ms);
-            inference_cuda_times.push_back(inferred.cuda_total_ms);
-            postprocess_times.push_back(post_ms);
-            end_to_end_times.push_back(end_to_end_ms);
-            last_annotated = annotate(frame, detections);
-            if (frame_index == 0) {
-                first_annotated = last_annotated.clone();
+                frames_csv << frame_index << ',' << detections.size() << ','
+                    << current_capture_ms << ',' << prepared.host_total_ms << ','
+                    << prepared.cuda_total_ms << ',' << inferred.host_total_ms << ','
+                    << inferred.cuda_total_ms << ',' << post_ms << ','
+                    << end_to_end_ms << '\n';
+                total_detections += detections.size();
+                capture_times.push_back(current_capture_ms);
+                preprocess_host_times.push_back(prepared.host_total_ms);
+                preprocess_cuda_times.push_back(prepared.cuda_total_ms);
+                inference_host_times.push_back(inferred.host_total_ms);
+                inference_cuda_times.push_back(inferred.cuda_total_ms);
+                postprocess_times.push_back(post_ms);
+                end_to_end_times.push_back(end_to_end_ms);
+                last_annotated = annotate(frame, detections);
+                if (frame_index == 0) {
+                    first_annotated = last_annotated.clone();
+                }
             }
             ++frame_index;
             if (max_frames > 0 && frame_index >= max_frames) {
                 break;
             }
             const auto capture_start = std::chrono::steady_clock::now();
-            const bool acquired = capture.read(frame);
+            bool acquired = false;
+            {
+                PPE_NVTX_RANGE("capture");
+                acquired = capture.read(frame);
+            }
             const auto capture_end = std::chrono::steady_clock::now();
             if (!acquired || frame.empty()) {
                 if (source_type == "camera") {
