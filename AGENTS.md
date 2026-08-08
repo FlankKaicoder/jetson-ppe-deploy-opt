@@ -384,6 +384,7 @@ Exp10 CUDA 融合预处理与五形状正确性/性能验证
 Exp11 视频/摄像头端到端推理
 Exp12 性能、功耗、温度与稳定性测试
 Exp13 Nsight Systems 端到端性能瓶颈画像与优化基线
+Exp14 Pinned Memory、CUDA Event 与 Double Buffer 异步流水线消融
 ```
 
 当前模型决策：
@@ -427,8 +428,12 @@ Exp12 已通过固定时钟三进程重复性和 54,000 帧/约 30 分钟稳定�
 Exp13 已通过 NVTX 正确性回归、文件/相机 Nsight Systems 时间线、三轮无分析器重复性和
 TensorRT 逐层诊断验收。文件模式归类为 synchronization-bound，相机模式归类为
 input-rate-bound + synchronization-bound；CPU decode/NMS 不是当前首要瓶颈。
-用户已批准将项目收尾顺延到 Exp20。当前下一候选为 Exp14 Pinned Memory、Async 与
-Double Buffer 流水线，必须先提交方案供用户审批，不得提前实现。
+Exp14 已完成 Pinned Memory、CUDA Event、单缓冲异步和双缓冲三 Stream 工程链路、文件/相机
+三轮无分析器对照与正式 Nsight 验证。Variant C 文件吞吐仅提升4.51%，P95退化159.28%；相机
+P95退化173.51%，虽观察到跨帧重叠但未满足冻结门槛，因此候选 `REJECT`，运行时主线继续使用
+Exp13 同步 FP16 Runtime。
+用户已批准将项目收尾顺延到 Exp20。当前下一候选为 Exp15 CUDA GPU Decode/Filter/Compaction
+与 Nsight Compute，必须先提交方案供用户审批，不得提前实现。
 
 Codex 不得擅自重新选择模型主线。
 

@@ -57,6 +57,10 @@ public:
     DeviceInferenceResult infer_device(
         const float* device_input,
         cudaStream_t stream);
+    void enqueue_device_async(
+        const float* device_input,
+        float* device_output,
+        cudaStream_t stream);
 
 private:
     class Impl;

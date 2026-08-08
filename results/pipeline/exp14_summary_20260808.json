@@ -1,0 +1,211 @@
+{
+  "experiment": "Exp14",
+  "title": "Pinned Memory, CUDA Event and Double Buffer async pipeline",
+  "date": "2026-08-08",
+  "status": "REJECT",
+  "engineering_chain_complete": true,
+  "source_commit": "453bc6ecccd89873b6af03524dc84e703ac6619a",
+  "branch": "exp/14-async-double-buffer",
+  "result_commit": null,
+  "platform": {
+    "hostname": "nvidia-desktop",
+    "architecture": "aarch64",
+    "l4t": "R36.4.3",
+    "cuda": "12.6.68",
+    "tensorrt": "10.3.0.30",
+    "opencv": "4.10",
+    "gstreamer": "1.20.3",
+    "nvpmodel": "25W/id 1",
+    "dynamic_clocks": true
+  },
+  "inputs": {
+    "onnx": {
+      "size_bytes": 10566605,
+      "sha256": "305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8"
+    },
+    "fp16_engine": {
+      "size_bytes": 8951540,
+      "sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83"
+    },
+    "file_video": {
+      "size_bytes": 874518,
+      "sha256": "f00e116a9d8f1a9f2bdcb4fc08c8720019e6f61047934613b0940da961a66665"
+    }
+  },
+  "controls": {
+    "batch": 1,
+    "input_shape": [1, 3, 640, 640],
+    "output_shape": [1, 7, 8400],
+    "warmup_frames": 2,
+    "confidence": 0.25,
+    "nms_iou": 0.70,
+    "file_frames": 150,
+    "camera_frames": 300,
+    "camera_mode": "IMX219 sensor-id 0 1920x1080@30",
+    "no_profiler_runs_per_variant": 3
+  },
+  "variants": {
+    "baseline": "pageable, single buffer, immediate stage synchronization",
+    "A": "pinned input/output staging, single buffer, serialized scheduling",
+    "B": "pinned single buffer, upload/inference/download streams and CUDA Event dependencies",
+    "C": "pinned double buffer, three streams, cross-frame pipeline, one serialized TensorRT context"
+  },
+  "correctness": {
+    "result": "PASS",
+    "file_runs": 12,
+    "file_frames_per_run": 150,
+    "file_detections_per_run": 151,
+    "file_detection_sha256": "9f3f33459f8d086a74249a57f21f158a73ca794a2229a9e1af40a03de34e2d8a",
+    "camera_runs": 12,
+    "camera_frames_per_run": 300,
+    "finite_outputs": true,
+    "frame_order_valid": true,
+    "slot_ownership_valid": true,
+    "cuda_tensorrt_errors": 0
+  },
+  "file_no_profiler": {
+    "baseline": {
+      "pipeline_wall_fps_mean": 69.59519095866666,
+      "pipeline_wall_fps_cv_percent": 3.581827214,
+      "e2e_mean_ms": 13.266618055333334,
+      "e2e_p95_ms": 14.732481133333332,
+      "e2e_p99_ms": 14.87519755,
+      "stage_mean_ms": {
+        "capture": 1.9209148463333332,
+        "preprocess_cuda": 1.6099268993333335,
+        "inference_cuda": 9.484297729,
+        "postprocess": 0.073229651
+      }
+    },
+    "A": {
+      "pipeline_wall_fps_mean": 66.032848717,
+      "pipeline_wall_fps_cv_percent": 4.714266838,
+      "e2e_mean_ms": 16.83316268,
+      "e2e_p95_ms": 18.928545683333333,
+      "e2e_p99_ms": 19.0713067233,
+      "fps_gain_percent": -5.11866149455985,
+      "p95_regression_percent": 28.481723560508044,
+      "stage_mean_ms": {
+        "capture": 2.704667031,
+        "staging": 0.7350166733333333,
+        "upload_cuda": 0.8896618653333332,
+        "inference_cuda": 9.577452901333332
+      }
+    },
+    "B": {
+      "pipeline_wall_fps_mean": 66.499116473,
+      "pipeline_wall_fps_cv_percent": 6.168070009,
+      "e2e_mean_ms": 21.41677848666667,
+      "e2e_p95_ms": 24.157470649999997,
+      "e2e_p99_ms": 25.0156748433,
+      "fps_gain_percent": -4.448690265833822,
+      "p95_regression_percent": 63.97421745439691,
+      "stage_mean_ms": {
+        "capture": 7.513357124333333,
+        "staging": 0.8133199313333334,
+        "upload_cuda": 1.026109797,
+        "inference_cuda": 9.454379567
+      }
+    },
+    "C": {
+      "pipeline_wall_fps_mean": 72.736334657,
+      "pipeline_wall_fps_cv_percent": 3.170006055,
+      "e2e_mean_ms": 33.465052457999995,
+      "e2e_p95_ms": 38.197821833333336,
+      "e2e_p99_ms": 39.6264868033,
+      "fps_gain_percent": 4.513449356290855,
+      "e2e_mean_improvement_percent": -152.25006341798357,
+      "p95_regression_percent": 159.27623112245453,
+      "stage_mean_ms": {
+        "capture": 7.240679106666668,
+        "staging": 0.8503132733333333,
+        "upload_cuda": 0.9157788443333333,
+        "inference_cuda": 8.346582452
+      }
+    }
+  },
+  "camera_no_profiler": {
+    "baseline": {
+      "pipeline_wall_fps_mean": 30.14094950233333,
+      "pipeline_wall_fps_cv_percent": 0.0873575,
+      "e2e_mean_ms": 31.835824003333332,
+      "e2e_p95_ms": 34.21154678333333,
+      "e2e_p99_ms": 35.04446204
+    },
+    "A": {
+      "pipeline_wall_fps_mean": 30.155340559,
+      "e2e_mean_ms": 50.000409921,
+      "e2e_p95_ms": 52.44897205,
+      "e2e_p99_ms": 54.10958,
+      "p95_regression_percent": 53.30780681203022
+    },
+    "B": {
+      "pipeline_wall_fps_mean": 30.173814325666665,
+      "e2e_mean_ms": 57.26006972,
+      "e2e_p95_ms": 59.1622529,
+      "e2e_p99_ms": 60.448723,
+      "p95_regression_percent": 72.93065781177066
+    },
+    "C": {
+      "pipeline_wall_fps_mean": 30.197496171,
+      "pipeline_wall_fps_cv_percent": 0.084109,
+      "e2e_mean_ms": 90.22508402566666,
+      "e2e_p95_ms": 93.5705701,
+      "e2e_p99_ms": 94.6847068,
+      "fps_gain_percent": 0.18760745630224118,
+      "p95_regression_percent": 173.5058157194585
+    }
+  },
+  "nsight_variant_c": {
+    "file": {
+      "frames": 150,
+      "stream_wait_event_calls": 300,
+      "kernel_memcpy_overlap_ms": 2.961472,
+      "upload_inference_overlap_ms": 2.921248,
+      "overlap_window_percent": 0.148774,
+      "gpu_idle_percent": 38.4292
+    },
+    "camera": {
+      "frames": 300,
+      "stream_wait_event_calls": 600,
+      "kernel_memcpy_overlap_ms": 0.860192,
+      "upload_inference_overlap_ms": 0.828928,
+      "overlap_window_percent": 0.008651,
+      "gpu_idle_percent": 63.3885
+    }
+  },
+  "acceptance": {
+    "file_fps_or_mean_improvement_min_percent": 10.0,
+    "p95_max_regression_percent": 5.0,
+    "cross_frame_overlap_required": true,
+    "cross_frame_overlap_pass": true,
+    "file_performance_pass": false,
+    "camera_p95_pass": false,
+    "candidate_pass": false
+  },
+  "final_device_audit": {
+    "result": "PASS",
+    "cpu_locked": false,
+    "gpu_locked": false,
+    "gpu_min_hz": 306000000,
+    "gpu_max_hz": 918000000,
+    "short_sample_max_temperature_c": 51.25,
+    "free_nvme_gib_approx": 182,
+    "relevant_residual_processes": 0
+  },
+  "key_output_dirs": {
+    "build": "results/pipeline/exp14_0_build_20260808_181524",
+    "file_compare": "results/pipeline/exp14_file_compare_20260808_185151",
+    "camera_compare": "results/pipeline/exp14_camera_compare_20260808_185152",
+    "file_profile": "results/pipeline/exp14_profile_C_file_20260808_183846",
+    "camera_profile": "results/pipeline/exp14_profile_C_camera_20260808_183910",
+    "final_audit": "results/pipeline/exp14_final_audit_20260808_185656"
+  },
+  "decision": {
+    "candidate": "REJECT",
+    "runtime_mainline": "Exp13 synchronous FP16 TensorRT C++ Runtime",
+    "reason": "Cross-frame overlap exists but is too small to offset pinned staging, resource contention and queue latency; throughput/mean/P95 thresholds fail.",
+    "next_candidate": "Exp15 CUDA GPU Decode/Filter/Compaction and Nsight Compute",
+    "next_candidate_approved": false
+  }
+}

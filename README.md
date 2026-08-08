@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-08，Exp00～Exp13 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-08，Exp00～Exp14 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -25,7 +25,11 @@ kernel-only 平均耗时下降 91.20%。Exp11 已完成文件视频三进程确�
 瓶颈画像：文件三轮 pipeline wall 吞吐均值61.583 FPS；相机三轮均值30.174 FPS、CV 0.028%。
 文件模式 GPU idle 33.81%，相机模式 GPU idle 63.31%，两种场景 Kernel/Memcpy 重叠均为0；
 文件归类为 synchronization-bound，相机归类为 input-rate-bound + synchronization-bound。
-下一候选 Exp14 将验证 Pinned Memory、事件依赖和双缓冲，当前尚待用户审批。
+Exp14 已完成 pinned staging、CUDA Event、单缓冲异步与双缓冲三 Stream 的 A/B/C 消融。
+所有文件正式轮均保持150帧、151检测和冻结 digest；Variant C 虽在文件/相机时间线中分别观察到
+2.961/0.860 ms Kernel/Memcpy 重叠，但文件吞吐仅提升4.51%，P95退化159.28%，相机 P95退化
+173.51%，因此候选 `REJECT`，同步 FP16 Runtime 保持为部署主线。下一候选 Exp15 CUDA GPU
+Decode/Filter/Compaction 与 Nsight Compute 尚待用户审批。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 

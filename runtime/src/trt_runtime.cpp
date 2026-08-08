@@ -327,6 +327,30 @@ public:
         return {std::move(output), summarize(host_values), summarize(cuda_values)};
     }
 
+    void enqueue_device_async(
+        const float* device_input,
+        float* device_output,
+        cudaStream_t stream) {
+        if (device_input == nullptr || device_output == nullptr || stream == nullptr) {
+            throw std::runtime_error("invalid asynchronous inference arguments");
+        }
+        if (!context_->setTensorAddress(
+                input_.name.c_str(), const_cast<float*>(device_input)) ||
+            !context_->setTensorAddress(
+                output_.name.c_str(), device_output)) {
+            throw std::runtime_error(
+                "setTensorAddress for asynchronous device inference failed");
+        }
+        {
+            PPE_NVTX_RANGE("tensorrt_enqueue");
+            if (!context_->enqueueV3(stream)) {
+                throw std::runtime_error(
+                    "enqueueV3 for asynchronous device inference returned false");
+            }
+        }
+        check_cuda(cudaPeekAtLastError(), "CUDA asynchronous enqueue status");
+    }
+
     DeviceInferenceResult infer_device(
         const float* device_input,
         cudaStream_t stream) {
@@ -412,6 +436,13 @@ DeviceInferenceResult TrtRuntime::infer_device(
     const float* device_input,
     cudaStream_t stream) {
     return impl_->infer_device(device_input, stream);
+}
+
+void TrtRuntime::enqueue_device_async(
+    const float* device_input,
+    float* device_output,
+    cudaStream_t stream) {
+    impl_->enqueue_device_async(device_input, device_output, stream);
 }
 
 }  // namespace ppe
