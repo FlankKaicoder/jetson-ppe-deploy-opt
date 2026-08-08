@@ -1,0 +1,42 @@
+{
+  "experiment": "Exp15",
+  "status": "PASS",
+  "decision": "ADOPT_VARIANT_B_CUB_STABLE_COMPACTION",
+  "base_commit": "0b17852638bf68125d5c75ce6331c54fc430b83a",
+  "runtime_mainline": "FP16 TensorRT + CUDA preprocess + CUB stable GPU postprocess + CPU NMS",
+  "file_three_run": {
+    "baseline": {"pipeline_wall_fps": 60.270, "e2e_mean_ms": 15.502, "e2e_p95_ms": 16.940, "d2h_bytes": 235200.0},
+    "atomic": {"pipeline_wall_fps": 70.201, "e2e_mean_ms": 13.310, "e2e_p95_ms": 14.668, "d2h_bytes": 263.84},
+    "cub": {"pipeline_wall_fps": 71.838, "e2e_mean_ms": 12.939, "e2e_p95_ms": 14.403, "d2h_bytes": 263.84}
+  },
+  "cub_changes_percent": {
+    "file_pipeline_wall_fps": 19.193566,
+    "file_e2e_mean": -16.534105,
+    "file_e2e_p95": -14.973478,
+    "camera_e2e_p95": 1.614333,
+    "file_d2h_bytes": -99.887823
+  },
+  "correctness": {
+    "file_runs_passed": 9,
+    "camera_runs_passed": 9,
+    "file_frames_per_run": 150,
+    "file_detections_per_run": 151,
+    "camera_frames_per_run": 300,
+    "detections_sha256": "9f3f33459f8d086a74249a57f21f158a73ca794a2229a9e1af40a03de34e2d8a"
+  },
+  "fixture": {
+    "bytes": 235200,
+    "sha256": "0e6aff4557d989ec62c26908988bcb5b15222de4a7d66f53ea73f36ce825abfe"
+  },
+  "ncu": {
+    "atomic_duration_us": 23.90,
+    "atomic_achieved_occupancy_percent": 49.32,
+    "cub_decode_duration_us": 21.12,
+    "cub_init_duration_us": 11.94,
+    "cub_select_duration_us": 35.01,
+    "cub_select_achieved_occupancy_percent": 64.17,
+    "warp_stall_breakdown_available": false,
+    "atomic_transaction_metric_available": false
+  },
+  "large_artifacts": "Jetson results/gpu_postprocess only"
+}

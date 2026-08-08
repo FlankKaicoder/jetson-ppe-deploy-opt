@@ -432,8 +432,11 @@ Exp14 已完成 Pinned Memory、CUDA Event、单缓冲异步和双缓冲三 Stre
 三轮无分析器对照与正式 Nsight 验证。Variant C 文件吞吐仅提升4.51%，P95退化159.28%；相机
 P95退化173.51%，虽观察到跨帧重叠但未满足冻结门槛，因此候选 `REJECT`，运行时主线继续使用
 Exp13 同步 FP16 Runtime。
-用户已批准将项目收尾顺延到 Exp20。当前下一候选为 Exp15 CUDA GPU Decode/Filter/Compaction
-与 Nsight Compute，必须先提交方案供用户审批，不得提前实现。
+Exp15 已通过 Atomic/CUB GPU decode、filter、compaction、压缩 D2H、文件/相机三轮对照及
+Nsight Systems/Compute 验收。Variant B（CUB stable compaction）文件 wall FPS 提升19.19%，
+E2E mean/P95下降16.53%/14.97%，平均 D2H减少99.89%，相机 P95退化1.61%，保持冻结检测 digest，
+因此 `PASS` 并成为新的 FP16 C++ Runtime 后处理主线。模型、ONNX、Engine 与 CPU NMS语义不变。
+Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon 仍为 `PLANNED`，执行前必须另行获得用户批准。
 
 Codex 不得擅自重新选择模型主线。
 
