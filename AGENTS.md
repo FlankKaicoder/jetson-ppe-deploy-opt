@@ -382,6 +382,7 @@ Exp08 INT8 PTQ 构建、精度—性能比较与候选决策
 Exp09 TensorRT C++ Runtime 与三进程生命周期验证
 Exp10 CUDA 融合预处理与五形状正确性/性能验证
 Exp11 视频/摄像头端到端推理
+Exp12 性能、功耗、温度与稳定性测试
 ```
 
 当前模型决策：
@@ -421,7 +422,8 @@ tiny+small recall 超过预冻结退化门槛而 REJECT；运行时主线保留 
 Exp09 已通过 C++ Runtime 编译、原始输出一致性和三独立进程生命周期验收。
 Exp10 已通过五种输入形状逐元素一致性和 CUDA kernel-only 性能验收。
 Exp11 已通过文件视频三进程确定性和 IMX219 300 帧端到端功能验收。
-当前下一项实验为 Exp12 性能、功耗、温度与稳定性测试。
+Exp12 已通过固定时钟三进程重复性和 54,000 帧/约 30 分钟稳定性验收；默认部署恢复动态调频。
+当前下一项实验为 Exp13 项目收尾、README、简历与面试材料。
 
 Codex 不得擅自重新选择模型主线。
 
@@ -1053,6 +1055,16 @@ Batch
 jetson_clocks 状态
 ```
 
+若正式测试需要 `jetson_clocks`，锁频前必须先显式保存动态状态，例如：
+
+```bash
+sudo jetson_clocks --store /tmp/expXX_jetsonclocks_before.conf
+sudo jetson_clocks
+```
+
+测试结束后使用同一个明确文件恢复并验证 CPU/GPU min/max；不得假设无参数锁频会自动生成
+`${HOME}/.jetsonclocks_conf.txt`。若保存文件不存在，不得把 `--restore` 失败写成恢复成功。
+
 Jetson 端建议记录：
 
 ```text
@@ -1283,7 +1295,7 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. 后续 Exp12 推荐工作流；
+8. 后续 Exp13 推荐工作流；
 9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
 
 最后只输出检查结果和建议，不执行修改。
@@ -1296,7 +1308,7 @@ BLOCKED
 ```text
 当前工作环境应为 AutoDL 训练服务器。
 
-请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、Exp06～Exp10 总结，
+请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、Exp06～Exp12 总结，
 检查当前分支与 git 状态。
 
 不要修改代码，不要提交，不要推送。
@@ -1308,7 +1320,7 @@ BLOCKED
 4. 数据集 YAML；
 5. Exp06 ONNX 文件及 SHA256 是否与冻结记录一致；
 6. Exp08 INT8 为何被 REJECT，且不得改写为运行时主线；
-7. Exp12 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
+7. Exp13 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
 
 先给出执行计划和风险，不要直接开始。
 ```
@@ -1321,7 +1333,7 @@ BLOCKED
 当前工作环境应为 Jetson Orin Nano Super。
 
 请先阅读 AGENTS.md、`docs/项目全流程快速学习手册.md`、docs/01_environment.md、
-Exp06～Exp10 总结和当前部署相关文档。
+Exp06～Exp12 总结和当前部署相关文档。
 
 不要修改代码，不要提交，不要推送。
 
@@ -1333,7 +1345,7 @@ Exp06～Exp10 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. 后续 Exp12 性能、功耗、温度与稳定性测试的最小执行计划。
+8. 后续 Exp13 项目收尾、README、简历与面试材料的最小执行计划。
 
 先输出检查结果，不执行构建。
 ```
@@ -1359,13 +1371,13 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-拉取 main，创建 Exp12 板端综合验证分支
+核对 Exp12 原始证据、哈希和动态调频恢复状态
         ↓
-Jetson
-固定功耗/时钟/输入与计时边界，采集延迟、资源、功耗、温度和稳定性
+Windows Codex
+汇总 README、项目讲解稿、简历要点和面试材料
         ↓
 ChatGPT
-分析指标并决定下一实验
+复核成果边界并完成项目发布材料
 ```
 
 ---
