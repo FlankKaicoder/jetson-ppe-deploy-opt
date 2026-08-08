@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- 完成 Exp14 pinned staging、CUDA Event、单缓冲异步与双缓冲三 Stream 消融；文件与相机
+  Variant C 均形成可量化跨帧 Kernel/Memcpy 重叠，但未达到冻结性能门槛，候选 `REJECT`。
+- 文件 Variant C 吞吐相对同日同步基线仅提升4.51%，E2E P95退化159.28%；相机吞吐受30 FPS
+  输入节拍限制且 P95退化173.51%。部署主线继续使用同步 FP16 Runtime。
+- 保留首次 CMake CUDA 编译器缺失、Nsight stats 参数缺失、检测摘要哈希转写错误及历史回归脚本
+  分支保护触发等失败现场；未删除或改写负向实验目录。
 - 完成 Exp10 CUDA 融合预处理；5 种输入形状与 Jetson OpenCV 4.10 Reference 逐元素一致，
   `hd_wide` kernel-only 平均耗时由 CPU 2.28212 ms 降至 0.200761 ms（下降 91.20%）。
 - 保留 Exp10 CMake CUDA 路径失败、非整数缩放误差及两次错误舍入假设的负向结果；最终按

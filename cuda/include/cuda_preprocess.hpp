@@ -65,6 +65,12 @@ LetterboxGeometry make_letterbox_geometry(
     int source_height,
     int target_size);
 
+void launch_cuda_preprocess_async(
+    const std::uint8_t* device_bgr,
+    float* device_output,
+    const LetterboxGeometry& geometry,
+    cudaStream_t stream);
+
 CudaPreprocessResult run_cuda_preprocess(
     const std::uint8_t* host_bgr,
     const LetterboxGeometry& geometry,

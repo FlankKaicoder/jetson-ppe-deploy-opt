@@ -208,21 +208,9 @@ void launch(
     const DeviceBuffer& output,
     const LetterboxGeometry& geometry,
     cudaStream_t stream) {
-    const dim3 block(16, 16);
-    const dim3 grid(
-        (geometry.target_size + block.x - 1) / block.x,
-        (geometry.target_size + block.y - 1) / block.y);
-    fused_preprocess_kernel<<<grid, block, 0, stream>>>(
+    launch_cuda_preprocess_async(
         static_cast<const std::uint8_t*>(input.data()),
-        static_cast<float*>(output.data()),
-        geometry.source_width,
-        geometry.source_height,
-        geometry.target_size,
-        geometry.resized_width,
-        geometry.resized_height,
-        geometry.padding_left,
-        geometry.padding_top);
-    check_cuda(cudaGetLastError(), "fused_preprocess_kernel launch");
+        static_cast<float*>(output.data()), geometry, stream);
 }
 
 double elapsed_ms(const CudaEvent& start, const CudaEvent& end) {
@@ -234,6 +222,36 @@ double elapsed_ms(const CudaEvent& start, const CudaEvent& end) {
 }
 
 }  // namespace
+
+void launch_cuda_preprocess_async(
+    const std::uint8_t* device_bgr,
+    float* device_output,
+    const LetterboxGeometry& geometry,
+    cudaStream_t stream) {
+    if (device_bgr == nullptr || device_output == nullptr || stream == nullptr) {
+        throw std::runtime_error("invalid asynchronous preprocess arguments");
+    }
+    const auto checked = make_letterbox_geometry(
+        geometry.source_width, geometry.source_height, geometry.target_size);
+    if (checked.resized_width != geometry.resized_width ||
+        checked.resized_height != geometry.resized_height ||
+        checked.padding_left != geometry.padding_left ||
+        checked.padding_right != geometry.padding_right ||
+        checked.padding_top != geometry.padding_top ||
+        checked.padding_bottom != geometry.padding_bottom) {
+        throw std::runtime_error("inconsistent asynchronous preprocess geometry");
+    }
+    const dim3 block(16, 16);
+    const dim3 grid(
+        (geometry.target_size + block.x - 1) / block.x,
+        (geometry.target_size + block.y - 1) / block.y);
+    fused_preprocess_kernel<<<grid, block, 0, stream>>>(
+        device_bgr, device_output, geometry.source_width,
+        geometry.source_height, geometry.target_size,
+        geometry.resized_width, geometry.resized_height,
+        geometry.padding_left, geometry.padding_top);
+    check_cuda(cudaGetLastError(), "fused_preprocess_kernel async launch");
+}
 
 class CudaPreprocessor::Impl {
 public:

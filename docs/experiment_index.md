@@ -22,7 +22,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp11 | 视频/摄像头端到端推理 | PASS | `11_视频摄像头端到端推理总结.md` |
 | Exp12 | Jetson 性能、功耗、温度与稳定性测试 | PASS | `12_Jetson性能功耗温度稳定性总结.md` |
 | Exp13 | Nsight Systems 端到端性能瓶颈画像 | PASS | `13_Nsight端到端性能瓶颈分析总结.md` |
-| Exp14 | Pinned Memory、Async 与 Double Buffer | PLANNED | 待 Exp13 后审批 |
+| Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT | `14_PinnedMemory_CUDAEvent_DoubleBuffer异步流水线总结.md` |
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PLANNED | 待审批 |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED | 待审批 |
 | Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED | 待审批 |
