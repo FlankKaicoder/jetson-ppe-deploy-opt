@@ -150,4 +150,3 @@ if [[ "${RUN_KIND}" == "profile" ]]; then
 fi
 printf 'result=PASS run_id=%s output_dir=%s\n' "${RUN_ID}" "${OUTPUT_DIR}" \
   | tee "${OUTPUT_DIR}/summary.txt"
-

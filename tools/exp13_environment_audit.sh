@@ -69,4 +69,3 @@ nsys stats --help > "${OUTPUT_DIR}/nsys_stats_help.txt" 2>&1
 printf '0\n' > "${OUTPUT_DIR}/return_code.txt"
 printf 'result=PASS output_dir=%s\n' "${OUTPUT_DIR}" \
   | tee "${OUTPUT_DIR}/summary.txt"
-
