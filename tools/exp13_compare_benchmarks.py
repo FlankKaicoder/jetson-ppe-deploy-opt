@@ -56,7 +56,9 @@ def main() -> None:
                 "processed_frames": int(app_summary["processed_frames"]),
                 "total_detections": int(app_summary["total_detections"]),
                 "wall_seconds": wall_seconds,
-                "wall_fps": args.expected_frames / wall_seconds,
+                "process_wall_fps": args.expected_frames / wall_seconds,
+                "pipeline_wall_seconds": float(app_summary["pipeline_wall_seconds"]),
+                "pipeline_wall_fps": float(app_summary["pipeline_wall_fps"]),
                 "app_effective_fps": float(app_summary["effective_fps"]),
                 "e2e_mean_ms": float(app_summary["timings_ms"]["end_to_end"]["mean"]),
                 "e2e_p95_ms": float(app_summary["timings_ms"]["end_to_end"]["p95"]),
@@ -68,7 +70,8 @@ def main() -> None:
         raise RuntimeError("file benchmark detections are not deterministic")
 
     numeric_keys = (
-        "wall_fps",
+        "process_wall_fps",
+        "pipeline_wall_fps",
         "app_effective_fps",
         "e2e_mean_ms",
         "e2e_p95_ms",
@@ -90,7 +93,8 @@ def main() -> None:
         "runs": rows,
         "aggregate": aggregate,
         "notes": [
-            "wall_fps includes application startup, frame processing, output work, and shutdown.",
+            "process_wall_fps includes application startup, frame processing, output work, and shutdown.",
+            "pipeline_wall_fps covers the main loop including per-frame output/capture but excludes one-time startup and shutdown.",
             "app_effective_fps uses the existing Exp11 end-to-end timing scope and excludes output annotation/CSV work.",
         ],
     }

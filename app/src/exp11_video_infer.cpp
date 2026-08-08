@@ -377,6 +377,7 @@ int main(int argc, char** argv) {
         cv::Mat first_annotated;
         cv::Mat last_annotated;
 
+        const auto pipeline_start = std::chrono::steady_clock::now();
         while (true) {
             PPE_NVTX_RANGE("frame_total");
             const auto frame_start = std::chrono::steady_clock::now();
@@ -464,6 +465,7 @@ int main(int argc, char** argv) {
             current_capture_ms = std::chrono::duration<double, std::milli>(
                 capture_end - capture_start).count();
         }
+        const auto pipeline_end = std::chrono::steady_clock::now();
         if (frame_index <= 0 ||
             (source_type == "camera" && max_frames > 0 && frame_index != max_frames)) {
             throw std::runtime_error("processed frame count failed acceptance");
@@ -485,6 +487,10 @@ int main(int argc, char** argv) {
         const double elapsed_seconds = std::accumulate(
             end_to_end_times.begin(), end_to_end_times.end(), 0.0) / 1000.0;
         const double effective_fps = static_cast<double>(frame_index) / elapsed_seconds;
+        const double pipeline_wall_seconds =
+            std::chrono::duration<double>(pipeline_end - pipeline_start).count();
+        const double pipeline_wall_fps =
+            static_cast<double>(frame_index) / pipeline_wall_seconds;
         std::ofstream summary(output_dir / "summary.json");
         if (!summary) {
             throw std::runtime_error("cannot open summary.json");
@@ -503,6 +509,8 @@ int main(int argc, char** argv) {
                 << "  \"confidence_threshold\": " << confidence << ",\n"
                 << "  \"nms_iou_threshold\": " << nms_iou << ",\n"
                 << "  \"effective_fps\": " << effective_fps << ",\n"
+                << "  \"pipeline_wall_seconds\": " << pipeline_wall_seconds << ",\n"
+                << "  \"pipeline_wall_fps\": " << pipeline_wall_fps << ",\n"
                 << "  \"timing_scope\": \"capture+H2D+CUDA_preprocess+TensorRT+D2H+NMS\",\n"
                 << "  \"timings_ms\": {\n";
         write_stats(summary, "capture", capture_stats); summary << ",\n";
