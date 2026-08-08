@@ -383,6 +383,7 @@ Exp09 TensorRT C++ Runtime 与三进程生命周期验证
 Exp10 CUDA 融合预处理与五形状正确性/性能验证
 Exp11 视频/摄像头端到端推理
 Exp12 性能、功耗、温度与稳定性测试
+Exp13 Nsight Systems 端到端性能瓶颈画像与优化基线
 ```
 
 当前模型决策：
@@ -423,8 +424,11 @@ Exp09 已通过 C++ Runtime 编译、原始输出一致性和三独立进程生�
 Exp10 已通过五种输入形状逐元素一致性和 CUDA kernel-only 性能验收。
 Exp11 已通过文件视频三进程确定性和 IMX219 300 帧端到端功能验收。
 Exp12 已通过固定时钟三进程重复性和 54,000 帧/约 30 分钟稳定性验收；默认部署恢复动态调频。
-用户已批准将项目收尾顺延到 Exp20。当前下一项实验为 Exp13 Nsight Systems
-端到端性能瓶颈画像与优化基线；Exp13 只做测量和定位，不提前实施异步流水优化。
+Exp13 已通过 NVTX 正确性回归、文件/相机 Nsight Systems 时间线、三轮无分析器重复性和
+TensorRT 逐层诊断验收。文件模式归类为 synchronization-bound，相机模式归类为
+input-rate-bound + synchronization-bound；CPU decode/NMS 不是当前首要瓶颈。
+用户已批准将项目收尾顺延到 Exp20。当前下一候选为 Exp14 Pinned Memory、Async 与
+Double Buffer 流水线，必须先提交方案供用户审批，不得提前实现。
 
 Codex 不得擅自重新选择模型主线。
 
@@ -1303,7 +1307,7 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. 后续 Exp13 推荐工作流；
+8. Exp13 已证实的瓶颈和后续 Exp14 推荐工作流；
 9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
 
 最后只输出检查结果和建议，不执行修改。
@@ -1328,7 +1332,7 @@ BLOCKED
 4. 数据集 YAML；
 5. Exp06 ONNX 文件及 SHA256 是否与冻结记录一致；
 6. Exp08 INT8 为何被 REJECT，且不得改写为运行时主线；
-7. Exp13 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
+7. Exp14 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
 
 先给出执行计划和风险，不要直接开始。
 ```
@@ -1353,7 +1357,7 @@ Exp06～Exp12 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. 后续 Exp13 Nsight Systems 瓶颈画像的最小执行计划。
+8. Exp13 结论是否一致，以及 Exp14 流水线优化的最小执行计划（尚待用户审批）。
 
 先输出检查结果，不执行构建。
 ```
@@ -1379,13 +1383,13 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-以 Exp12 同步 Runtime 为冻结基线执行 Exp13 Profiling
+以 Exp13 时间线证据为基线，等待用户审批 Exp14
         ↓
 Windows Codex
 审查时间线证据、瓶颈分类和后续优化假设
         ↓
 ChatGPT
-依据 Exp13 结果规划 Exp14，并再次提交用户审批
+审查 Exp14 方案，用户审批后才进入实现
 ```
 
 ---
