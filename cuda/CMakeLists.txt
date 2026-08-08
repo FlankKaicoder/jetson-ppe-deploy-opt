@@ -14,10 +14,10 @@ find_package(OpenCV 4 REQUIRED COMPONENTS core imgcodecs imgproc)
 
 add_library(ppe_cuda_preprocess STATIC
     src/cuda_preprocess.cu)
-target_include_directories(ppe_cuda_preprocess PUBLIC include)
+target_include_directories(ppe_cuda_preprocess
+    PUBLIC include
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../profiling/include)
 if(PPE_ENABLE_NVTX)
-    target_include_directories(ppe_cuda_preprocess PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../profiling/include)
     target_compile_definitions(ppe_cuda_preprocess PRIVATE PPE_ENABLE_NVTX=1)
 endif()
 target_link_libraries(ppe_cuda_preprocess PUBLIC CUDA::cudart)

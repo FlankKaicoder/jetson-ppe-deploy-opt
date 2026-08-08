@@ -19,10 +19,10 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../runtime
                  ${CMAKE_CURRENT_BINARY_DIR}/runtime)
 
 add_executable(exp11_video_infer src/exp11_video_infer.cpp)
-target_include_directories(exp11_video_infer PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_include_directories(exp11_video_infer PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../profiling/include)
 if(PPE_ENABLE_NVTX)
-    target_include_directories(exp11_video_infer PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../profiling/include)
     target_compile_definitions(exp11_video_infer PRIVATE PPE_ENABLE_NVTX=1)
     set_target_properties(exp11_video_infer PROPERTIES
         OUTPUT_NAME exp13_profiled_video_infer)
