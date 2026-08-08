@@ -33,12 +33,29 @@
 | Exp10 | CUDA 融合预处理 | PASS |
 | Exp11 | 视频/摄像头端到端推理 | PASS |
 
-## M3：板端验证与项目发布
+## M3：板端综合验证
 
 | 实验 | 内容 | 状态 |
 |---|---|---|
 | Exp12 | 性能、功耗、温度与稳定性测试 | PASS |
-| Exp13 | README、实验总结、简历与面试材料 | PLANNED |
+
+## M4：GPU 推理性能工程深化
+
+| 实验 | 内容 | 状态 |
+|---|---|---|
+| Exp13 | Nsight Systems 端到端性能瓶颈画像 | IN_PROGRESS |
+| Exp14 | Pinned Memory、Async 与 Double Buffer | PLANNED |
+| Exp15 | CUDA GPU 后处理与 Nsight Compute | PLANNED |
+| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED |
+| Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED |
+| Exp18 | CUDA Graph 与最终 Runtime 优化 | PLANNED |
+| Exp19 | 最终综合 Benchmark | PLANNED |
+
+## M5：项目发布
+
+| 实验 | 内容 | 状态 |
+|---|---|---|
+| Exp20 | README、学习路线、简历与面试材料 | PLANNED |
 
 ## 当前部署主线
 
@@ -51,6 +68,7 @@ Exp02 YOLO11n baseline best.pt
 → Exp10 CUDA 预处理
 → Exp11 摄像头
 → Exp12 Jetson 综合 Benchmark
+→ Exp13 Profiling 基线
 ```
 
 不得用 RTX 3080 Ti 的验证速度代替 Jetson 性能结论，也不得提前把计划项表述为

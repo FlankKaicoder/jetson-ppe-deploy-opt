@@ -26,7 +26,11 @@ TensorRT/CUDA 推理优化。
 7. 实现 TensorRT C++ Runtime；
 8. 实现 CUDA 融合预处理；
 9. 分析延迟、吞吐、内存、功耗和温度；
-10. 形成可公开、可解释的 GitHub 工程。
+10. 使用 Nsight Systems/Compute 定位 CPU/GPU、传输和同步瓶颈；
+11. 验证 Pinned Memory、异步流水、GPU 后处理和 CUDA Graph；
+12. 实现并验证 TensorRT IPluginV3 与 ONNX GraphSurgeon 扩展链路；
+13. 分析 INT8 量化敏感模块并探索 Mixed Precision；
+14. 形成可公开、可解释的 GitHub 工程。
 
 ## 4. 非核心范围
 

@@ -423,7 +423,8 @@ Exp09 已通过 C++ Runtime 编译、原始输出一致性和三独立进程生�
 Exp10 已通过五种输入形状逐元素一致性和 CUDA kernel-only 性能验收。
 Exp11 已通过文件视频三进程确定性和 IMX219 300 帧端到端功能验收。
 Exp12 已通过固定时钟三进程重复性和 54,000 帧/约 30 分钟稳定性验收；默认部署恢复动态调频。
-当前下一项实验为 Exp13 项目收尾、README、简历与面试材料。
+用户已批准将项目收尾顺延到 Exp20。当前下一项实验为 Exp13 Nsight Systems
+端到端性能瓶颈画像与优化基线；Exp13 只做测量和定位，不提前实施异步流水优化。
 
 Codex 不得擅自重新选择模型主线。
 
@@ -441,7 +442,14 @@ Exp09  TensorRT C++ Runtime
 Exp10  CUDA 融合预处理
 Exp11  视频/摄像头端到端推理
 Exp12  性能、功耗、温度与稳定性测试
-Exp13  项目收尾、README、简历与面试材料
+Exp13  Nsight Systems 端到端性能瓶颈画像与优化基线
+Exp14  Pinned Memory、Async 与 Double Buffer 流水线
+Exp15  CUDA GPU Decode/Filter/Compaction 与 Nsight Compute
+Exp16  TensorRT IPluginV3 与 ONNX GraphSurgeon
+Exp17  INT8 敏感性分析与 Mixed Precision
+Exp18  CUDA Graph 与最终 Runtime 优化
+Exp19  最终综合 Benchmark
+Exp20  README、学习路线、简历与面试材料
 ```
 
 若用户另行指定编号，以用户最新指令为准。
@@ -1345,7 +1353,7 @@ Exp06～Exp12 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. 后续 Exp13 项目收尾、README、简历与面试材料的最小执行计划。
+8. 后续 Exp13 Nsight Systems 瓶颈画像的最小执行计划。
 
 先输出检查结果，不执行构建。
 ```
@@ -1371,13 +1379,13 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-核对 Exp12 原始证据、哈希和动态调频恢复状态
+以 Exp12 同步 Runtime 为冻结基线执行 Exp13 Profiling
         ↓
 Windows Codex
-汇总 README、项目讲解稿、简历要点和面试材料
+审查时间线证据、瓶颈分类和后续优化假设
         ↓
 ChatGPT
-复核成果边界并完成项目发布材料
+依据 Exp13 结果规划 Exp14，并再次提交用户审批
 ```
 
 ---
