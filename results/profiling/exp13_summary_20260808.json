@@ -1,0 +1,70 @@
+{
+  "experiment": "Exp13",
+  "status": "PASS",
+  "date": "2026-08-08",
+  "platform": "Jetson Orin Nano Super",
+  "power_mode": "25W / id 1 / dynamic clocks",
+  "formal_code_commit": "5ad07aa",
+  "engine_sha256": "88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83",
+  "correctness": {
+    "file_frames": 150,
+    "file_detections": 151,
+    "file_detections_sha256": "9f3f33459f8d086a74249a57f21f158a73ca794a2229a9e1af40a03de34e2d8a",
+    "camera_frames": 300,
+    "nvtx_plain_five_frame_digest_equal": true
+  },
+  "unprofiled_file_three_run": {
+    "pipeline_wall_fps_mean": 61.583010709,
+    "pipeline_wall_fps_cv_percent": 3.002070141,
+    "app_effective_fps_mean": 66.138227551,
+    "end_to_end_mean_ms": 15.129539342,
+    "end_to_end_p95_ms": 16.728788717,
+    "end_to_end_p99_ms": 16.937083283
+  },
+  "unprofiled_camera_three_run": {
+    "pipeline_wall_fps_mean": 30.173949022,
+    "pipeline_wall_fps_cv_percent": 0.028491174,
+    "app_effective_fps_mean": 31.422572571,
+    "end_to_end_mean_ms": 31.824284782,
+    "end_to_end_p95_ms": 34.7150099,
+    "end_to_end_p99_ms": 35.78334104
+  },
+  "profiled_file": {
+    "frame_total_mean_ms": 15.717474773,
+    "capture_mean_ms": 1.091288698,
+    "h2d_host_range_mean_ms": 0.89701056,
+    "preprocess_sync_mean_ms": 0.76620224,
+    "tensorrt_enqueue_host_range_mean_ms": 6.08857536,
+    "d2h_host_range_mean_ms": 4.05271488,
+    "decode_mean_ms": 0.239618347,
+    "nms_mean_ms": 0.008761813,
+    "output_mean_ms": 1.103169707,
+    "gpu_busy_percent": 66.190037031,
+    "gpu_idle_percent": 33.809962969,
+    "kernel_memcpy_overlap_percent": 0.0,
+    "h2d_bytes_per_frame": 6220800,
+    "h2d_gpu_mean_ms": 0.825414613,
+    "d2h_bytes_per_frame": 235200,
+    "d2h_gpu_mean_ms": 0.02839744
+  },
+  "profiled_camera": {
+    "frame_total_mean_ms": 33.22823616,
+    "capture_mean_ms": 14.643793231,
+    "capture_share_percent": 43.920037265,
+    "gpu_busy_percent": 36.693952324,
+    "gpu_idle_percent": 63.306047676,
+    "kernel_memcpy_overlap_percent": 0.0
+  },
+  "trtexec_layer_profile": {
+    "summed_average_ms": 5.1003,
+    "layer_count": 178,
+    "largest_single_layer_average_ms": 0.1939,
+    "largest_single_layer_percent": 3.8
+  },
+  "classification": {
+    "file": ["synchronization-bound", "compute-significant"],
+    "camera": ["input-rate-bound", "synchronization-bound"],
+    "memory_bound": "not proven by Nsight Systems; requires Nsight Compute"
+  },
+  "decision": "Prioritize pinned host memory, event-based dependencies and double buffering in Exp14; keep FP16 engine and defer GPU postprocess optimization."
+}

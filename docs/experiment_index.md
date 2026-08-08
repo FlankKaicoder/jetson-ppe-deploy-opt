@@ -2,7 +2,7 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp10 复盘、设备重连
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp13 复盘、设备重连
 SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
@@ -21,7 +21,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp10 | CUDA 融合预处理 | PASS | `10_CUDA融合预处理与验证总结.md` |
 | Exp11 | 视频/摄像头端到端推理 | PASS | `11_视频摄像头端到端推理总结.md` |
 | Exp12 | Jetson 性能、功耗、温度与稳定性测试 | PASS | `12_Jetson性能功耗温度稳定性总结.md` |
-| Exp13 | Nsight Systems 端到端性能瓶颈画像 | IN_PROGRESS | `13_Nsight端到端性能瓶颈分析总结.md`（待创建） |
+| Exp13 | Nsight Systems 端到端性能瓶颈画像 | PASS | `13_Nsight端到端性能瓶颈分析总结.md` |
 | Exp14 | Pinned Memory、Async 与 Double Buffer | PLANNED | 待 Exp13 后审批 |
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PLANNED | 待审批 |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED | 待审批 |

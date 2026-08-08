@@ -1,4 +1,5 @@
 #include "trt_runtime.hpp"
+#include "ppe_nvtx.hpp"
 
 #include <NvInfer.h>
 #include <cuda_runtime_api.h>
@@ -345,20 +346,30 @@ public:
         check_cuda(
             cudaEventRecord(start_event.get(), stream),
             "device inference start event");
-        if (!context_->enqueueV3(stream)) {
-            throw std::runtime_error("enqueueV3 with external device input returned false");
+        {
+            PPE_NVTX_RANGE("tensorrt_enqueue");
+            if (!context_->enqueueV3(stream)) {
+                throw std::runtime_error(
+                    "enqueueV3 with external device input returned false");
+            }
         }
-        check_cuda(
-            cudaMemcpyAsync(
-                output.data(), device_output_->data(), output_.bytes,
-                cudaMemcpyDeviceToHost, stream),
-            "device inference cudaMemcpyAsync D2H");
+        {
+            PPE_NVTX_RANGE("d2h");
+            check_cuda(
+                cudaMemcpyAsync(
+                    output.data(), device_output_->data(), output_.bytes,
+                    cudaMemcpyDeviceToHost, stream),
+                "device inference cudaMemcpyAsync D2H");
+        }
         check_cuda(
             cudaEventRecord(end_event.get(), stream),
             "device inference end event");
-        check_cuda(
-            cudaEventSynchronize(end_event.get()),
-            "device inference event synchronize");
+        {
+            PPE_NVTX_RANGE("inference_sync");
+            check_cuda(
+                cudaEventSynchronize(end_event.get()),
+                "device inference event synchronize");
+        }
         const auto host_end = std::chrono::steady_clock::now();
         float cuda_ms = 0.0F;
         check_cuda(

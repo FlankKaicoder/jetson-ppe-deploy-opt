@@ -43,7 +43,7 @@
 
 | 实验 | 内容 | 状态 |
 |---|---|---|
-| Exp13 | Nsight Systems 端到端性能瓶颈画像 | IN_PROGRESS |
+| Exp13 | Nsight Systems 端到端性能瓶颈画像 | PASS |
 | Exp14 | Pinned Memory、Async 与 Double Buffer | PLANNED |
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PLANNED |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED |
@@ -70,6 +70,9 @@ Exp02 YOLO11n baseline best.pt
 → Exp12 Jetson 综合 Benchmark
 → Exp13 Profiling 基线
 ```
+
+Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
+同步串行问题。Exp14 的 Pinned Memory、事件依赖与双缓冲方案尚待用户审批，不得提前表述为完成。
 
 不得用 RTX 3080 Ti 的验证速度代替 Jetson 性能结论，也不得提前把计划项表述为
 已经完成。

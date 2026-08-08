@@ -20,7 +20,12 @@ add_library(ppe_trt_runtime STATIC
     src/trt_runtime.cpp)
 target_include_directories(ppe_trt_runtime
     PUBLIC include
-    PRIVATE ${TENSORRT_INCLUDE_DIR})
+    PRIVATE
+        ${TENSORRT_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../profiling/include)
+if(PPE_ENABLE_NVTX)
+    target_compile_definitions(ppe_trt_runtime PRIVATE PPE_ENABLE_NVTX=1)
+endif()
 target_link_libraries(ppe_trt_runtime
     PUBLIC CUDA::cudart ${TENSORRT_LIBRARY})
 target_compile_options(ppe_trt_runtime PRIVATE
