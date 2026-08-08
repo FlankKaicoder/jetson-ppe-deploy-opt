@@ -21,7 +21,14 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp10 | CUDA 融合预处理 | PASS | `10_CUDA融合预处理与验证总结.md` |
 | Exp11 | 视频/摄像头端到端推理 | PASS | `11_视频摄像头端到端推理总结.md` |
 | Exp12 | Jetson 性能、功耗、温度与稳定性测试 | PASS | `12_Jetson性能功耗温度稳定性总结.md` |
-| Exp13 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
+| Exp13 | Nsight Systems 端到端性能瓶颈画像 | IN_PROGRESS | `13_Nsight端到端性能瓶颈分析总结.md`（待创建） |
+| Exp14 | Pinned Memory、Async 与 Double Buffer | PLANNED | 待 Exp13 后审批 |
+| Exp15 | CUDA GPU 后处理与 Nsight Compute | PLANNED | 待审批 |
+| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED | 待审批 |
+| Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED | 待审批 |
+| Exp18 | CUDA Graph 与最终 Runtime 优化 | PLANNED | 待审批 |
+| Exp19 | 最终综合 Benchmark | PLANNED | 待审批 |
+| Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 
 ## 状态定义
 
