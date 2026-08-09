@@ -1,1737 +1,808 @@
 # Jetson PPE 项目后续深化路线与秋招能力补强方案
 
-> 文档用途：提供给 Codex 作为当前 Jetson PPE 项目后续实验规划、实现边界、技术优先级和验收依据。
-> 当前时间：2026-08-08
-> 当前阶段：Exp00～Exp12 已完成，不立即进入原计划中的“Exp13 项目收尾”，而是继续补齐推理优化、CUDA、TensorRT 扩展和量化优化能力。
-> 核心原则：**停止继续横向堆模型实验，开始从 Runtime、内存、并发、算子、计算图和量化失败分析方向向下深入。**
+> 文档版本：V3，2026-08-08。
+> 文档地位：本文件是仓库中后续技术路线、能力边界、优先级和验收原则的唯一 canonical 文档。
+> 当前阶段：Exp00～Exp15 已完成；Exp16～Exp20 尚未执行。
+> 核心方法：**Measure → Identify → Optimize → Verify → Re-profile → Accept/Reject**。
+> 事实边界：计划、实现、验证和主线采用必须分开表述；没有代码和实验产物支撑的能力不得写成成果。
 
 ---
 
-# 1. 当前项目状态判断
+# 1. 文档用途与事实来源
 
-当前项目并不是“简单把 RK3588 上做过的 YOLO 部署搬到 Jetson 上重新做一遍”。
+本文件用于统一：
 
-截至 Exp12，已经完成：
+```text
+项目技术定位
+当前真实状态
+后续实验顺序
+工程与性能验收
+能力—证据映射
+秋招表达边界
+Codex 执行约束
+```
+
+事实优先级为：
+
+```text
+代码、正式日志、指标、SHA256、Git 历史
+↓
+各实验正式总结与项目全流程快速学习手册
+↓
+README / ROADMAP / experiment_index
+↓
+本路线文档中的规划与解释
+```
+
+发生冲突时，不得用路线文档覆盖真实实验结果。旧版 V1、V2 和 supplement 不再作为同时有效的
+路线来源；本文件完成合并后，仓库只保留这一份 canonical 路线文档。
+
+---
+
+# 2. 项目定位与能力边界
+
+业务名称继续使用：
+
+> 基于 Jetson Orin Nano Super 的 PPE 小目标检测与 TensorRT/CUDA 推理优化。
+
+技术定位升级为：
+
+> **Jetson Orin Nano 端侧视觉推理优化：TensorRT、CUDA Kernel、Profiling、Plugin 与低精度推理。**
+
+PPE 是 workload，YOLO11n 是冻结模型。真正研究对象是：
+
+```text
+Model
+↓
+Graph
+↓
+Precision
+↓
+CUDA Operator
+↓
+Memory
+↓
+Runtime
+↓
+Scheduling
+↓
+Profiling
+↓
+System
+```
+
+## 2.1 与 RK3588 项目的边界
+
+RK3588 项目重点体现：
+
+```text
+V4L2 / RGA / RKNN / NPU 多核 / MPP
+H.264 / ALSA / AAC / FFmpeg / RTSP / MP4
+多线程 / 音视频同步 / 嵌入式 Linux 音视频系统
+```
+
+Jetson 项目重点体现：
+
+```text
+ONNX / TensorRT 10 / TensorRT C++ Runtime
+FP16 / INT8 / Explicit Q/DQ / Mixed Precision
+CUDA Kernel / CUB / GPU Memory
+CUDA Stream / Event / Graph
+Nsight Systems / Nsight Compute / NVTX
+IPluginV3 / ONNX GraphSurgeon
+性能建模、正确性验证和端侧 GPU 推理优化
+```
+
+不再把 Jetson 项目扩张为另一个摄像头—模型—画框或多路音视频系统项目。
+
+---
+
+# 3. 当前已完成链路与部署主线
+
+截至 Exp15，已完成：
 
 ```text
 数据集审计
-→ YOLO11n 基线训练
-→ P2 小目标结构消融
-→ 部署可重参数化结构消融
-→ CBAM-Lite / Focal Loss 消融
-→ 冻结原始 YOLO11n baseline
-→ PyTorch → ONNX
-→ ONNX Runtime 一致性验证
-→ TensorRT FP32 / FP16
-→ INT8 PTQ
+→ YOLO11n baseline 与 P2/Rep/Attention/Focal 消融
+→ 冻结原始 YOLO11n
+→ PyTorch → ONNX → ONNX Runtime 一致性
+→ TensorRT FP32 / FP16 / INT8 PTQ
 → TensorRT C++ Runtime
 → CUDA 融合预处理
-→ GStreamer / IMX219 摄像头端到端推理
-→ 延迟 / P95 / P99 / FPS / 功耗 / 温度 / 稳定性
+→ 文件视频 / IMX219 端到端推理
+→ 延迟 / P95 / P99 / 功耗 / 温度 / 30 分钟稳定性
+→ Nsight Systems 端到端瓶颈画像
+→ Pinned / Stream / Event / Double Buffer 消融
+→ CUDA Atomic/CUB Decode/Filter/Compaction
+→ Nsight Compute Kernel 分析
 ```
 
-已有成果明显区别于普通的“YOLO 导出 TensorRT 后跑起来”：
+当前模型主线：
 
-- PyTorch / ONNX / TensorRT 有完整一致性验证；
-- FP32 / FP16 / INT8 有公平对照；
-- INT8 不只是构建成功，而是根据精度和 tiny/small recall 主动 REJECT；
-- C++ TensorRT Runtime 已实现；
-- CUDA 已实现真实融合预处理 Kernel；
-- IMX219 摄像头端到端链路已跑通；
-- 30 分钟稳定性、P95/P99、功耗、温度和 RSS 趋势已经验证。
+```text
+Exp02 原始 YOLO11n baseline
+→ Exp06 静态 ONNX
+→ Exp07 Jetson 本机构建 FP16 Engine
+```
 
-因此：
+当前 Runtime 主线：
 
-> 当前项目的“宽度”已经足够，真正不足的是向 GPU 推理优化底层继续深入的“深度”。
+```text
+GStreamer / OpenCV Host Frame
+→ CUDA 融合预处理
+→ TensorRT FP16 enqueueV3
+→ Exp15 CUB stable GPU Decode/Filter/Compaction
+→ count D2H + 可变长 Candidate D2H
+→ CPU class-aware NMS
+```
+
+Exp08 Full INT8 因精度退化 `REJECT`；Exp14 双缓冲异步路径因尾延迟退化 `REJECT`。二者保留代码和
+负向证据，但不进入当前部署主线。
 
 ---
 
-# 2. 当前最大的能力缺口
+# 4. Exp13～Exp15 性能工程证据链
 
-当前数据流基本为：
+## 4.1 Exp13：先测量，再优化
 
-```text
-IMX219 / Video
-↓
-GStreamer / OpenCV BGR Host Frame
-↓
-pageable Host → Device Copy
-↓
-CUDA Preprocess
-↓
-TensorRT enqueueV3
-↓
-Raw Output Device → Host
-↓
-CPU Decode / NMS
-↓
-Result
-```
-
-当前主要问题不是“功能不完整”，而是：
+Exp13 通过 NVTX、Nsight Systems、CUDA Event 和 TensorRT layer profile 建立同步 Runtime 基线：
 
 ```text
-数据传输仍偏同步
-Host / Device 之间仍存在较多搬运
-流水线未充分重叠
-后处理仍主要在 CPU
-没有系统级 Nsight Profiling
-没有真正完成 TensorRT Plugin
-没有 ONNX GraphSurgeon 图级扩展
-INT8 失败后没有继续做敏感层分析
-没有形成 Mixed Precision / QAT 优化闭环
+文件：synchronization-bound
+相机：input-rate-bound + synchronization-bound
+Kernel/Memcpy overlap：0
 ```
 
-所以当前项目仍主要处于：
+文件 wall FPS 约61.583；相机约30.174 FPS。文件 GPU idle 约33.81%，相机约63.31%。
+
+必须保留的解释边界：
 
 ```text
-TensorRT SDK 使用
-+
-C++ Runtime
-+
-单个 CUDA 融合 Kernel
-+
-端到端工程验证
+Host API Duration
+≠ GPU Activity Duration
+≠ Critical Path Contribution
 ```
 
-还没有完全进入：
+例如 D2H Host Range 可包含等待前序 Stream 工作的时间，不能把整个 Host Range 都解释为物理复制耗时。
+
+## 4.2 Exp14：工程实现成功，性能采用失败
+
+Exp14 的状态应分层表达：
 
 ```text
-性能瓶颈定位
-→ 内存优化
-→ GPU 并发调度
-→ CUDA 算子优化
-→ TensorRT 自定义 Plugin
-→ 计算图修改
-→ 量化敏感层分析
-→ 混合精度
+Engineering Implementation : IMPLEMENTED
+Dependency Correctness      : VERIFIED
+Cross-frame Overlap         : VERIFIED
+Performance Gate            : REJECTED
+Mainline Adoption           : REJECTED
 ```
 
-这正是后续最需要补齐的部分。
+Variant C 文件吞吐只提升约4.51%，但 P95 退化159.28%；相机 P95 退化173.51%。原因包括：
+
+```text
+OpenCV pageable frame → pinned staging 的额外 CPU memcpy
+YOLO11n batch=1 可重叠窗口较小
+Stream/Event/slot/retirement 调度成本
+排队提高 throughput 机会但扩大单帧驻留时间
+```
+
+Exp14 isolation audit 降为 optional/post-resume，不阻塞 Exp16，也不改变当前主线 `REJECTED` 结论。
+
+## 4.3 Exp15：系统最优不等于单 Kernel 最优
+
+Exp15 将 raw `[1,7,8400]` 的 class-max、filter、box decode 和 compaction 移到 GPU，保留 CPU NMS。
+
+三轮文件结果：
+
+| Variant | Wall FPS | E2E mean | E2E P95 | D2H B/frame |
+|---|---:|---:|---:|---:|
+| Baseline | 60.270 | 15.502 ms | 16.940 ms | 235,200.00 |
+| Atomic | 70.201 | 13.310 ms | 14.668 ms | 263.84 |
+| CUB | 71.838 | 12.939 ms | 14.403 ms | 263.84 |
+
+CUB 相对 baseline：文件 FPS +19.19%，mean -16.53%，P95 -14.97%，D2H -99.89%；相机 P95 仅退化
+1.61%。文件检测 digest 保持冻结值，因此 CUB 路径 `ACCEPTED`。
+
+Nsight Compute 显示 Atomic 单 Kernel 约23.90 µs；CUB decode/init/select 约21.12/11.94/35.01 µs。
+Atomic 局部 Kernel 更短，但 CUB 保持稳定顺序，避免 CPU 恢复排序，最终 Runtime 更快。主要 Kernel
+waves/SM不足1且 SM/Memory throughput未饱和，当前更接近小 workload/固定 launch 成本约束。
+
+不得把全部19.19%提升简单归因于235 KB D2H缩减。Exp13 的真实 copy与CPU decode/NMS量级远小于
+Exp15 的同日 E2E差值，仍需 Postprocess Gain Attribution Gate 拆解因果。
 
 ---
 
-# 3. 与 RK3588 项目的能力边界重新划分
+# 5. 状态模型与能力—证据矩阵
 
-后续不要让 Jetson 项目继续重复 RK3588 项目的内容。
+## 5.1 四种能力状态
 
-## 3.1 RK3588 项目主要体现
+- `IMPLEMENTED`：已有代码或工程链路，但不代表正确或适合主线；
+- `VERIFIED`：已通过冻结输入、正确性、生命周期或 Profiling 验证；
+- `ACCEPTED`：已满足预先冻结的采用条件，进入当前主线；
+- `REJECTED`：工程或验证可能完成，但未满足采用条件，不进入主线。
 
-```text
-V4L2
-RGA
-RKNN
-NPU 多核
-MPP
-H.264
-ALSA
-AAC
-FFmpeg
-RTSP
-MP4
-多线程
-音视频同步
-嵌入式 Linux 音视频系统工程
-```
+单项能力可同时具有多个维度，例如 Exp14 为 `IMPLEMENTED + VERIFIED + REJECTED`。不得用一个笼统的
+`PASS` 隐藏“实现成功但主线拒绝”的事实。
 
-## 3.2 Jetson 项目今后主要体现
+## 5.2 当前能力—证据矩阵
 
-```text
-ONNX
-TensorRT
-TensorRT C++ Runtime
-FP16 / INT8 / Mixed Precision / QAT
-CUDA
-GPU Memory
-Pinned Memory
-CUDA Stream
-CUDA Event
-Double Buffer
-CUDA Graph
-Nsight Systems
-Nsight Compute
-Custom CUDA Kernel
-TensorRT IPluginV3
-ONNX GraphSurgeon
-GPU Postprocess
-性能建模
-端侧 GPU 推理优化
-```
+| 能力 | 状态 | 主要证据 | 简历成果边界 |
+|---|---|---|---|
+| PyTorch→ONNX一致性 | VERIFIED / ACCEPTED | Exp06张量与检测一致性 | 可写 |
+| TensorRT FP16 | VERIFIED / ACCEPTED | Exp07精度与GPU benchmark | 可写 |
+| Full INT8 PTQ | IMPLEMENTED / VERIFIED / REJECTED | Exp08速度、体积、tiny/small退化 | 可写负向决策，不可写INT8主线 |
+| TensorRT C++ Runtime | VERIFIED / ACCEPTED | Exp09原始输出与三进程生命周期 | 可写 |
+| CUDA融合预处理 | VERIFIED / ACCEPTED | Exp10五形状逐元素对照 | 可写 |
+| 视频/IMX219链路 | VERIFIED / ACCEPTED | Exp11文件确定性与相机300帧 | 可写 |
+| 性能/功耗/稳定性 | VERIFIED | Exp12三轮与54,000帧 | 可写 |
+| Nsight Systems/NVTX | VERIFIED | Exp13时间线与瓶颈分类 | 可写 |
+| Pinned/Stream/Event/Double Buffer | IMPLEMENTED / VERIFIED / REJECTED | Exp14 overlap与P95退化 | 可写实现和拒绝原因 |
+| CUDA Atomic/CUB后处理 | VERIFIED | Exp15 synthetic、视频、NCU | 可写 |
+| CUB stable后处理主线 | ACCEPTED | Exp15三轮性能、digest与相机P95 | 可写 |
+| IPluginV3 | 未完成 | 无Plugin `.so`/Engine/独立进程证据 | 不可写成果 |
+| ONNX GraphSurgeon自定义图 | 未完成 | 无冻结修改后ONNX | 不可写成果 |
+| Explicit Q/DQ / Mixed Precision | 未完成 | 尚无敏感性与Pareto结果 | 不可写成果 |
+| Runtime CUDA Graph | 未完成 | trtexec使用不能替代自有Runtime集成 | 不可写成果 |
+| GPU NMS / NVMM zero-copy | 未完成且非当前主线 | 无正式证据 | 不可写成果 |
 
-以后不要再把 Jetson 项目做成：
-
-```text
-摄像头
-→ 模型
-→ 画框
-```
-
-而要把项目转成：
-
-> **Jetson Orin Nano 端侧视觉推理引擎优化项目。**
-
-PPE 只是 workload。
-
-YOLO11n 只是测试模型。
-
-真正研究对象变成：
-
-```text
-模型
-↓
-计算图
-↓
-数值精度
-↓
-算子
-↓
-内存
-↓
-Runtime
-↓
-GPU 调度
-↓
-Profiling
-↓
-系统性能
-```
+此矩阵必须随实验更新。只有存在可追溯代码、日志、指标或哈希的能力，才允许进入最终简历成果。
 
 ---
 
-# 4. 当前能力矩阵
+# 6. 当前能力缺口与岗位映射
 
-| 能力 | 当前状态 | 后续决策 |
-|---|---|---|
-| 数据集 / 模型训练 | 已完成 | 不再扩展 |
-| 模型结构消融 | 已完成 P2 / Rep / Attention / Focal | 不再扩展 |
-| PyTorch → ONNX | 已完成 | 保留 |
-| ONNX 一致性 | 已完成 | 保留 |
-| TensorRT FP32 / FP16 | 已完成 | 保留 |
-| TensorRT INT8 PTQ | 工程完成，但候选 REJECT | 继续深入 |
-| TensorRT C++ Runtime | 已完成 | 作为后续基础 |
-| CUDA Kernel | 已有融合预处理 | 继续深入 |
-| Pinned Memory | 未完成 | 必做 |
-| cudaMemcpyAsync | 未完整形成优化链 | 必做 |
-| CUDA Stream | 已使用，但没有真正流水优化 | 必做 |
-| Double / Triple Buffer | 未完成 | 必做 |
-| CUDA Graph | trtexec 用过，自己 Runtime 未集成 | 推荐 |
-| Nsight Systems | 未形成正式实验 | 必做 |
-| Nsight Compute | 未形成 Kernel 深度分析 | 推荐 |
-| GPU 后处理 | 未完成 | 推荐 |
-| TensorRT IPluginV3 | 未完成 | 高优先级 |
-| ONNX GraphSurgeon | 未完成 | 高优先级 |
-| INT8 Layer Sensitivity | 未完成 | 高优先级 |
-| Mixed Precision | 未完成 | 高优先级 |
-| QAT | 未完成 | 视 Mixed Precision 结果 |
-| TVM / MLIR | 未完成 | 本项目暂不做 |
+## 6.1 当前最高价值缺口
+
+```text
+TensorRT IPluginV3 与 Creator/Registry/Lifecycle
+ONNX GraphSurgeon 自定义节点与图契约
+Plugin ABI、workspace、独立进程加载和设备正确性 QA
+量化 activation/dynamic-range/clipping 诊断
+P3/P4/P5 与 cls/reg/DFL 模块敏感性
+Explicit Q/DQ 与 Mixed Precision Pareto
+由 Nsight 证据驱动的 CUDA Graph
+最终统一条件下的系统 Benchmark
+```
+
+## 6.2 岗位映射
+
+- 嵌入式 AI / Edge AI：当前已经具备投递基础，继续强化 GPU Runtime、正确性和系统性能解释；
+- TensorRT / 模型部署：Exp16、Exp17 是最关键补强；
+- AI Infra / 推理优化：重点是 critical path、内存、调度、Kernel、Plugin、量化和可重复 Benchmark；
+- CUDA 算子：当前只有融合预处理和后处理两个案例，不应夸大为通用算子专家；
+- AI Compiler：使用 TensorRT/GraphSurgeon 不等于掌握编译器 pass、lowering、scheduling 或 codegen。
 
 ---
 
-# 5. 后续总体路线
+# 7. Postprocess Gain Attribution Gate（不新增 Exp15.1 编号）
 
-原计划：
+## 7.1 目的
 
-```text
-Exp13
-项目收尾 / README / 简历 / 面试
-```
-
-暂时取消。
-
-重新规划为：
+在 Exp16 前用小型审计拆分：
 
 ```text
-Exp13  Nsight Systems 端到端性能瓶颈画像
-↓
-Exp14  Pinned Memory + Async + Double Buffer 流水线
-↓
-Exp15  CUDA GPU 后处理与 D2H 压缩
-↓
-Exp16  TensorRT IPluginV3 + GraphSurgeon
-↓
-Exp17  INT8 Layer Sensitivity + Mixed Precision
-↓
-Exp18  CUDA Graph / 最终 Runtime 优化
-↓
-Exp19  最终综合 Benchmark
-↓
-Exp20  README / 简历 / 面试材料
-```
-
-如果时间不足，则优先保留：
-
-```text
-Exp13
-Exp14
-Exp16
-Exp17
-```
-
-这是秋招前最高价值组合。
-
----
-
-# 6. Exp13：Nsight Systems 端到端瓶颈分析
-
-## 6.1 核心目标
-
-不要先修改性能代码。
-
-先回答：
-
-> 当前 Exp12 同步版 Runtime 到底慢在哪里？
-
-需要对完整 C++ 推理程序加入 NVTX Range：
-
-```text
-capture
-h2d
-preprocess
-tensorrt
-d2h
-decode
-nms
-output
-```
-
-然后使用：
-
-```text
-Nsight Systems
-CUDA Event
-TensorRT profiling
-trtexec --dumpProfile
-trtexec --dumpLayerInfo
-```
-
-形成完整时间线。
-
----
-
-## 6.2 两种测试场景
-
-### 场景 A：文件视频无限速
-
-用于测试系统最大吞吐：
-
-```text
-sync=false
-不限制原视频 FPS
-尽快消费
-```
-
-主要关注：
-
-```text
-最大 throughput
-GPU 空洞
-CPU 等待
-Memcpy 与 Kernel 是否重叠
-enqueue 间隔
-```
-
-### 场景 B：IMX219 30 FPS
-
-用于测试真实实时链路：
-
-```text
-1920×1080 @ 30 FPS
-appsink max-buffers=1
-drop=true
-```
-
-主要关注：
-
-```text
-P50
-P95
-P99
-jitter
-摄像头等待占比
-GPU 是否实际成为瓶颈
-```
-
----
-
-## 6.3 必须回答的问题
-
-最终总结必须回答：
-
-```text
-1. CPU 在哪里阻塞？
-2. CUDA Stream 是否存在长时间 idle？
-3. H2D 与 Kernel 是否重叠？
-4. D2H 是否阻塞下一帧？
-5. TensorRT enqueue 前后是否存在 GPU bubble？
-6. CPU 后处理占多少比例？
-7. 摄像头模式为什么 FPS 接近 30？
-8. 文件模式下系统真正最大吞吐是多少？
-9. 当前瓶颈属于：
-   - compute-bound
-   - memory-bound
-   - synchronization-bound
-   - input-rate-bound
-   中的哪一种？
-```
-
----
-
-## 6.4 预期输出
-
-```text
-results/profiling/exp13_*/
-├── nsys_report.qdrep
-├── nsys_stats.txt
-├── nvtx_summary.csv
-├── trt_layer_profile.txt
-├── timeline_summary.json
-├── benchmark.csv
-└── summary.md
-```
-
----
-
-## 6.5 验收标准
-
-Exp13 不要求“变快”。
-
-PASS 条件是：
-
-```text
-可以明确定位主要同步点
-可以明确定位主要 memcpy
-可以明确各阶段比例
-可以识别 GPU idle 区域
-可以形成后续优化假设
-```
-
-Exp13 是后续所有优化实验的基准。
-
----
-
-# 7. Exp14：Pinned Memory + Async + Double Buffer
-
-## 7.1 实验目的
-
-将当前相对串行的数据流：
-
-```text
-Frame N:
-H2D
-→ preprocess
-→ TensorRT
-→ D2H
-→ CPU postprocess
-→ Frame N+1
-```
-
-改造成部分流水：
-
-```text
-Frame N
-H2D → Preprocess → TensorRT → D2H
-
-Frame N+1
-       H2D → Preprocess → TensorRT → D2H
-
-CPU
-Capture / Postprocess 与 GPU 工作尽可能重叠
-```
-
----
-
-## 7.2 必须实现
-
-### Host 内存
-
-对比：
-
-```text
-pageable malloc/new
+GPU decode/filter 收益
 vs
-cudaHostAlloc / cudaHostRegister
-```
-
-### 异步传输
-
-使用：
-
-```cpp
-cudaMemcpyAsync()
-```
-
-### CUDA Stream
-
-至少形成：
-
-```text
-stream0
-stream1
-```
-
-或者：
-
-```text
-capture thread
-+
-GPU inference stream
-+
-postprocess thread
-```
-
-### Buffer
-
-实现：
-
-```text
-double buffer
-```
-
-如果结构清晰，可扩展：
-
-```text
-triple buffer
-```
-
----
-
-## 7.3 必须理解的概念
-
-不能只让 Codex 写代码。
-
-需要通过实验理解：
-
-```text
-pageable memory
-pinned memory
-DMA
-cudaMemcpy
-cudaMemcpyAsync
-default stream
-non-default stream
-CUDA Event
-stream dependency
-cudaStreamSynchronize
-cudaEventSynchronize
-buffer ownership
-race condition
-producer-consumer
-```
-
----
-
-## 7.4 性能比较
-
-至少比较：
-
-```text
-V0 当前 Exp12 同步 baseline
-V1 pinned memory
-V2 pinned + async
-V3 pinned + async + double buffer
-```
-
-分别测试：
-
-```text
-文件视频最大吞吐
-IMX219 30 FPS 实时延迟
-```
-
----
-
-## 7.5 重点指标
-
-```text
-mean
-P50
-P95
-P99
-FPS
-GPU utilization
-CPU utilization
-H2D time
-D2H time
-GPU idle ratio
-VDD_IN
-temperature
-```
-
-不要只比较 FPS。
-
-摄像头本身是 30 FPS，因此：
-
-```text
-文件模式 → 看 throughput
-摄像头模式 → 看 latency / jitter / resource
-```
-
----
-
-# 8. Exp15：CUDA GPU 后处理与 D2H 压缩
-
-## 8.1 当前问题
-
-TensorRT 当前输出：
-
-```text
-[1, 7, 8400]
-```
-
-当前做法：
-
-```text
-整个 Raw Tensor D2H
-↓
-CPU decode
-↓
-confidence filter
-↓
-NMS
-```
-
-目标是减少：
-
-```text
-GPU → CPU
-```
-
-的数据量，并继续学习 CUDA Kernel。
-
----
-
-## 8.2 第一阶段
-
-先不要求完整 GPU NMS。
-
-实现：
-
-```text
-Raw Tensor
-↓
-CUDA Decode
-↓
-Class Max
-↓
-Confidence Filter
-↓
-Candidate Compaction
-↓
-仅将候选框 D2H
-↓
-CPU NMS
-```
-
-这样能够直接比较：
-
-```text
-raw output D2H bytes
+CUB compaction + D2H缩减收益
 vs
-filtered candidate D2H bytes
+动态调频、视频解码和运行顺序噪声
 ```
+
+该 Gate 补充 Exp15 因果解释，不改变 Exp15 `ACCEPTED` 状态，也不创建新的正式实验编号。
+
+## 7.2 三条路径
+
+```text
+P0 Raw Baseline
+raw 235,200 B D2H → CPU class-max/filter/decode/NMS
+
+P1 GPU Decode Only
+GPU class-max/filter/decode
+→ 固定 8400×28 B Candidate Buffer D2H（恰好235,200 B）
+→ invalid candidate 使用 index=-1 等冻结语义表示
+→ CPU跳过invalid并执行同一NMS
+
+P2 GPU Decode + Compact
+GPU class-max/filter/decode
+→ CUB stable compaction
+→ count + 可变长 Candidate D2H
+→ 同一CPU NMS
+```
+
+P1 不增加独立 valid array，避免改变传输字节口径。必须初始化所有无效位置，验证 index=-1 不会进入
+排序/NMS，且 P0/P1/P2 最终检测 digest一致。
+
+## 7.3 方法与证据
+
+先用固定 raw fixture 做低方差 microbenchmark，再做同日 E2E paired/interleaved 测试。推荐顺序：
+
+```text
+P0 → P1 → P2 → P2 → P1 → P0
+```
+
+记录：Kernel、raw/fixed/variable D2H、count copy、count-sync、payload copy、CPU decode/filter、CPU NMS、
+host blocking、E2E、P95、wall FPS、温度和频率状态。报告每组配对差值、均值、median、CV和min/max，
+不挑最好一轮。
 
 ---
 
-## 8.3 CUDA 学习重点
+# 8. Exp16：IPluginV3 + ONNX GraphSurgeon
 
-该实验需要重点学习：
+Exp16 的目标是把 Exp15 已验证的 CUDA/CUB 算子接入 TensorRT 图，不是再发明一个新 CUDA 算子，也
+不把“大幅加速”预设为成功条件。
 
-```text
-thread mapping
-global memory access
-coalescing
-warp divergence
-atomic operations
-prefix sum / compaction
-shared memory（若需要）
-occupancy
-branch behavior
-```
+## 8.1 开始前冻结 Postprocess ABI / Semantic Contract
 
----
-
-## 8.4 第二阶段（可选）
-
-如果第一阶段稳定：
+正式方案必须先冻结：
 
 ```text
-CUDA NMS
+Plugin name / version / namespace
+输入 tensor name / shape / dtype / layout
+只支持当前实际需要的 FP32 raw input
+class-max tie-break
+confidence threshold 与边界包含规则
+cxcywh → xyxy 数值语义
+network coordinate / original coordinate 边界
+candidate index与stable order
+capacity=8400与overflow行为
+NaN/Inf/非正宽高行为
+输出 boxes_scores/classes/indices/count 的shape与dtype
+CPU inverse-letterbox与NMS输入契约
+FP32数值容差与最终检测digest
 ```
 
-再比较：
+第一版不为展示技术栈强制增加没有实际需求的 FP16 Plugin IO。若未来真实图需要 FP16 IO，必须作为
+独立扩展验证，不得用“Engine 是 FP16”推断 Plugin binding 就必然需要 half。
+
+## 8.2 推荐输出
+
+不向 TensorRT 暴露 opaque C++ struct，使用固定容量 Tensor：
 
 ```text
-CPU NMS
-vs
-GPU NMS
+boxes_scores [1,8400,5] FP32
+classes      [1,8400]   INT32
+indices      [1,8400]   INT32
+count        [1]        INT32
 ```
 
----
+有效长度由 count 决定。Plugin 第一版保持 network-coordinate 输出；对少量候选的 inverse letterbox
+和 class-aware NMS 继续留在 CPU，以降低动态几何输入和 GPU NMS复杂度。
 
-## 8.5 Nsight Compute
+## 8.3 TensorRT 10.3 实现边界
 
-至少对核心 Kernel 使用一次 Nsight Compute，观察：
-
-```text
-SM utilization
-Memory Throughput
-DRAM Throughput
-Achieved Occupancy
-Warp Stall
-Branch Efficiency
-L1 / L2 behavior
-```
-
-目标不是为了追求某个漂亮数字，而是学会：
-
-> 用硬件计数器解释 Kernel 为什么快或为什么慢。
-
----
-
-# 9. Exp16：TensorRT IPluginV3 + ONNX GraphSurgeon
-
-这是项目后半段最重要的高级实验之一。
-
----
-
-## 9.1 不建议的路线
-
-不要为了“有 Plugin”重新训练一个 DCNv2 模型。
-
-原因：
-
-```text
-训练风险高
-模型收益不确定
-时间不足
-容易再次回到模型魔改
-```
-
----
-
-## 9.2 推荐 Plugin
-
-直接使用 Exp15 已经验证的 CUDA 后处理算子：
-
-```text
-YOLO Decode
-+
-Confidence Filter
-```
-
-封装为：
-
-```text
-PPEDecodeFilterPlugin
-```
-
----
-
-## 9.3 Plugin 需要完成
-
-至少覆盖：
+统一审计并使用当前环境真实接口：
 
 ```text
 IPluginV3
-Plugin Creator
-Plugin Registry
-输入输出 Shape
-FP32 / FP16
-Tensor Format
-Workspace
-enqueue()
-serialize
-deserialize
-clone / lifecycle
-CMake
-.so
-Engine build
-Engine load
+IPluginV3OneCore / OneBuild / OneRuntime
+IPluginCreatorV3One
+PluginRegistry
+Plugin Fields / getFieldsToSerialize
+Build phase / Runtime phase
+supportsFormatCombination或V3等效格式协商
+workspace size / enqueueV3数据流
 ```
+
+CUB temporary storage 必须来自显式 workspace 或经正式生命周期管理的资源；禁止在 `enqueue()` 内
+逐帧 `cudaMalloc/cudaFree`。Plugin不得把可变地址、临时 Host指针或机器专用路径错误序列化进Engine。
+
+## 8.4 GraphSurgeon 与产物链
+
+```text
+Exp06 ONNX
+→ GraphSurgeon插入自定义domain/op节点并冻结custom opset约定
+→ cleanup/toposort与结构审计
+→ TensorRT Parser + Plugin Registry
+→ Engine build/serialize
+→ 独立新进程先加载Plugin .so
+→ deserialize Engine
+→ enqueueV3
+```
+
+记录原ONNX、修改后ONNX、Plugin `.so` 和Engine的大小/SHA256，以及生成命令、TensorRT/CUDA版本和
+Git commit。Engine和大型模型产物仍不进入普通Git。
+
+## 8.5 Device QA 与 Host QA
+
+Device QA：
+
+```text
+固定与边界fixture
+CPU Reference vs Exp15 CUDA vs Plugin
+candidate count/index/class/order/confidence/box
+capacity/overflow/NaN/Inf
+Compute Sanitizer memcheck/initcheck/synccheck
+适用时使用racecheck，并说明其覆盖边界
+```
+
+Host QA：
+
+```text
+RAII与异常路径
+ASan/UBSan（环境支持时）
+Creator/Registry/version/namespace错误路径
+Plugin .so缺失或版本不匹配的可诊断失败
+独立新进程加载 .so 后再 deserialize Engine
+重复创建/销毁Runtime、Engine、Context和Plugin
+ldd/RPATH/符号可见性与部署清单
+```
+
+Compute Sanitizer `racecheck` 等工具只覆盖其支持的设备访问模式，不得表述为覆盖全部 host/device race、
+跨进程生命周期或业务级 buffer ownership；Host线程安全和资源所有权仍需独立测试与代码审计。
+
+## 8.6 Exp16 Gate
+
+Engineering Gate：Graph修改、Parser、Creator注册、Engine构建/序列化、独立进程反序列化和enqueue成功。
+
+Correctness Gate：CPU、Exp15和Plugin的count/index/class/order完全一致，confidence/box满足冻结容差，
+文件最终检测digest不变，无非法访问和生命周期错误。
+
+Performance Gate：相对 Exp15 B 的同日 paired/interleaved测试 P95退化不超过5%。达到工程与正确性
+要求可判 `VERIFIED`；只有满足采用条件且集成价值/维护成本合理，才判 `ACCEPTED`。Plugin接近Exp15 B
+但没有加速时可以是“Engineering PASS / Mainline REJECTED”，不能因功能运行就自动进入主线。
 
 ---
 
-## 9.4 ONNX GraphSurgeon
+# 9. Exp17：量化诊断、敏感性与 Mixed Precision
 
-使用 GraphSurgeon 修改 Exp06 ONNX：
+Exp08 已完成256图校准集合及 tiny/small覆盖审计，不从“标签分布是否代表”重新开始。Exp17 首先审计
+实际量化实现是 Explicit Q/DQ 还是 calibrator/cache路径，并保留已有负向结果：INT8更快、更小，但
+tiny+small recall从0.7902降至0.4895，因此当前主线仍为FP16。
 
-原始：
+## 9.1 Activation / Dynamic-range / Clipping Audit
 
-```text
-YOLO
-↓
-output0 [1,7,8400]
-```
-
-修改：
+新增重点：
 
 ```text
-YOLO
-↓
-PPEDecodeFilterPlugin
-↓
-compact detections
+关键activation min/max与直方图
+校准scale、zero point和dynamic range
+饱和/clipping比例
+FP32/FP16与INT8中间tensor误差
+cosine/L2/max_abs等诊断指标
+异常值对scale的影响
 ```
 
-形成：
+不得仅从最终mAP倒推敏感层，也不得把标签覆盖审计等同于activation代表性。
+
+## 9.2 优先敏感性分组
+
+优先按检测尺度与功能分支，而不是逐178层暴力搜索：
 
 ```text
-PyTorch
-↓
-ONNX
-↓
-GraphSurgeon
-↓
-Custom Plugin Node
-↓
-TensorRT Parser
-↓
-Plugin Registry
-↓
-CUDA Kernel
-↓
-TensorRT Engine
+P3 / P4 / P5
+classification branch
+regression branch
+DFL相关节点
+完整Detect Head
+必要时再扩展early/late backbone与neck
 ```
 
----
+首轮控制在约6～8个候选。每个候选执行Engine build、219-image test、tiny/small audit和GPU-only
+benchmark，记录mAP50、mAP50-95、tiny/small recall、mean/P95、Engine size，并计算 accuracy recovery
+per latency cost。
 
-## 9.5 必须验证
+## 9.3 Explicit Q/DQ 与 Mixed Precision
 
-正确性：
-
-```text
-Python / CPU Reference
-vs
-CUDA Kernel
-vs
-TensorRT Plugin
-```
-
-至少验证：
-
-```text
-candidate count
-class
-confidence
-bbox
-max error
-NaN / Inf
-```
-
-性能：
-
-```text
-原始 Runtime
-vs
-Plugin Runtime
-```
-
-关注：
-
-```text
-D2H bytes
-postprocess latency
-CPU usage
-P95
-P99
-throughput
-```
-
----
-
-## 9.6 为什么 Exp16 很重要
-
-完成前：
-
-> 会使用 TensorRT。
-
-完成后：
-
-> 可以扩展 TensorRT。
-
-这两者在简历和面试中的技术含量明显不同。
-
----
-
-# 10. Exp17：INT8 Layer Sensitivity + Mixed Precision
-
-Exp08 已经出现一个非常有价值的负向结果。
-
-当前结果：
-
-```text
-FP16 GPU-only mean:
-3.640914 ms
-
-INT8 GPU-only mean:
-2.714804 ms
-
-INT8 latency:
--25.4362%
-
-Engine size:
--39.8177%
-```
-
-但：
-
-```text
-mAP50-95:
-下降 0.01391398
-
-tiny+small recall:
-0.79020979
-→
-0.48951049
-```
-
-因此 INT8 被 REJECT。
-
-后续不能停在：
-
-> INT8 精度掉了，所以不用。
-
-真正需要回答：
-
-> 哪些层对 INT8 最敏感？
-
----
-
-## 10.1 第一阶段：层级敏感性分析
-
-目标：
-
-```text
-逐层或逐模块测试高精度 fallback
-```
-
-重点模块：
-
-```text
-Backbone
-Neck
-Detect Head
-最后若干 Conv
-分类分支
-回归分支
-```
-
-得到类似：
-
-```text
-Layer / Module
-↓
-FP16 fallback 后
-↓
-mAP 恢复量
-tiny recall 恢复量
-latency 损失
-```
-
-形成：
-
-```text
-accuracy sensitivity ranking
-```
-
----
-
-## 10.2 第二阶段：Mixed Precision
-
-构建：
-
-```text
-Full FP16
-Full INT8
-Mixed INT8/FP16
-```
-
-例如：
-
-```text
-Backbone INT8
-Detect Head FP16
-```
-
-或者：
-
-```text
-敏感层 FP16
-其他层 INT8
-```
-
----
-
-## 10.3 最终目标
-
-绘制：
-
-```text
-Accuracy
-↑
-│          FP16
-│
-│      Mixed
-│
-│
-│ INT8
-└──────────────→ Performance
-```
-
-找到：
-
-```text
-accuracy-performance Pareto point
-```
-
----
-
-## 10.4 如果 Mixed Precision 仍失败
-
-再考虑：
-
-```text
-QAT
-```
-
-而不是一开始就直接做 QAT。
-
-QAT 必须有明确问题驱动：
-
-```text
-PTQ 失败
-↓
-定位量化敏感层
-↓
-Mixed Precision 仍不够
-↓
-QAT
-```
-
----
-
-# 11. Exp18：CUDA Graph 与最终 Runtime 优化
-
-## 11.1 目标
-
-当以下执行链稳定后：
-
-```text
-H2D
-↓
-CUDA preprocess
-↓
-TensorRT
-↓
-CUDA postprocess
-↓
-D2H
-```
-
-尝试 CUDA Graph Capture。
-
----
-
-## 11.2 对比
-
-```text
-Normal enqueue
-vs
-CUDA Graph
-```
-
-观察：
-
-```text
-CPU launch overhead
-mean latency
-P95
-P99
-jitter
-throughput
-```
-
----
-
-## 11.3 注意
-
-CUDA Graph 不保证一定有明显收益。
-
-如果当前 workload：
-
-```text
-Kernel 较长
-CPU launch overhead 很小
-```
-
-收益可能有限。
-
-负向结果也允许 PASS，只要：
-
-```text
-测试公平
-结论清楚
-能解释原因
-```
-
----
-
-# 12. Exp19：最终综合 Benchmark
-
-最终形成：
-
-```text
-Baseline
-V1 FP16 C++ Runtime
-V2 CUDA Preprocess
-V3 Async Pipeline
-V4 GPU Postprocess
-V5 Plugin
-V6 Mixed INT8/FP16
-V7 CUDA Graph
-```
-
-对比：
-
-| Version | mean | P95 | P99 | FPS | CPU | GPU | Power | Temp | Accuracy |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-
-还要记录：
-
-```text
-Git Commit
-Engine SHA256
-Precision Mode
-Power Mode
-Clock State
-Input
-Batch
-Warmup
-Iterations
-```
-
----
-
-# 13. Exp20：最终 README、简历与面试材料
-
-等后续优化真正完成后，再统一收尾。
-
-不要现在就写死最终简历结论。
-
----
-
-# 14. 秋招前最小可执行路线
-
-考虑时间有限，最低建议只做：
-
-```text
-Exp13
-Nsight Profiling
-↓
-Exp14
-Pinned + Async + Double Buffer
-↓
-Exp16
-CUDA Kernel + IPluginV3 + GraphSurgeon
-↓
-Exp17
-INT8 Sensitivity + Mixed Precision
-```
-
-CUDA Graph 可以合并到 Exp14 或 Exp18。
-
-GPU 后处理 Kernel 可以直接作为 Exp16 Plugin 的底层实现。
-
-也就是最终只要形成三条完整故事：
-
----
-
-## 14.1 性能优化故事
-
-```text
-Nsight
-↓
-发现同步 / Memcpy / GPU Bubble
-↓
-Pinned Memory
-↓
-cudaMemcpyAsync
-↓
-Double Buffer
-↓
-CUDA Stream / Event
-↓
-CUDA Graph
-↓
-Benchmark
-```
-
----
-
-## 14.2 算子优化故事
-
-```text
-CPU Postprocess
-↓
-CUDA Kernel
-↓
-GPU Candidate Filter
-↓
-TensorRT IPluginV3
-↓
-ONNX GraphSurgeon
-↓
-Engine Integration
-```
-
----
-
-## 14.3 量化优化故事
+若 Exp08 不是 Explicit Q/DQ，先建立可追溯Q/DQ PTQ baseline；若已经是，则直接进入模块级fallback。
+从敏感性排名选择2～3个方案，比较：
 
 ```text
 FP16
-↓
-PTQ INT8
-↓
-发现 tiny/small 精度严重下降
-↓
-Layer Sensitivity
-↓
-Mixed Precision
-↓
-必要时 QAT
-↓
-Accuracy / Performance Pareto
+Full INT8
+Mixed-1
+Mixed-2
 ```
 
-这三条路线比继续训练多个 YOLO 变体更有价值。
+以准确率—延迟 Pareto 决定是否采用。只有 Explicit PTQ、敏感性和 Mixed Precision仍不能恢复冻结的
+小目标指标时，才评估QAT；不得一开始直接扩大到QAT。
 
 ---
 
-# 15. 后续明确停止的方向
+# 10. Exp18：CUDA Graph Decision Gate
 
-## 15.1 不继续 YOLO 模型魔改
-
-当前已经完成：
-
-```text
-P2
-Rep
-Attention
-Focal
-```
-
-足以证明：
+只有 Nsight Systems 证明 Runtime 存在足够明显的 enqueue/launch overhead 时才实现 CUDA Graph。
+重点观察：
 
 ```text
-模型结构理解
-公平消融
-业务指标判断
-失败候选拒绝
+enqueueV3 host duration
+cudaLaunchKernel/API间隔
+GPU bubble
+短Kernel总量与平均时长
+CPU launch interval相对GPU service time
 ```
 
-不要继续：
+TensorRT `enqueueV3()` 可用于 CUDA Graph capture，但当前链路存在：
 
 ```text
-新的 Attention
-新的 Neck
-新的 Loss
-新的 YOLO 小改动
+GPU compact
+→ count D2H
+→ CPU读取count
+→ 决定payload bytes
+→ variable D2H
 ```
 
-除非未来有非常明确的数据问题驱动。
+这种中途CPU交互不适合整体捕获。若 Gate 通过，优先捕获固定地址、固定shape的边界：
+
+```text
+H2D → CUDA preprocess → enqueueV3 → Plugin/GPU decode-filter
+```
+
+Graph launch之后再执行count/payload D2H和CPU NMS。比较Normal vs Graph的文件吞吐、mean/P50/P95/P99、
+CPU launch overhead和GPU idle。Engineering `VERIFIED` 与Mainline `ACCEPTED/REJECTED`继续分离。
 
 ---
 
-## 15.2 不做 DeepStream 多路视频作为当前主线
+# 11. Exp19：最终联合 Benchmark
 
-原因：
+Exp19 不增加新技术，只组合已经 `ACCEPTED` 的能力。禁止自动重新加入 Exp14 Double Buffer，也不把
+未通过Gate的Plugin、Mixed Precision或CUDA Graph放进最终版本。
+
+候选矩阵按实际结果收敛，例如：
 
 ```text
-RK3588 项目已经充分覆盖音视频系统
-Jetson 当前最缺的是 GPU 推理优化深度
+V0 Exp12同步基线
+V1 Exp15 CUB主线
+V2 Exp16 Plugin（若ACCEPTED）
+V3 Exp17 Mixed Precision（若ACCEPTED）
+V4 Exp18 Graph（若ACCEPTED）
+V_Final 仅由ACCEPTED组件组成
 ```
 
-DeepStream 可作为以后扩展，不作为秋招前高优先级。
+正式部署主结果保持25W动态调频，代表默认部署行为；采用 paired/interleaved顺序、至少3个独立进程，
+报告mean/P50/P95/P99、wall FPS、CPU/GPU、功耗、温度、内存和精度。固定时钟只作为低方差
+microbenchmark/代码差异诊断轨，不替代动态调频主结果，也不得混合两条轨道的数字。
+
+最终主线重新执行54,000帧/约30分钟稳定性，检查性能漂移、RSS、功耗、温度、NaN/Inf和Runtime错误。
+所有版本记录Git commit、Engine/Plugin SHA256、功耗/时钟模式、TensorRT/CUDA版本、输入、warmup和迭代。
 
 ---
 
-## 15.3 不机械做 Pruning + Distillation
+# 12. Exp20：项目收尾
 
-现在已有真实 INT8 精度问题。
-
-应优先：
+Exp20 才统一完成：
 
 ```text
-分析 INT8 为什么失败
+README最终结构
+架构图与数据流图
+最终Benchmark表
+快速学习路线
+项目讲解稿
+简历要点
+面试题与负向实验故事
+公开仓库清理与License核查
 ```
 
-而不是继续堆：
+不再在Exp20开发新的优化。所有简历描述都必须回查能力—证据矩阵，未达到 `VERIFIED` 的能力不得写成
+成果；`REJECTED` 能力只能按“实现、测量、发现代价并拒绝”表述。
+
+---
+
+# 13. 性能实验统计与公平性规范
+
+所有正式性能实验固定模型、Engine、输入、batch、预处理、阈值、NMS、功耗模式和计时范围，并采用：
 
 ```text
-pruning
-distillation
+paired/interleaved顺序
+至少3个独立进程
+warmup与正式窗口分离
+每轮起止温度/频率/时钟状态
+mean + median + P50/P95/P99
+CV + min/max + paired delta
+失败轮不删除、不替换
+```
+
+文件视频用于最大吞吐，相机用于真实单帧延迟与jitter。动态调频是最终部署主轨；固定时钟是诊断轨。
+Profiler只解释瓶颈，不与无Profiler正式性能数字混用。必须区分submit interval、GPU service time、queue
+wait、submit-to-completion latency和pipeline wall throughput。
+
+---
+
+# 14. C++/CUDA Runtime QA 与工程技术栈
+
+后续能力补强不只包含CUDA API，还包括：
+
+```text
+C++17 / RAII / move-only资源
+CMake target与依赖边界
+CUDA错误传播与异步错误检查
+Stream/Event/buffer ownership
+CTest与确定性fixture
+Compute Sanitizer memcheck/initcheck/synccheck/racecheck（适用范围内）
+ASan/UBSan（Host环境支持时）
+Plugin ABI / namespace / version / symbol visibility
+dlopen / ldd / RPATH / shared library部署
+新进程生命周期与负向加载测试
+artifact manifest / SHA256 / reproducible command
+```
+
+工具报告不是完整正确性的替代品。Device QA、Host QA、业务语义对照和端到端生命周期必须共同构成证据。
+
+---
+
+# 15. 必须亲自掌握的知识
+
+## 15.1 Profiling 与性能模型
+
+```text
+NVTX、CUDA API、GPU Activity、Critical Path、GPU Bubble、Observer Effect
+compute/memory/synchronization/input-rate bound
+Amdahl定律、固定成本与变量成本
+throughput、service time、queueing latency与tail latency
+```
+
+## 15.2 CUDA 内存与调度
+
+```text
+pageable/pinned、DMA、cudaHostAlloc/cudaHostRegister
+cudaMemcpy/cudaMemcpyAsync
+default/non-default stream、Event、dependency、synchronize
+double buffer、slot ownership、retirement、race boundary
+```
+
+## 15.3 Kernel 与 CUB
+
+```text
+grid/block/thread/warp
+coalescing、divergence、occupancy、waves/SM
+SM/Memory throughput、cache行为
+atomic顺序、prefix scan、stable compaction、temporary storage
+```
+
+## 15.4 TensorRT 与 Plugin
+
+```text
+Builder、Network、Engine、Runtime、ExecutionContext、enqueueV3
+IPluginV3、Creator、Registry、Build/Runtime phase
+shape、dtype、format、workspace、fields、namespace、version、lifecycle
+GraphSurgeon node/tensor/custom domain/cleanup/toposort
+```
+
+## 15.5 Quantization 与 CUDA Graph
+
+```text
+PTQ、Q/DQ、scale、zero point、dynamic range、clipping
+calibration、activation代表性、sensitivity、Mixed Precision、QAT
+Graph capture/instantiate/replay、static address、CPU-dependent boundary
 ```
 
 ---
 
-## 15.4 不在当前项目强行加入 TVM / MLIR
+# 16. 最终项目故事
 
-TVM / MLIR / AI Compiler 是另一条能力树：
+项目最终应形成四条有证据的故事：
 
-```text
-Graph IR
-Lowering
-Scheduling
-Codegen
-Compiler Pass
-```
+1. 模型与部署正确性：模型消融→ONNX→TensorRT→FP32/FP16/INT8→一致性与采用决策；
+2. Profiling与性能工程：Exp13测量→Exp14异步实现→观察overlap→尾延迟退化→拒绝；
+3. CUDA算子：raw output→Atomic/CUB→NCU→局部与系统trade-off→CUB采用；
+4. 量化恢复：INT8负向结果→activation/branch sensitivity→Mixed Precision→Pareto（完成后才能写）。
 
-短期硬塞进当前 PPE 项目容易流于表面。
-
-后续可以单独规划：
+最有价值的当前闭环是：
 
 ```text
-CUDA
-↓
-Triton
-↓
-TVM TensorIR
-↓
-MLIR
+Exp13 Measure
+→ Exp14 Optimize but Reject
+→ Exp15 Change Direction and Accept
 ```
 
-但不作为本项目秋招前必做内容。
+它证明会用API不等于优化成功，系统决策必须同时考虑正确性、吞吐、尾延迟和复杂度。
 
 ---
 
-# 16. Codex 后续工作方式要求
+# 17. 明确停止与 Post-resume Extension
 
-Codex 可以继续负责大量工程实现，但后续不允许“黑盒式一次性把实验做完”。
+秋招前主线停止：
 
-每个实验必须包含：
+```text
+新的YOLO结构/Attention/Loss/P2/Rep训练
+Pruning/Distillation
+DeepStream多路、RTSP和音视频扩张
+GPU NMS
+NVMM/EGLImage zero-copy
+TVM/MLIR/Triton
+LLM on Jetson
+```
+
+这些方向不是没有价值，而是当前 ROI 低或属于另一条能力树。Exp14 isolation audit、NVMM zero-copy、
+GPU NMS、多摄像头、更多CUDA算子、TVM/MLIR等进入 optional/post-resume，不阻塞 Exp16～Exp20。
+
+## 17.1 可选 Exp14 isolation audit
+
+若未来需要补强异步调度的因果解释，只使用预加载 Host Frame，排除 GStreamer、Camera、Video Decode、
+CSV和图片输出，对比 pageable sync、pinned sync、pinned async single-slot、pinned async double-buffer。
+必须分别记录 submit interval、GPU service time、queue wait、submit-to-completion latency和throughput。
+无论结果如何，都不能直接推翻真实摄像头链路的 `REJECTED` 结论。
+
+## 17.2 可选 NVMM zero-copy
+
+当前相机路径仍经过 NVMM→BGR Host Frame→CUDA。NVMM/EGLImage/CUDA interop可能消除CPU中转，但与
+GStreamer、EGL和NvBufSurface强耦合，集成与调试成本高，且当前秋招能力收益低于Plugin和量化诊断，
+因此只作为post-resume扩展。
+
+---
+
+# 18. Codex 后续执行规则
+
+每个实验开始前必须先给出并等待审批：
+
+```text
+Current Dataflow
+Current Bottleneck
+Hypothesis
+Single Main Variable
+Files To Modify
+Correctness Gate
+Performance Gate
+Stop Condition
+Expected Evidence
+```
+
+执行顺序：
 
 ```text
 实验前规划
-↓
-当前瓶颈 / 假设
-↓
-设计
-↓
-Smoke Test
-↓
-正式实验
-↓
-Profiling
-↓
-正确性验证
-↓
-性能验证
-↓
-失败记录
-↓
-结论
-↓
-学习复盘
+→ 环境/Git/输入哈希
+→ Smoke Test
+→ 正确性 Gate
+→ 正式 paired/interleaved实验
+→ Profiling
+→ 结果与失败现场
+→ VERIFIED
+→ 主线 ACCEPTED/REJECTED
+→ 学习复盘
 ```
+
+不得自动把 Pinned、Async、Plugin、Mixed Precision、CUDA Graph加入主线；不得覆盖旧结果、删除失败目录、
+事后修改阈值、把Profiler数字混入正式性能、把Windows静态检查当作Jetson实验，或提前宣称未完成能力。
+
+代码和证据保持模块化：
+
+```text
+runtime/  cuda/  plugins/  profiling/
+tools/    tests/ docs/     results/
+```
+
+不要把Plugin、Runtime、CUDA测试和实验编排塞进单个 `main.cpp`。每次正式实验至少保留失败目录、run.log、
+return code、配置、benchmark JSON/CSV、输入与产物SHA256、Git commit和正式总结；大型Engine、模型、
+`.ncu-rep/.nsys-rep`及fixture只留目标机器，不进入普通Git。
 
 ---
 
-## 16.1 Codex 在每个实验开始前必须先输出
+# 19. 当前优先级与时间不足时的裁剪
+
+当前推荐顺序：
 
 ```text
-1. 当前代码路径
-2. 当前数据流
-3. 本实验唯一主要变量
-4. 预计修改哪些文件
-5. 为什么这些修改可能有效
-6. 正确性验收条件
-7. 性能验收条件
-8. 失败停止条件
+Priority 0  本V3 canonical文档合并
+Priority 1  Postprocess Gain Attribution Gate
+Priority 2  Exp16 IPluginV3 + GraphSurgeon
+Priority 3  Exp17 Activation/Sensitivity + Mixed Precision
+Priority 4  Exp18 CUDA Graph Decision Gate
+Priority 5  Exp19 Final Benchmark
+Priority 6  Exp20 Closeout
 ```
 
-未经审查不要直接进行大规模重构。
+如果秋招时间突然不足：
+
+```text
+Postprocess Gain Attribution Gate
+→ Exp16
+→ Exp17最小模块级敏感性/Mixed Precision
+→ Exp19
+→ Exp20
+```
+
+Exp14 isolation audit和未通过Decision Gate的Exp18可裁剪。
 
 ---
 
-## 16.2 每次实验必须保留
-
-```text
-失败目录
-run.log
-return code
-benchmark JSON / CSV
-Git commit
-SHA256
-配置
-正式 summary.md
-```
-
-不得：
-
-```text
-删除失败现场
-覆盖旧结果
-看到结果后偷偷修改验收阈值
-```
-
----
-
-## 16.3 代码结构要求
-
-尽量模块化：
-
-```text
-runtime/
-cuda/
-plugins/
-profiling/
-tools/
-tests/
-docs/
-results/
-```
-
-不要把所有逻辑塞进一个：
-
-```text
-main.cpp
-```
-
----
-
-# 17. 用户必须亲自掌握的内容
-
-后续实验不能只由 Codex “完成”。
-
-每个实验结束后，必须能够不用代码回答：
-
----
-
-## CUDA 内存
-
-```text
-pageable memory 和 pinned memory 有什么区别？
-为什么 pinned memory 才容易真正实现异步 DMA？
-cudaMemcpy 和 cudaMemcpyAsync 有什么区别？
-```
-
----
-
-## Stream / Event
-
-```text
-为什么两个 Stream 可以 overlap？
-什么时候其实仍然不能 overlap？
-CUDA Event 和 cudaDeviceSynchronize 有什么区别？
-```
-
----
-
-## Double Buffer
-
-```text
-为什么需要两个 buffer？
-CPU 和 GPU 怎么避免同时写一个 buffer？
-什么时候会 race？
-```
-
----
-
-## Kernel
-
-```text
-thread / block / grid 如何划分？
-global memory 是否 coalesced？
-为什么 warp divergence 会影响效率？
-occupancy 是不是越高越好？
-```
-
----
-
-## Profiling
-
-```text
-Nsight Systems 和 Nsight Compute 的区别？
-timeline 上的 GPU bubble 是什么？
-怎么判断 compute-bound / memory-bound？
-```
-
----
-
-## TensorRT
-
-```text
-Builder
-Engine
-Runtime
-ExecutionContext
-enqueueV3
-setTensorAddress
-Plugin
-分别是什么？
-```
-
----
-
-## Plugin
-
-```text
-为什么需要 serialize / deserialize？
-Plugin Creator 干什么？
-Plugin 的 enqueue 在什么时候执行？
-GraphSurgeon 为什么需要插入自定义节点？
-```
-
----
-
-## INT8
-
-```text
-PTQ 是什么？
-Calibration 在估计什么？
-为什么某些层量化敏感？
-Q/DQ 节点有什么意义？
-Mixed Precision 为什么可以恢复精度？
-QAT 与 PTQ 的区别？
-```
-
----
-
-# 18. 项目最终定位
-
-原来的名称：
-
-> 基于 Jetson Orin Nano Super 的 PPE 小目标检测与 TensorRT/CUDA 推理优化
-
-后续可以继续保留业务标题，但技术定位建议升级为：
-
-> **基于 Jetson Orin Nano Super 的端侧视觉推理引擎与 TensorRT/CUDA 性能优化**
-
-或者：
-
-> **Jetson Orin Nano 端侧视觉推理优化：TensorRT、CUDA Kernel、异步流水与低精度量化**
-
-项目核心不再是：
-
-```text
-PPE 检测做得多准
-```
-
-而是：
-
-```text
-如何在 Jetson GPU 上
-将一个训练模型
-逐层变成
-高效、可解释、可验证的端侧推理系统
-```
-
----
-
-# 19. 后续简历能力目标
-
-完成上述关键实验后，希望项目可以真实支撑以下能力描述：
-
-```text
-PyTorch / ONNX / TensorRT
-TensorRT C++ Runtime
-FP32 / FP16 / INT8
-PTQ / Mixed Precision / QAT
-CUDA Kernel
-CUDA Stream / Event
-Pinned Memory
-cudaMemcpyAsync
-Double Buffer
-CUDA Graph
-Nsight Systems / Nsight Compute
-TensorRT IPluginV3
-ONNX GraphSurgeon
-C++17 / CMake
-Jetson Orin
-GStreamer / IMX219
-性能 / 功耗 / 温度 / 稳定性 Benchmark
-```
-
-只有真正完成后才能写入简历。
-
----
-
-# 20. 当前项目与目标岗位映射
-
-## 20.1 嵌入式 AI / Edge AI
-
-当前已经可以投。
-
-重点补强：
-
-```text
-CUDA
-性能分析
-内存
-异步流水
-```
-
----
-
-## 20.2 TensorRT / 模型部署工程师
-
-当前已经比较接近。
-
-完成：
-
-```text
-Nsight
-Async
-Plugin
-Mixed Precision
-```
-
-后竞争力会明显提高。
-
----
-
-## 20.3 AI Infra / 推理优化
-
-当前属于有基础但深度不足。
-
-需要重点补：
-
-```text
-Profiler
-Memory
-Concurrency
-Kernel
-Plugin
-Quantization Sensitivity
-```
-
----
-
-## 20.4 CUDA 算子工程师
-
-当前不作为主投方向。
-
-后续至少还需要多个真实 Kernel 优化案例，并真正掌握：
-
-```text
-coalescing
-shared memory
-bank conflict
-warp divergence
-occupancy
-arithmetic intensity
-memory-bound
-compute-bound
-```
-
----
-
-## 20.5 AI Compiler
-
-当前不作为主投方向。
-
-不能因为使用 TensorRT 就表述为：
-
-```text
-AI Compiler
-Compiler Optimization
-```
-
-后续若学习 TVM / MLIR，再单独形成新项目或学习路线。
-
----
-
-# 21. 最终执行原则
-
-后续所有实验遵循：
-
-> **Measure → Identify Bottleneck → Optimize → Verify Correctness → Re-profile → Decide**
-
-不能变成：
-
-```text
-看到一个 CUDA API
-↓
-加进去
-↓
-FPS 高一点
-↓
-宣布优化成功
-```
-
-任何优化必须回答：
-
-```text
-为什么做？
-瓶颈证据是什么？
-改了哪一层？
-性能为什么变化？
-正确性是否保持？
-有没有新的 trade-off？
-```
-
----
-
-# 22. 当前下一步
-
-不要开始原来的“Exp13 项目收尾”。
-
-下一实验直接定义为：
-
-# Exp13：Nsight Systems 端到端性能瓶颈分析与优化基线
-
-以 Exp12 当前同步版本作为冻结 baseline。
-
-先：
-
-```text
-不优化
-只 Profiling
-```
-
-得到真正的 GPU/CPU 时间线之后，再决定 Exp14 中：
-
-```text
-Pinned Memory
-Async
-Double Buffer
-Stream
-CUDA Graph
-```
-
-的具体改动顺序。
-
-后续所有性能优化必须由 Exp13 的实际 Profiling 数据驱动，而不是凭经验直接修改。
-
----
-
-# 23. 参考当前项目文档
-
-Codex 在执行前应重点阅读：
-
-```text
-00_project_scope.md
-01_environment.md
-02_YOLO11n基线训练与评估总结.md
-03_YOLO11n-P2小目标结构消融总结.md
-04_YOLO11n部署可重参数化结构消融总结.md
-05_YOLO11n轻量注意力与Focal损失消融总结.md
-06_YOLO11n基线ONNX导出与一致性验证总结.md
-07_YOLO11n基线TensorRT_FP32_FP16部署与验证总结.md
-08_YOLO11n基线INT8_PTQ部署与验证总结.md
-09_TensorRT_CPP_Runtime部署与验证总结.md
-10_CUDA融合预处理与验证总结.md
-11_视频摄像头端到端推理总结.md
-12_Jetson性能功耗温度稳定性总结.md
-experiment_index.md
-项目全流程快速学习手册.md
-```
-
-并以现有代码、日志、Git 历史和正式实验结果为事实来源。
-
----
-
-# 24. 一句话给 Codex 的总指令
-
-> Exp00～Exp12 已经完成“模型选择 → ONNX → TensorRT → C++ → CUDA 预处理 → 摄像头 → 稳定性”的基础部署链。后续不要继续堆模型功能，也不要立即收尾。请从 Exp13 开始，把项目切换到真正的 GPU 推理性能工程阶段：先用 Nsight 对现有同步 Runtime 做瓶颈画像，然后围绕 Pinned Memory、Async、Double Buffer、GPU 后处理、TensorRT IPluginV3、GraphSurgeon、INT8 敏感层分析和 Mixed Precision 逐层深入；任何优化都必须以 Profiling 数据、正确性对照和正式 Benchmark 为依据。
+# 20. 给后续任务的总指令
+
+> 当前项目已完成 Exp00～Exp15。Exp13 通过 Nsight Systems 定位同步与输入节拍边界；Exp14 完成
+> Pinned/Stream/Event/Double Buffer并验证overlap，但因尾延迟严重退化而主线拒绝；Exp15 完成Atomic
+> 与CUB GPU Decode/Filter/Compaction，CUB stable路径通过正确性、NCU和三轮Benchmark并成为当前FP16
+> Runtime主线。下一步先完成不新增实验编号的Postprocess Gain Attribution Gate，再设计Exp16。Exp16
+> 必须先冻结FP32 raw input的Postprocess ABI/semantic contract，使用TensorRT 10.3 IPluginV3与
+> GraphSurgeon，显式管理CUB workspace，验证Device/Host QA及独立新进程加载 `.so` 后反序列化Engine。
+> Exp17基于已有256图覆盖审计，转向activation/dynamic-range/clipping以及P3/P4/P5、cls/reg/DFL
+> 敏感性和Mixed Precision。Exp18只有在Nsight证明enqueue/launch overhead足够明显时才实现CUDA Graph。
+> Exp19只组合ACCEPTED能力，并以动态调频paired/interleaved结果作为部署主结论；Exp20统一收尾。

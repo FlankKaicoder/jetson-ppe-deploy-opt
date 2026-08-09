@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-08，Exp00～Exp14 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-08，Exp00～Exp15 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -28,8 +28,11 @@ kernel-only 平均耗时下降 91.20%。Exp11 已完成文件视频三进程确�
 Exp14 已完成 pinned staging、CUDA Event、单缓冲异步与双缓冲三 Stream 的 A/B/C 消融。
 所有文件正式轮均保持150帧、151检测和冻结 digest；Variant C 虽在文件/相机时间线中分别观察到
 2.961/0.860 ms Kernel/Memcpy 重叠，但文件吞吐仅提升4.51%，P95退化159.28%，相机 P95退化
-173.51%，因此候选 `REJECT`，同步 FP16 Runtime 保持为部署主线。下一候选 Exp15 CUDA GPU
-Decode/Filter/Compaction 与 Nsight Compute 尚待用户审批。
+173.51%，因此候选 `REJECT`。Exp15 已完成 Atomic/CUB GPU decode、filter、compaction、压缩 D2H
+与 Nsight Systems/Compute 验证；Variant B（CUB stable compaction）文件三轮 wall FPS 从
+60.270 提升至71.838（+19.19%），E2E mean/P95 分别下降16.53%/14.97%，平均 D2H 从235,200 B
+降至263.84 B（-99.89%），相机 P95仅退化1.61%。正确性 digest 保持冻结值，故 Exp15 `PASS`，
+Variant B 成为新的 FP16 C++ Runtime 后处理主线；模型、ONNX 与 Engine 主线不变。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 

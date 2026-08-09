@@ -1,4 +1,7 @@
 #include "cuda_preprocess.hpp"
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+#include "gpu_postprocess.hpp"
+#endif
 #include "ppe_nvtx.hpp"
 #include "trt_runtime.hpp"
 
@@ -17,6 +20,7 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <memory>
 #include <numeric>
 #include <sstream>
 #include <stdexcept>
@@ -80,6 +84,38 @@ double double_arg(
     double fallback) {
     return args.count(key) ? std::stod(args.at(key)) : fallback;
 }
+
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+enum class PostprocessMode { kBaseline, kAtomic, kCub };
+
+PostprocessMode parse_postprocess_mode(
+    const std::map<std::string, std::string>& args) {
+    const std::string value =
+        args.count("--postprocess") ? args.at("--postprocess") : "baseline";
+    if (value == "baseline") {
+        return PostprocessMode::kBaseline;
+    }
+    if (value == "atomic") {
+        return PostprocessMode::kAtomic;
+    }
+    if (value == "cub") {
+        return PostprocessMode::kCub;
+    }
+    throw std::runtime_error("--postprocess must be baseline, atomic, or cub");
+}
+
+const char* postprocess_mode_name(PostprocessMode mode) {
+    switch (mode) {
+        case PostprocessMode::kBaseline:
+            return "baseline";
+        case PostprocessMode::kAtomic:
+            return "atomic";
+        case PostprocessMode::kCub:
+            return "cub";
+    }
+    throw std::runtime_error("invalid postprocess mode");
+}
+#endif
 
 std::string camera_pipeline(int sensor, int width, int height, int fps) {
     std::ostringstream stream;
@@ -152,7 +188,8 @@ std::vector<Detection> decode_detections(
     const std::vector<float>& output,
     const ppe::LetterboxGeometry& geometry,
     float confidence_threshold,
-    float nms_threshold) {
+    float nms_threshold,
+    int* decoded_count = nullptr) {
     constexpr int candidates = 8400;
     constexpr int classes = 3;
     constexpr int channels = 7;
@@ -207,6 +244,9 @@ std::vector<Detection> decode_detections(
         }
     }
     std::vector<Detection> kept;
+    if (decoded_count != nullptr) {
+        *decoded_count = static_cast<int>(decoded.size());
+    }
     {
         PPE_NVTX_RANGE("nms");
         std::sort(
@@ -281,12 +321,278 @@ std::string json_escape(const std::string& value) {
     return escaped;
 }
 
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+void check_cuda(cudaError_t status, const char* operation) {
+    if (status != cudaSuccess) {
+        throw std::runtime_error(
+            std::string(operation) + ": " + cudaGetErrorString(status));
+    }
+}
+
+class DeviceBuffer {
+public:
+    explicit DeviceBuffer(std::size_t bytes) : bytes_(bytes) {
+        check_cuda(cudaMalloc(&pointer_, bytes_), "cudaMalloc Exp15 buffer");
+    }
+    ~DeviceBuffer() { cudaFree(pointer_); }
+    DeviceBuffer(const DeviceBuffer&) = delete;
+    DeviceBuffer& operator=(const DeviceBuffer&) = delete;
+    void* data() const { return pointer_; }
+
+private:
+    void* pointer_{nullptr};
+    std::size_t bytes_{};
+};
+
+class PinnedBuffer {
+public:
+    explicit PinnedBuffer(std::size_t bytes) {
+        check_cuda(
+            cudaHostAlloc(&pointer_, bytes, cudaHostAllocDefault),
+            "cudaHostAlloc Exp15 buffer");
+    }
+    ~PinnedBuffer() { cudaFreeHost(pointer_); }
+    PinnedBuffer(const PinnedBuffer&) = delete;
+    PinnedBuffer& operator=(const PinnedBuffer&) = delete;
+    void* data() const { return pointer_; }
+
+private:
+    void* pointer_{nullptr};
+};
+
+class CudaEvent {
+public:
+    CudaEvent() { check_cuda(cudaEventCreate(&event_), "cudaEventCreate Exp15"); }
+    ~CudaEvent() { cudaEventDestroy(event_); }
+    CudaEvent(const CudaEvent&) = delete;
+    CudaEvent& operator=(const CudaEvent&) = delete;
+    cudaEvent_t get() const { return event_; }
+
+private:
+    cudaEvent_t event_{nullptr};
+};
+
+double event_elapsed_ms(const CudaEvent& begin, const CudaEvent& end) {
+    float milliseconds = 0.0F;
+    check_cuda(
+        cudaEventElapsedTime(&milliseconds, begin.get(), end.get()),
+        "cudaEventElapsedTime Exp15");
+    return static_cast<double>(milliseconds);
+}
+
+struct GpuFrameResult {
+    std::vector<ppe::GpuCandidate> candidates;
+    int candidate_count{};
+    std::size_t d2h_bytes{};
+    double host_total_ms{};
+    double inference_cuda_ms{};
+    double gpu_postprocess_cuda_ms{};
+    double count_copy_cuda_ms{};
+    double count_sync_host_ms{};
+    double candidate_copy_cuda_ms{};
+    double candidate_sync_host_ms{};
+};
+
+class GpuPostprocessPath {
+public:
+    explicit GpuPostprocessPath(ppe::TrtRuntime& runtime)
+        : runtime_(runtime),
+          raw_output_(runtime.output_info().bytes),
+          host_count_(sizeof(int)),
+          host_candidates_(
+              static_cast<std::size_t>(ppe::kYoloCandidateCount) *
+              sizeof(ppe::GpuCandidate)) {
+        if (runtime.output_info().elements !=
+            static_cast<std::size_t>(ppe::kYoloOutputChannels) *
+                ppe::kYoloCandidateCount) {
+            throw std::runtime_error("unexpected raw tensor shape for Exp15");
+        }
+    }
+
+    GpuFrameResult process(
+        const float* device_model_input,
+        cudaStream_t stream,
+        const ppe::LetterboxGeometry& geometry,
+        float confidence_threshold,
+        PostprocessMode mode) {
+        if (mode == PostprocessMode::kBaseline) {
+            throw std::runtime_error("baseline cannot use GPU postprocess path");
+        }
+        const auto host_start = std::chrono::steady_clock::now();
+        check_cuda(
+            cudaEventRecord(inference_start_.get(), stream),
+            "record Exp15 inference start");
+        runtime_.enqueue_device_async(
+            device_model_input, static_cast<float*>(raw_output_.data()), stream);
+        check_cuda(
+            cudaEventRecord(inference_end_.get(), stream),
+            "record Exp15 inference end");
+        check_cuda(
+            cudaEventRecord(gpu_postprocess_start_.get(), stream),
+            "record Exp15 GPU postprocess start");
+        {
+            PPE_NVTX_RANGE("gpu_decode_filter_compaction");
+            postprocessor_.launch(
+                static_cast<const float*>(raw_output_.data()), geometry,
+                confidence_threshold,
+                mode == PostprocessMode::kAtomic
+                    ? ppe::GpuCompactionMode::kAtomic
+                    : ppe::GpuCompactionMode::kCubStable,
+                stream);
+        }
+        check_cuda(
+            cudaEventRecord(gpu_postprocess_end_.get(), stream),
+            "record Exp15 GPU postprocess end");
+        check_cuda(
+            cudaEventRecord(count_copy_start_.get(), stream),
+            "record Exp15 count copy start");
+        {
+            PPE_NVTX_RANGE("candidate_count_d2h");
+            check_cuda(
+                cudaMemcpyAsync(
+                    host_count_.data(), postprocessor_.device_count(), sizeof(int),
+                    cudaMemcpyDeviceToHost, stream),
+                "copy Exp15 candidate count");
+        }
+        check_cuda(
+            cudaEventRecord(count_copy_end_.get(), stream),
+            "record Exp15 count copy end");
+        const auto count_wait_start = std::chrono::steady_clock::now();
+        {
+            PPE_NVTX_RANGE("candidate_count_sync");
+            check_cuda(
+                cudaEventSynchronize(count_copy_end_.get()),
+                "synchronize Exp15 candidate count");
+        }
+        const double count_sync_host_ms =
+            std::chrono::duration<double, std::milli>(
+                std::chrono::steady_clock::now() - count_wait_start).count();
+        const int count = *static_cast<const int*>(host_count_.data());
+        if (count < 0 || count > postprocessor_.capacity()) {
+            throw std::runtime_error("Exp15 candidate count overflow");
+        }
+
+        const std::size_t candidate_bytes =
+            static_cast<std::size_t>(count) * sizeof(ppe::GpuCandidate);
+        check_cuda(
+            cudaEventRecord(candidate_copy_start_.get(), stream),
+            "record Exp15 candidate copy start");
+        if (candidate_bytes > 0) {
+            PPE_NVTX_RANGE("candidate_payload_d2h");
+            check_cuda(
+                cudaMemcpyAsync(
+                    host_candidates_.data(), postprocessor_.device_candidates(),
+                    candidate_bytes, cudaMemcpyDeviceToHost, stream),
+                "copy Exp15 candidates");
+        }
+        check_cuda(
+            cudaEventRecord(candidate_copy_end_.get(), stream),
+            "record Exp15 candidate copy end");
+        const auto candidate_wait_start = std::chrono::steady_clock::now();
+        {
+            PPE_NVTX_RANGE("candidate_payload_sync");
+            check_cuda(
+                cudaEventSynchronize(candidate_copy_end_.get()),
+                "synchronize Exp15 candidates");
+        }
+        const double candidate_sync_host_ms =
+            std::chrono::duration<double, std::milli>(
+                std::chrono::steady_clock::now() - candidate_wait_start).count();
+        check_cuda(cudaGetLastError(), "Exp15 postprocess CUDA status");
+
+        const auto* begin =
+            static_cast<const ppe::GpuCandidate*>(host_candidates_.data());
+        GpuFrameResult result;
+        result.candidates.assign(begin, begin + count);
+        result.candidate_count = count;
+        result.d2h_bytes = sizeof(int) + candidate_bytes;
+        result.host_total_ms = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - host_start).count();
+        result.inference_cuda_ms =
+            event_elapsed_ms(inference_start_, inference_end_);
+        result.gpu_postprocess_cuda_ms =
+            event_elapsed_ms(gpu_postprocess_start_, gpu_postprocess_end_);
+        result.count_copy_cuda_ms =
+            event_elapsed_ms(count_copy_start_, count_copy_end_);
+        result.count_sync_host_ms = count_sync_host_ms;
+        result.candidate_copy_cuda_ms =
+            event_elapsed_ms(candidate_copy_start_, candidate_copy_end_);
+        result.candidate_sync_host_ms = candidate_sync_host_ms;
+        return result;
+    }
+
+private:
+    ppe::TrtRuntime& runtime_;
+    DeviceBuffer raw_output_;
+    ppe::GpuPostprocessor postprocessor_;
+    PinnedBuffer host_count_;
+    PinnedBuffer host_candidates_;
+    CudaEvent inference_start_;
+    CudaEvent inference_end_;
+    CudaEvent gpu_postprocess_start_;
+    CudaEvent gpu_postprocess_end_;
+    CudaEvent count_copy_start_;
+    CudaEvent count_copy_end_;
+    CudaEvent candidate_copy_start_;
+    CudaEvent candidate_copy_end_;
+};
+
+std::vector<Detection> nms_gpu_candidates(
+    const std::vector<ppe::GpuCandidate>& candidates,
+    float nms_threshold) {
+    std::vector<Detection> decoded;
+    decoded.reserve(candidates.size());
+    for (const auto& candidate : candidates) {
+        if (candidate.class_id < 0 || candidate.class_id >= ppe::kYoloClassCount ||
+            candidate.candidate_index < 0 ||
+            candidate.candidate_index >= ppe::kYoloCandidateCount ||
+            !std::isfinite(candidate.confidence) ||
+            !std::isfinite(candidate.x1) || !std::isfinite(candidate.y1) ||
+            !std::isfinite(candidate.x2) || !std::isfinite(candidate.y2) ||
+            candidate.x2 <= candidate.x1 || candidate.y2 <= candidate.y1) {
+            throw std::runtime_error("invalid compacted GPU candidate");
+        }
+        decoded.push_back({
+            candidate.class_id, candidate.candidate_index,
+            candidate.confidence, candidate.x1, candidate.y1,
+            candidate.x2, candidate.y2});
+    }
+    std::sort(
+        decoded.begin(), decoded.end(),
+        [](const Detection& left, const Detection& right) {
+            if (left.confidence != right.confidence) {
+                return left.confidence > right.confidence;
+            }
+            return left.candidate_index < right.candidate_index;
+        });
+    std::vector<Detection> kept;
+    kept.reserve(decoded.size());
+    for (const auto& candidate : decoded) {
+        bool suppressed = false;
+        for (const auto& accepted : kept) {
+            if (candidate.class_id == accepted.class_id &&
+                intersection_over_union(candidate, accepted) > nms_threshold) {
+                suppressed = true;
+                break;
+            }
+        }
+        if (!suppressed) {
+            kept.push_back(candidate);
+        }
+    }
+    return kept;
+}
+#endif
+
 }  // namespace
 
 int main(int argc, char** argv) {
     try {
         const auto args = parse_args(argc, argv);
         const std::string source_type = args.at("--source-type");
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        const PostprocessMode postprocess_mode = parse_postprocess_mode(args);
+#endif
         const int max_frames = integer_arg(args, "--max-frames", 0);
         const int warmup = integer_arg(args, "--warmup", 2);
         const float confidence = static_cast<float>(
@@ -339,8 +645,17 @@ int main(int argc, char** argv) {
         const auto geometry = ppe::make_letterbox_geometry(frame.cols, frame.rows, 640);
         ppe::TrtRuntime runtime(args.at("--engine"));
         ppe::CudaPreprocessor preprocessor(geometry);
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        std::unique_ptr<GpuPostprocessPath> gpu_postprocess_path;
+        if (postprocess_mode != PostprocessMode::kBaseline) {
+            gpu_postprocess_path = std::make_unique<GpuPostprocessPath>(runtime);
+        }
+#endif
         for (int index = 0; index < warmup; ++index) {
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            if (postprocess_mode == PostprocessMode::kBaseline) {
+#endif
             const auto inferred = runtime.infer_device(
                 prepared.device_output, preprocessor.stream());
             if (!std::all_of(
@@ -348,6 +663,14 @@ int main(int argc, char** argv) {
                     [](float value) { return std::isfinite(value); })) {
                 throw std::runtime_error("warmup output contains NaN or Inf");
             }
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            } else {
+                const auto compacted = gpu_postprocess_path->process(
+                    prepared.device_output, preprocessor.stream(), geometry,
+                    confidence, postprocess_mode);
+                static_cast<void>(nms_gpu_candidates(compacted.candidates, nms_iou));
+            }
+#endif
         }
 
         std::ofstream detections_csv(output_dir / "detections.csv");
@@ -358,7 +681,15 @@ int main(int argc, char** argv) {
         detections_csv << "frame_index,detection_index,class_id,class_name,confidence,x1,y1,x2,y2\n";
         frames_csv << "frame_index,detection_count,capture_ms,preprocess_host_ms,"
                       "preprocess_cuda_ms,inference_host_ms,inference_cuda_ms,"
-                      "postprocess_ms,end_to_end_ms\n";
+                      "postprocess_ms,end_to_end_ms";
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        frames_csv << ",postprocess_mode,candidate_count,d2h_bytes,"
+                      "gpu_postprocess_cuda_ms,count_copy_cuda_ms,"
+                      "count_sync_host_ms,candidate_copy_cuda_ms,"
+                      "candidate_sync_host_ms\n";
+#else
+        frames_csv << '\n';
+#endif
         detections_csv << std::fixed << std::setprecision(9);
         frames_csv << std::fixed << std::setprecision(9);
         const std::vector<std::string> class_names = {
@@ -370,6 +701,15 @@ int main(int argc, char** argv) {
         std::vector<double> inference_cuda_times;
         std::vector<double> postprocess_times;
         std::vector<double> end_to_end_times;
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        std::vector<double> candidate_counts;
+        std::vector<double> d2h_bytes_per_frame;
+        std::vector<double> gpu_postprocess_cuda_times;
+        std::vector<double> count_copy_cuda_times;
+        std::vector<double> count_sync_host_times;
+        std::vector<double> candidate_copy_cuda_times;
+        std::vector<double> candidate_sync_host_times;
+#endif
         std::size_t total_detections = 0;
         int frame_index = 0;
         double current_capture_ms = std::chrono::duration<double, std::milli>(
@@ -382,6 +722,20 @@ int main(int argc, char** argv) {
             PPE_NVTX_RANGE("frame_total");
             const auto frame_start = std::chrono::steady_clock::now();
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            double inference_host_ms = 0.0;
+            double inference_cuda_ms = 0.0;
+            double gpu_postprocess_cuda_ms = 0.0;
+            double count_copy_cuda_ms = 0.0;
+            double count_sync_host_ms = 0.0;
+            double candidate_copy_cuda_ms = 0.0;
+            double candidate_sync_host_ms = 0.0;
+            int candidate_count = 0;
+            std::size_t d2h_bytes = runtime.output_info().bytes;
+            std::vector<Detection> detections;
+            double post_ms = 0.0;
+            if (postprocess_mode == PostprocessMode::kBaseline) {
+#endif
             const auto inferred = runtime.infer_device(
                 prepared.device_output, preprocessor.stream());
             const bool finite = std::all_of(
@@ -390,13 +744,66 @@ int main(int argc, char** argv) {
             if (!finite) {
                 throw std::runtime_error("inference output contains NaN or Inf");
             }
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            if (frame_index == 0 && args.count("--raw-fixture")) {
+                const std::filesystem::path fixture_path(args.at("--raw-fixture"));
+                if (fixture_path.has_parent_path()) {
+                    std::filesystem::create_directories(fixture_path.parent_path());
+                }
+                std::ofstream fixture(fixture_path, std::ios::binary);
+                if (!fixture) {
+                    throw std::runtime_error("cannot open raw fixture output");
+                }
+                fixture.write(
+                    reinterpret_cast<const char*>(inferred.output.data()),
+                    static_cast<std::streamsize>(
+                        inferred.output.size() * sizeof(float)));
+                if (!fixture) {
+                    throw std::runtime_error("cannot write raw fixture output");
+                }
+            }
+#endif
             const auto post_start = std::chrono::steady_clock::now();
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            detections = decode_detections(
+                inferred.output, geometry, confidence, nms_iou,
+                &candidate_count);
+#else
             const auto detections = decode_detections(
                 inferred.output, geometry, confidence, nms_iou);
+#endif
             const auto post_end = std::chrono::steady_clock::now();
-            const auto frame_end = post_end;
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            post_ms = std::chrono::duration<double, std::milli>(
+                post_end - post_start).count();
+#else
             const double post_ms = std::chrono::duration<double, std::milli>(
                 post_end - post_start).count();
+#endif
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            inference_host_ms = inferred.host_total_ms;
+            inference_cuda_ms = inferred.cuda_total_ms;
+            } else {
+                const auto compacted = gpu_postprocess_path->process(
+                    prepared.device_output, preprocessor.stream(), geometry,
+                    confidence, postprocess_mode);
+                const auto nms_start = std::chrono::steady_clock::now();
+                detections = nms_gpu_candidates(compacted.candidates, nms_iou);
+                const auto nms_end = std::chrono::steady_clock::now();
+                post_ms = std::chrono::duration<double, std::milli>(
+                    nms_end - nms_start).count();
+                inference_host_ms = compacted.host_total_ms;
+                inference_cuda_ms = compacted.inference_cuda_ms;
+                gpu_postprocess_cuda_ms = compacted.gpu_postprocess_cuda_ms;
+                count_copy_cuda_ms = compacted.count_copy_cuda_ms;
+                count_sync_host_ms = compacted.count_sync_host_ms;
+                candidate_copy_cuda_ms = compacted.candidate_copy_cuda_ms;
+                candidate_sync_host_ms = compacted.candidate_sync_host_ms;
+                candidate_count = compacted.candidate_count;
+                d2h_bytes = compacted.d2h_bytes;
+            }
+#endif
+            const auto frame_end = std::chrono::steady_clock::now();
             const double end_to_end_ms = current_capture_ms +
                 std::chrono::duration<double, std::milli>(
                     frame_end - frame_start).count();
@@ -422,15 +829,42 @@ int main(int argc, char** argv) {
                 }
                 frames_csv << frame_index << ',' << detections.size() << ','
                     << current_capture_ms << ',' << prepared.host_total_ms << ','
-                    << prepared.cuda_total_ms << ',' << inferred.host_total_ms << ','
-                    << inferred.cuda_total_ms << ',' << post_ms << ','
-                    << end_to_end_ms << '\n';
+                    << prepared.cuda_total_ms << ','
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+                    << inference_host_ms << ',' << inference_cuda_ms << ','
+#else
+                    << inferred.host_total_ms << ',' << inferred.cuda_total_ms << ','
+#endif
+                    << post_ms << ',' << end_to_end_ms;
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+                frames_csv << ',' << postprocess_mode_name(postprocess_mode)
+                    << ',' << candidate_count << ',' << d2h_bytes
+                    << ',' << gpu_postprocess_cuda_ms
+                    << ',' << count_copy_cuda_ms
+                    << ',' << count_sync_host_ms
+                    << ',' << candidate_copy_cuda_ms
+                    << ',' << candidate_sync_host_ms << '\n';
+#else
+                frames_csv << '\n';
+#endif
                 total_detections += detections.size();
                 capture_times.push_back(current_capture_ms);
                 preprocess_host_times.push_back(prepared.host_total_ms);
                 preprocess_cuda_times.push_back(prepared.cuda_total_ms);
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+                inference_host_times.push_back(inference_host_ms);
+                inference_cuda_times.push_back(inference_cuda_ms);
+                candidate_counts.push_back(candidate_count);
+                d2h_bytes_per_frame.push_back(static_cast<double>(d2h_bytes));
+                gpu_postprocess_cuda_times.push_back(gpu_postprocess_cuda_ms);
+                count_copy_cuda_times.push_back(count_copy_cuda_ms);
+                count_sync_host_times.push_back(count_sync_host_ms);
+                candidate_copy_cuda_times.push_back(candidate_copy_cuda_ms);
+                candidate_sync_host_times.push_back(candidate_sync_host_ms);
+#else
                 inference_host_times.push_back(inferred.host_total_ms);
                 inference_cuda_times.push_back(inferred.cuda_total_ms);
+#endif
                 postprocess_times.push_back(post_ms);
                 end_to_end_times.push_back(end_to_end_ms);
                 last_annotated = annotate(frame, detections);
@@ -484,6 +918,15 @@ int main(int argc, char** argv) {
         const auto inference_cuda_stats = summarize(inference_cuda_times);
         const auto postprocess_stats = summarize(postprocess_times);
         const auto end_to_end_stats = summarize(end_to_end_times);
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        const auto candidate_count_stats = summarize(candidate_counts);
+        const auto d2h_bytes_stats = summarize(d2h_bytes_per_frame);
+        const auto gpu_postprocess_cuda_stats = summarize(gpu_postprocess_cuda_times);
+        const auto count_copy_cuda_stats = summarize(count_copy_cuda_times);
+        const auto count_sync_host_stats = summarize(count_sync_host_times);
+        const auto candidate_copy_cuda_stats = summarize(candidate_copy_cuda_times);
+        const auto candidate_sync_host_stats = summarize(candidate_sync_host_times);
+#endif
         const double elapsed_seconds = std::accumulate(
             end_to_end_times.begin(), end_to_end_times.end(), 0.0) / 1000.0;
         const double effective_fps = static_cast<double>(frame_index) / elapsed_seconds;
@@ -499,6 +942,14 @@ int main(int argc, char** argv) {
                 << "{\n"
                 << "  \"result\": \"PASS\",\n"
                 << "  \"source_type\": \"" << source_type << "\",\n"
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+                << "  \"postprocess_mode\": \""
+                << postprocess_mode_name(postprocess_mode) << "\",\n"
+                << "  \"gpu_candidate_bytes\": "
+                << sizeof(ppe::GpuCandidate) << ",\n"
+                << "  \"raw_output_d2h_bytes_per_frame\": "
+                << runtime.output_info().bytes << ",\n"
+#endif
                 << "  \"source\": \"" << json_escape(source_description) << "\",\n"
                 << "  \"engine\": \"" << json_escape(args.at("--engine")) << "\",\n"
                 << "  \"frame_width\": " << geometry.source_width << ",\n"
@@ -519,10 +970,32 @@ int main(int argc, char** argv) {
         write_stats(summary, "inference_host", inference_host_stats); summary << ",\n";
         write_stats(summary, "inference_cuda", inference_cuda_stats); summary << ",\n";
         write_stats(summary, "postprocess", postprocess_stats); summary << ",\n";
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        write_stats(summary, "gpu_postprocess_cuda", gpu_postprocess_cuda_stats);
+        summary << ",\n";
+        write_stats(summary, "count_copy_cuda", count_copy_cuda_stats);
+        summary << ",\n";
+        write_stats(summary, "count_sync_host", count_sync_host_stats);
+        summary << ",\n";
+        write_stats(summary, "candidate_copy_cuda", candidate_copy_cuda_stats);
+        summary << ",\n";
+        write_stats(summary, "candidate_sync_host", candidate_sync_host_stats);
+        summary << ",\n";
+#endif
         write_stats(summary, "end_to_end", end_to_end_stats); summary << "\n";
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        summary << "  },\n  \"transfer\": {\n";
+        write_stats(summary, "candidate_count", candidate_count_stats);
+        summary << ",\n";
+        write_stats(summary, "d2h_bytes_per_frame", d2h_bytes_stats);
+        summary << "\n";
+#endif
         summary << "  }\n}\n";
         std::cout << std::fixed << std::setprecision(3)
                   << "result=PASS source_type=" << source_type
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+                  << " postprocess=" << postprocess_mode_name(postprocess_mode)
+#endif
                   << " frames=" << frame_index
                   << " detections=" << total_detections
                   << " e2e_p95_ms=" << end_to_end_stats.p95

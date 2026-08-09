@@ -24,6 +24,21 @@ target_link_libraries(ppe_cuda_preprocess PUBLIC CUDA::cudart)
 target_compile_options(ppe_cuda_preprocess PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
 
+add_library(ppe_gpu_postprocess STATIC
+    src/gpu_postprocess.cu)
+target_include_directories(ppe_gpu_postprocess PUBLIC include)
+target_link_libraries(ppe_gpu_postprocess PUBLIC
+    ppe_cuda_preprocess CUDA::cudart)
+target_compile_options(ppe_gpu_postprocess PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
+
+add_executable(exp15_gpu_postprocess_test
+    src/exp15_gpu_postprocess_test.cpp)
+target_link_libraries(exp15_gpu_postprocess_test PRIVATE
+    ppe_gpu_postprocess)
+target_compile_options(exp15_gpu_postprocess_test PRIVATE
+    -Wall -Wextra -Wpedantic)
+
 add_executable(exp10_preprocess
     src/exp10_preprocess.cpp)
 target_include_directories(exp10_preprocess PRIVATE ${OpenCV_INCLUDE_DIRS})
