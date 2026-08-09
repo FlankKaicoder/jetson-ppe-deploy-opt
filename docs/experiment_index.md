@@ -2,7 +2,7 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp13 复盘、设备重连
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp16 复盘、设备重连
 SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
@@ -24,7 +24,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp13 | Nsight Systems 端到端性能瓶颈画像 | PASS | `13_Nsight端到端性能瓶颈分析总结.md` |
 | Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT | `14_PinnedMemory_CUDAEvent_DoubleBuffer异步流水线总结.md` |
 | Exp15 | CUDA GPU Decode/Filter/Compaction 与 Nsight Compute | PASS | `15_CUDA_GPU后处理与NsightCompute总结.md` |
-| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED | 待审批 |
+| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT | `16_TensorRT_IPluginV3与ONNX_GraphSurgeon总结.md` |
 | Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED | 待审批 |
 | Exp18 | CUDA Graph 与最终 Runtime 优化 | PLANNED | 待审批 |
 | Exp19 | 最终综合 Benchmark | PLANNED | 待审批 |
@@ -33,6 +33,10 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 Postprocess Gain Attribution Gate 已于2026-08-09完成，不新增 `Exp15.1` 编号。最终公平对照保持P0/P1
 同为pinned且同为235,200 B D2H：GPU decode与CUB compaction对P95分别呈现约3.05%和1.11%的三轮
 一致改善，但FPS/mean不足以稳定分摊；Exp15 CUB主线结论不变。详见Exp15总结第8节。
+
+Exp16 已完成IPluginV3/GraphSurgeon/显式workspace与独立新进程部署闭环，同Engine Plugin数学零误差，
+组件级标记为 `VERIFIED`；四输出全图候选在150帧正式Gate产生153而非151个检测并出现超限框差，故实验
+总体 `REJECT`。正确性失败后未执行剩余正式性能轮次，Exp15 B继续作为Runtime主线。
 
 ## 状态定义
 

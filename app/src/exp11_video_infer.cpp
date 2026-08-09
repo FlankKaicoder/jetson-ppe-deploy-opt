@@ -1,6 +1,7 @@
 #include "cuda_preprocess.hpp"
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
 #include "gpu_postprocess.hpp"
+#include "trt_plugin_runtime.hpp"
 #endif
 #include "ppe_nvtx.hpp"
 #include "trt_runtime.hpp"
@@ -86,7 +87,7 @@ double double_arg(
 }
 
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
-enum class PostprocessMode { kBaseline, kRawPinned, kAtomic, kCub, kFixed };
+enum class PostprocessMode { kBaseline, kRawPinned, kAtomic, kCub, kFixed, kPlugin };
 
 PostprocessMode parse_postprocess_mode(
     const std::map<std::string, std::string>& args) {
@@ -107,8 +108,11 @@ PostprocessMode parse_postprocess_mode(
     if (value == "fixed") {
         return PostprocessMode::kFixed;
     }
+    if (value == "plugin") {
+        return PostprocessMode::kPlugin;
+    }
     throw std::runtime_error(
-        "--postprocess must be baseline, raw_pinned, atomic, cub, or fixed");
+        "--postprocess must be baseline, raw_pinned, atomic, cub, fixed, or plugin");
 }
 
 const char* postprocess_mode_name(PostprocessMode mode) {
@@ -123,6 +127,8 @@ const char* postprocess_mode_name(PostprocessMode mode) {
             return "cub";
         case PostprocessMode::kFixed:
             return "fixed";
+        case PostprocessMode::kPlugin:
+            return "plugin";
     }
     throw std::runtime_error("invalid postprocess mode");
 }
@@ -794,23 +800,42 @@ int main(int argc, char** argv) {
             frame = frame.clone();
         }
         const auto geometry = ppe::make_letterbox_geometry(frame.cols, frame.rows, 640);
-        ppe::TrtRuntime runtime(args.at("--engine"));
+        std::unique_ptr<ppe::TrtRuntime> runtime;
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        std::unique_ptr<ppe::TrtPluginRuntime> plugin_runtime;
+        if (postprocess_mode == PostprocessMode::kPlugin) {
+            if (!args.count("--plugin")) {
+                throw std::runtime_error("plugin mode requires --plugin");
+            }
+            plugin_runtime = std::make_unique<ppe::TrtPluginRuntime>(
+                args.at("--engine"), args.at("--plugin"), geometry);
+        } else {
+            runtime = std::make_unique<ppe::TrtRuntime>(args.at("--engine"));
+        }
+#else
+        runtime = std::make_unique<ppe::TrtRuntime>(args.at("--engine"));
+#endif
         ppe::CudaPreprocessor preprocessor(geometry);
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
         std::unique_ptr<RawPinnedPostprocessPath> raw_pinned_path;
         std::unique_ptr<GpuPostprocessPath> gpu_postprocess_path;
         if (postprocess_mode == PostprocessMode::kRawPinned) {
-            raw_pinned_path = std::make_unique<RawPinnedPostprocessPath>(runtime);
-        } else if (postprocess_mode != PostprocessMode::kBaseline) {
-            gpu_postprocess_path = std::make_unique<GpuPostprocessPath>(runtime);
+            raw_pinned_path = std::make_unique<RawPinnedPostprocessPath>(*runtime);
+        } else if (postprocess_mode != PostprocessMode::kBaseline &&
+                   postprocess_mode != PostprocessMode::kPlugin) {
+            gpu_postprocess_path = std::make_unique<GpuPostprocessPath>(*runtime);
         }
 #endif
         for (int index = 0; index < warmup; ++index) {
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
-            if (postprocess_mode == PostprocessMode::kBaseline) {
+            if (postprocess_mode == PostprocessMode::kPlugin) {
+                const auto compacted = plugin_runtime->process(
+                    prepared.device_output, preprocessor.stream());
+                static_cast<void>(nms_gpu_candidates(compacted.candidates, nms_iou));
+            } else if (postprocess_mode == PostprocessMode::kBaseline) {
 #endif
-            const auto inferred = runtime.infer_device(
+            const auto inferred = runtime->infer_device(
                 prepared.device_output, preprocessor.stream());
             if (!std::all_of(
                     inferred.output.begin(), inferred.output.end(),
@@ -900,12 +925,31 @@ int main(int argc, char** argv) {
             double cpu_candidate_scan_ms = 0.0;
             double cpu_nms_ms = 0.0;
             int candidate_count = 0;
-            std::size_t d2h_bytes = runtime.output_info().bytes;
+            std::size_t d2h_bytes = postprocess_mode == PostprocessMode::kPlugin
+                ? 0U : runtime->output_info().bytes;
             std::vector<Detection> detections;
             double post_ms = 0.0;
-            if (postprocess_mode == PostprocessMode::kBaseline) {
+            if (postprocess_mode == PostprocessMode::kPlugin) {
+                const auto compacted = plugin_runtime->process(
+                    prepared.device_output, preprocessor.stream());
+                const auto nms_start = std::chrono::steady_clock::now();
+                detections = nms_gpu_candidates(
+                    compacted.candidates, nms_iou, false, &candidate_count,
+                    &cpu_candidate_scan_ms, &cpu_nms_ms);
+                post_ms = compacted.cpu_inverse_letterbox_ms +
+                    std::chrono::duration<double, std::milli>(
+                        std::chrono::steady_clock::now() - nms_start).count();
+                inference_host_ms = compacted.host_total_ms;
+                inference_cuda_ms = compacted.inference_cuda_ms;
+                count_copy_cuda_ms = compacted.count_copy_cuda_ms;
+                count_sync_host_ms = compacted.count_sync_host_ms;
+                candidate_copy_cuda_ms = compacted.candidate_copy_cuda_ms;
+                candidate_sync_host_ms = compacted.candidate_sync_host_ms;
+                cpu_decode_filter_ms = compacted.cpu_inverse_letterbox_ms;
+                d2h_bytes = compacted.d2h_bytes;
+            } else if (postprocess_mode == PostprocessMode::kBaseline) {
 #endif
-            const auto inferred = runtime.infer_device(
+            const auto inferred = runtime->infer_device(
                 prepared.device_output, preprocessor.stream());
             const bool finite = std::all_of(
                 inferred.output.begin(), inferred.output.end(),
@@ -988,7 +1032,7 @@ int main(int argc, char** argv) {
                 inference_cuda_ms = inferred.inference_cuda_ms;
                 candidate_copy_cuda_ms = inferred.raw_copy_cuda_ms;
                 candidate_sync_host_ms = inferred.raw_sync_host_ms;
-                d2h_bytes = runtime.output_info().bytes;
+                d2h_bytes = runtime->output_info().bytes;
             } else {
                 const auto compacted = gpu_postprocess_path->process(
                     prepared.device_output, preprocessor.stream(), geometry,
@@ -1165,7 +1209,8 @@ int main(int argc, char** argv) {
                 << "  \"gpu_candidate_bytes\": "
                 << sizeof(ppe::GpuCandidate) << ",\n"
                 << "  \"raw_output_d2h_bytes_per_frame\": "
-                << runtime.output_info().bytes << ",\n"
+                << (postprocess_mode == PostprocessMode::kPlugin
+                        ? 0U : runtime->output_info().bytes) << ",\n"
 #endif
                 << "  \"source\": \"" << json_escape(source_description) << "\",\n"
                 << "  \"engine\": \"" << json_escape(args.at("--engine")) << "\",\n"

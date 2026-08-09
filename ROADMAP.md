@@ -46,7 +46,7 @@
 | Exp13 | Nsight Systems 端到端性能瓶颈画像 | PASS |
 | Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT |
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PASS |
-| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED |
+| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT |
 | Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED |
 | Exp18 | CUDA Graph 与最终 Runtime 优化 | PLANNED |
 | Exp19 | 最终综合 Benchmark | PLANNED |
@@ -71,13 +71,16 @@ Exp02 YOLO11n baseline best.pt
 → Exp13 Profiling 基线
 → Exp14 异步流水线候选（REJECT，保留同步 FP16 Runtime）
 → Exp15 CUB stable compaction GPU 后处理（PASS，采用为 Runtime 主线）
+→ Exp16 IPluginV3图内后处理（组件VERIFIED，全图候选REJECT）
 ```
 
 Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
 同步串行问题。Exp14 已证明 pinned memory、Event 与双缓冲能产生跨帧重叠，但重叠占比过小且
 CPU staging、资源竞争和排队显著放大 P95；候选未满足冻结性能门槛，故 `REJECT`。Exp15 的 CUB
 stable compaction 保持 CPU NMS 和冻结检测语义，把文件平均 D2H 压缩99.89%，文件 wall FPS
-提升19.19%，同时满足文件/相机 P95门槛，故 `PASS` 并成为当前 Runtime 主线。Exp16 仍为待审批计划。
+提升19.19%，同时满足文件/相机 P95门槛，故 `PASS` 并成为当前 Runtime 主线。Exp16已完成Plugin V3、
+GraphSurgeon、显式workspace和独立进程部署闭环，组件同Engine数学零误差；但150帧正式语义Gate出现
+151 vs 153检测及超限框差，因此全图候选 `REJECT`，没有执行完整三轮性能Gate，Exp15 B主线不变。
 
 不新增实验编号的 Postprocess Gain Attribution Gate 已完成：在P0/P1都使用pinned Host buffer且都传输
 235,200 B后，P0→P1和P1→P2的P95三轮均改善，paired平均分别为−3.05%和−1.11%；FPS/mean方向混合，

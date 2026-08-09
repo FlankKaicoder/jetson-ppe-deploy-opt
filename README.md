@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-09，Exp00～Exp15 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-09，Exp00～Exp16 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -38,6 +38,13 @@ Variant B 成为新的 FP16 C++ Runtime 后处理主线；模型、ONNX 与 Engi
 GPU fixed decode相对CPU raw decode的P95三轮均改善、paired平均−3.05%；CUB压缩相对fixed路径的P95
 三轮均改善、平均−1.11%，但两段的FPS/mean均受动态调频和顺序噪声影响，不能把Exp15的19.19%精确
 分摊或全部归因于D2H缩减。P2 CUB主线决策不变。
+
+Exp16 已完成 TensorRT 10.3 IPluginV3、ONNX GraphSurgeon四输出图、显式workspace和独立新进程先加载
+Plugin `.so` 再反序列化Engine的工程闭环；synthetic、冻结raw fixture和dual同Engine raw→Plugin均为
+逐项零误差，组件级能力记为 `VERIFIED`。但正式150帧第一轮中Exp15 B control保持151检测，Plugin候选
+产生153检测，并存在两个刚越过0.25阈值的额外检测及最大138 source pixels框差，违反事前冻结的语义Gate。
+正式编排因此停止，未形成三轮性能结论；Exp16总体 `REJECT`，不得宣称Plugin加速，Runtime主线继续使用
+Exp15 B。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
