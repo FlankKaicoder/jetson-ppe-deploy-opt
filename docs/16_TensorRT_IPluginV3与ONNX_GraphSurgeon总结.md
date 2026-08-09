@@ -141,12 +141,64 @@ box差均违反正式语义Gate。两个应用及基础validator返回0，semant
 | 显式workspace、禁止enqueue动态分配 | VERIFIED | fixture/synthetic/Engine运行与代码审计 |
 | 独立新进程加载`.so`后deserialize | VERIFIED | 三独立进程、相同输出hash |
 | Plugin decode/filter/CUB数学 | VERIFIED | raw fixture、synthetic、dual同Engine零误差 |
-| Compute Sanitizer覆盖 | UNVERIFIED | 平台禁用GPU debugging features |
+| Compute Sanitizer覆盖 | —（未达到VERIFIED） | 平台禁用GPU debugging features |
 | 四输出Plugin替换Exp15 B | REJECTED | 150帧151 vs 153，box最大差138 px |
-| Plugin正式性能收益 | UNVERIFIED | 正确性失败后停止，只有一对诊断数字 |
+| Plugin正式性能收益 | —（未达到VERIFIED） | 正确性失败后停止，只有一对诊断数字 |
 | 简历中的已采用Plugin优化 | REJECTED | 候选未进入部署主线 |
 
 本实验能够作为“实现并验证TensorRT Plugin工程闭环、用同Engine诊断隔离算子数学、最终因系统语义漂移
-拒绝部署候选”的学习证据，但不能写成已采用或已加速的项目成果。下一阶段按路线进入Exp17，优先审计
-activation/dynamic-range/clipping及P3/P4/P5、cls/reg/DFL敏感性，再决定是否进行Mixed Precision；
-Exp08已经完成的数据分布和tiny/small覆盖不重复从头做。
+拒绝部署候选”的学习证据，但不能写成已采用或已加速的项目成果。实验结束当时计划直接进入Exp17；
+2026-08-09的当前路线已由下述第10节重校准为先审批窄范围Deployment Semantic Revalidation Gate，再决定
+是否进入Exp17。Exp08已经完成的数据分布和tiny/small覆盖不重复从头做。
+
+## 10. Deployment Semantic Revalidation Gate（待审批，不改写原 REJECT）
+
+本节是2026-08-09基于真实结果追加的窄范围后续计划，不是对原Exp16结果的重判。原150帧正式Gate、
+`REJECT`、失败目录、检测门槛和“没有正式三轮性能结论”永久保留；Exp15 B继续是当前`ACCEPTED`主线。
+本Gate不新增Exp16.1编号，不重写Plugin，也不继续优化CUDA Kernel。
+
+### 10.1 Forensic Gate
+
+先只审计frame27、frame40和旧比较器报告的最大138 source pixels差异，逐级保存并对照：
+
+```text
+candidate index / class
+network-coordinate raw box / confidence
+0.25 threshold crossing
+inverse-letterbox geometry / source box
+NMS输入、排序、抑制关系与最终检测
+```
+
+目标是确认138 px属于真实同候选框漂移，还是`detection_index`/CSV行号对齐导致不同候选被误配的假大差。
+跨Engine比较必须改为`image + class + IoU cost`的Hungarian assignment，显式报告matched、unmatched、
+extra和missing；CSV行号只作输出顺序信息，不再作为检测身份。
+
+### 10.2 219张模型级比较与 Build Variance
+
+在同一冻结219张test、同一预处理、conf=0.25、class-aware NMS IoU和匹配IoU下比较：
+
+```text
+F0  Frozen Exp07 Engine + Exp15 CUB
+B1  Fresh rebuilt baseline #1 + Exp15 CUB
+B2  Fresh rebuilt baseline #2 + Exp15 CUB
+P   Fresh Plugin Engine
+```
+
+至少两个普通baseline rebuild用于估计TensorRT build/tactic variance。每条路径报告Precision、Recall、
+mAP50、mAP50-95、固定阈值TP/FP/FN、tiny recall、small recall、tiny+small recall、unmatched rate、
+matched bbox IoU分布、confidence delta分布和threshold-crossing数量。任何跨Engine差异都必须与B1/B2之间
+及其相对F0的正常build波动对照，不能只比较Plugin与冻结Engine。
+
+### 10.3 采用条件
+
+只有Plugin的模型级精度不差于正常baseline rebuild波动，并且随后动态调频paired/interleaved性能、
+部署复杂度和维护成本满足预先审批的采用条件时，Plugin主线状态才可改为`ACCEPTED`。否则继续保持：
+
+```text
+Plugin engineering/math : IMPLEMENTED + VERIFIED
+Original Exp16 result   : REJECTED
+Mainline adoption       : REJECTED
+Current runtime         : Exp15 B CUB stable compaction
+```
+
+Gate执行前必须先追加学习手册实验前规划并获得人工批准；本轮文档重校准本身不启动Gate。

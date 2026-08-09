@@ -44,7 +44,16 @@ Plugin `.so` 再反序列化Engine的工程闭环；synthetic、冻结raw fixtur
 逐项零误差，组件级能力记为 `VERIFIED`。但正式150帧第一轮中Exp15 B control保持151检测，Plugin候选
 产生153检测，并存在两个刚越过0.25阈值的额外检测及最大138 source pixels框差，违反事前冻结的语义Gate。
 正式编排因此停止，未形成三轮性能结论；Exp16总体 `REJECT`，不得宣称Plugin加速，Runtime主线继续使用
-Exp15 B。
+Exp15 B。该结果不是“Plugin组件失败”：普通无Plugin control rebuild相对冻结Exp07 Engine同样出现raw
+漂移，说明跨独立Engine比较混入TensorRT rebuild/tactic selection变量；但系统级部署语义未过Gate的原始
+`REJECT`仍永久保留。
+
+当前下一项不是重写Plugin或继续调CUDA Kernel，而是待人工审批的不新增实验编号
+`Exp16 Deployment Semantic Revalidation Gate`：先对frame27、frame40和138 px报告差做candidate/raw box/
+confidence/inverse-letterbox/NMS forensic，并改用image+class+IoU/Hungarian跨Engine匹配；随后在同一219张
+test上比较Frozen Exp07+Exp15、至少两个Fresh baseline rebuild+Exp15和Fresh Plugin Engine的模型级精度、
+固定阈值TP/FP/FN、小目标召回、unmatched rate、bbox IoU与confidence delta。只有Plugin精度不差于正常
+rebuild波动且性能/复杂度满足采用条件时才可进入主线，否则保持组件`VERIFIED`、主线`REJECTED`。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
@@ -95,6 +104,10 @@ CUDA Graph、spin wait 且关闭 H2D/D2H；未锁定 `jetson_clocks`，不是端
 | TensorRT FP32 | 0.52160406 |
 | TensorRT FP16 | 0.52192881 |
 
+Exp07证明的是冻结Serialized Engine在相同输入和Runtime条件下可重复执行；Exp16后续诊断同时证明，
+即使使用同一ONNX、TensorRT版本和显式Builder参数，重新Build也不保证生成bitwise相同的Engine或raw。
+两种结论不冲突，跨build比较必须显式估计build/tactic variance并使用检测级匹配与模型级指标。
+
 Exp11 已完成文件视频与 IMX219 端到端 C++ 推理。文件视频三个独立进程均处理
 150 帧、151 个检测，检测 CSV SHA256 一致；IMX219 1920×1080@30 正式运行处理
 300/300 帧，端到端 mean/P95 为 31.832/34.190 ms，有效处理率 31.415 FPS。
@@ -117,6 +130,22 @@ Exp11 已完成文件视频与 IMX219 端到端 C++ 推理。文件视频三个�
 → 内存、并发、GPU 后处理、Plugin 与混合精度优化
 → 最终综合 Benchmark 与项目收尾
 ```
+
+后续冻结顺序为：先审批并执行窄范围Exp16 Deployment Semantic Revalidation Gate；再进行Exp17
+Explicit Q/DQ/量化机制与粗粒度敏感性；Exp18仅在最终真实主线被Nsight证明enqueue-bound时实现
+device-side CUDA Graph，否则`SKIPPED_BY_EVIDENCE`；Exp19只比较baseline与`ACCEPTED`最终路线；Exp20
+完成发布材料后停止开发。Exp14 isolation audit仅为optional/post-resume。
+
+## 能力证据口径
+
+- `IMPLEMENTED`：已有代码或工程闭环，不代表正确或进入主线；
+- `VERIFIED`：已有冻结输入下的正确性、生命周期或Profiling证据；
+- `ACCEPTED`：通过预冻结采用条件并进入当前主线；
+- `REJECTED`：实现或验证可以成立，但候选不进入主线。
+
+单项能力可同时是`IMPLEMENTED + VERIFIED + REJECTED`。未完成或未验证能力不得写入简历成果；负向实验、
+旧门槛和失败现场不得删除或回写。所有后续工作继续遵守
+`Measure → Identify → Optimize → Verify → Re-profile → Accept/Reject`。
 
 ## 三端职责
 

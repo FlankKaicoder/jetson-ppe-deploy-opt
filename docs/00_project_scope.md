@@ -27,7 +27,7 @@ TensorRT/CUDA 推理优化。
 8. 实现 CUDA 融合预处理；
 9. 分析延迟、吞吐、内存、功耗和温度；
 10. 使用 Nsight Systems/Compute 定位 CPU/GPU、传输和同步瓶颈；
-11. 验证 Pinned Memory、异步流水、GPU 后处理和 CUDA Graph；
+11. 实现并按预冻结门槛评估 Pinned Memory、异步流水、GPU 后处理和 CUDA Graph；功能可运行不等于采用；
 12. 实现并验证 TensorRT IPluginV3 与 ONNX GraphSurgeon 扩展链路；
 13. 分析 INT8 量化敏感模块并探索 Mixed Precision；
 14. 形成可公开、可解释的 GitHub 工程。
@@ -41,3 +41,10 @@ TensorRT/CUDA 推理优化。
 
 所有成果必须能够通过代码、实验记录和指标文件追溯。
 未经完成和验证的功能不得表述为已经实现。
+
+能力证据统一区分 `IMPLEMENTED / VERIFIED / ACCEPTED / REJECTED`。Exp03～Exp05、Exp08、Exp14和Exp16
+等负向结论属于项目事实，不得为“全PASS”重训、放宽门槛或删除。后续工作遵守
+`Measure → Identify → Optimize → Verify → Re-profile → Accept/Reject`。
+
+Exp20完成后停止当前主线开发，不再扩展新的YOLO结构、Attention/Loss、GPU NMS、NVMM zero-copy、
+DeepStream、多摄像头、剪枝、蒸馏、TVM/MLIR/Triton等方向。

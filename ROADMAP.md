@@ -47,9 +47,10 @@
 | Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT |
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PASS |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT |
-| Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED |
-| Exp18 | CUDA Graph 与最终 Runtime 优化 | PLANNED |
-| Exp19 | 最终综合 Benchmark | PLANNED |
+| Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | PLANNED / 待审批 |
+| Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | PLANNED |
+| Exp18 | CUDA Graph Decision Gate | PLANNED |
+| Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED |
 
 ## M5：项目发布
 
@@ -72,6 +73,7 @@ Exp02 YOLO11n baseline best.pt
 → Exp14 异步流水线候选（REJECT，保留同步 FP16 Runtime）
 → Exp15 CUB stable compaction GPU 后处理（PASS，采用为 Runtime 主线）
 → Exp16 IPluginV3图内后处理（组件VERIFIED，全图候选REJECT）
+→ Exp16 Deployment Semantic Revalidation Gate（待审批，不改写原REJECT）
 ```
 
 Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
@@ -81,10 +83,31 @@ stable compaction 保持 CPU NMS 和冻结检测语义，把文件平均 D2H 压
 提升19.19%，同时满足文件/相机 P95门槛，故 `PASS` 并成为当前 Runtime 主线。Exp16已完成Plugin V3、
 GraphSurgeon、显式workspace和独立进程部署闭环，组件同Engine数学零误差；但150帧正式语义Gate出现
 151 vs 153检测及超限框差，因此全图候选 `REJECT`，没有执行完整三轮性能Gate，Exp15 B主线不变。
+普通无Plugin rebuild相对冻结Exp07 Engine同样出现raw漂移，说明跨Engine比较混入rebuild/tactic selection
+变量；这不等于Plugin候选自动通过，也不把Exp16改写成单纯“Plugin失败”。
 
 不新增实验编号的 Postprocess Gain Attribution Gate 已完成：在P0/P1都使用pinned Host buffer且都传输
 235,200 B后，P0→P1和P1→P2的P95三轮均改善，paired平均分别为−3.05%和−1.11%；FPS/mean方向混合，
 因此不强行精确分摊Exp15的19.19%。P2仍因完整正确性、D2H/Host扫描缩减和原采用门槛保持主线地位。
+
+Exp16 Deployment Semantic Revalidation Gate先对frame27、frame40和138 px报告差做candidate级forensic，
+并以image+class+IoU/Hungarian替代CSV行号匹配；随后在同一219张test上比较Frozen Exp07、至少两个Fresh
+baseline rebuild和Fresh Plugin Engine，报告模型级精度、小目标召回、固定阈值TP/FP/FN、unmatched rate、
+bbox IoU与confidence delta，并估计普通TensorRT build variance。只有Plugin不差于正常rebuild波动且满足
+性能/复杂度采用条件时才可`ACCEPTED`，否则保持`VERIFIED + REJECTED`。
+
+Exp17不重做Exp08的256图覆盖审计：先审计implicit calibrator/cache与explicit Q/DQ；必要时建立Explicit
+Q/DQ PTQ baseline，再做activation/dynamic-range/clipping及P3/P4/P5、cls/reg/DFL、完整Detect Head
+粗粒度敏感性，构建2～3个Mixed Precision Pareto候选并重复构建最终候选。Exp18仅在Exp17后最终主线上
+重新Nsight证明enqueue/kernel-launch overhead明显时实现，只捕获device-side preprocess→enqueueV3→GPU
+decode/filter→CUB，H2D和count/payload D2H保持Graph外；否则记`SKIPPED_BY_EVIDENCE`。
+
+Exp19只比较baseline与已`ACCEPTED`路线。文件视频用于最大吞吐；30 FPS相机重点报告capture wait、
+post-capture processing、frame total与P95/P99，同时记录CPU/GPU、功耗、温度、RSS和energy/frame。动态调频
+为最终部署主轨，固定时钟只作诊断；54,000帧稳定性只对最终`V_Final`重跑。Exp20完成后停止扩展。
+
+全仓统一使用`IMPLEMENTED / VERIFIED / ACCEPTED / REJECTED`能力证据模型；实验表中的`PASS/REJECT`仍保留
+历史裁决。未完成或未验证能力不得写入简历，旧负向结果、门槛和失败现场不得改写或删除。
 
 不得用 RTX 3080 Ti 的验证速度代替 Jetson 性能结论，也不得提前把计划项表述为
 已经完成。

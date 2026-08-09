@@ -2,7 +2,8 @@
 
 ## 1. 最终结论
 
-Exp14 工程链路完成，但候选状态为 `REJECT`。
+Exp14 工程链路完成，但候选状态为 `REJECT`。按全仓四层能力证据模型，异步实现和依赖/重叠正确性为
+`IMPLEMENTED + VERIFIED`，性能Gate与主线采用为`REJECTED`；这不是功能失败，也不因工程可运行而进入主线。
 
 Variant A/B/C 均通过正确性验证，Variant C 也在文件和相机 Nsight 时间线中产生了可量化的
 跨帧 Kernel/Memcpy 重叠；然而同日三轮无 profiler 对照显示：
@@ -14,7 +15,8 @@ Variant A/B/C 均通过正确性验证，Variant C 也在文件和相机 Nsight 
 - 文件/相机时间线重叠分别只有2.961/0.860 ms，占正式窗口约0.149%/0.009%，不足以抵消
   pinned staging、采集资源竞争和双槽排队成本。
 
-因此部署主线继续使用 Exp13 的同步 FP16 C++ Runtime。Exp15 仍为 `PLANNED`，需另行审批。
+因此部署主线继续使用同步 FP16 C++ Runtime。Exp14纯计算isolation audit后续降为optional/post-resume，
+不阻塞主线；该补充不改变原性能门槛和`REJECTED`结论。
 
 ## 2. 实验边界与环境
 

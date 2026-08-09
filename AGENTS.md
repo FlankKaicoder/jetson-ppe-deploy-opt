@@ -385,6 +385,8 @@ Exp11 视频/摄像头端到端推理
 Exp12 性能、功耗、温度与稳定性测试
 Exp13 Nsight Systems 端到端性能瓶颈画像与优化基线
 Exp14 Pinned Memory、CUDA Event 与 Double Buffer 异步流水线消融
+Exp15 CUDA GPU Decode/Filter/Compaction 与 Nsight Compute
+Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon
 ```
 
 当前模型决策：
@@ -427,19 +429,37 @@ Exp11 已通过文件视频三进程确定性和 IMX219 300 帧端到端功能�
 Exp12 已通过固定时钟三进程重复性和 54,000 帧/约 30 分钟稳定性验收；默认部署恢复动态调频。
 Exp13 已通过 NVTX 正确性回归、文件/相机 Nsight Systems 时间线、三轮无分析器重复性和
 TensorRT 逐层诊断验收。文件模式归类为 synchronization-bound，相机模式归类为
-input-rate-bound + synchronization-bound；CPU decode/NMS 不是当前首要瓶颈。
+input-rate-bound + synchronization-bound；CPU decode/NMS 不是当时首要瓶颈。后续分析必须继续区分
+`Host API Duration`、`GPU Activity Duration` 与 `Critical Path Contribution`，三者不得混用。
 Exp14 已完成 Pinned Memory、CUDA Event、单缓冲异步和双缓冲三 Stream 工程链路、文件/相机
 三轮无分析器对照与正式 Nsight 验证。Variant C 文件吞吐仅提升4.51%，P95退化159.28%；相机
-P95退化173.51%，虽观察到跨帧重叠但未满足冻结门槛，因此候选 `REJECT`，运行时主线继续使用
-Exp13 同步 FP16 Runtime。
+P95退化173.51%，虽观察到跨帧重叠但未满足冻结门槛。因此异步工程为 `IMPLEMENTED + VERIFIED`，
+性能和主线采用为 `REJECTED`；运行时主线继续使用同步 FP16 Runtime。纯计算 isolation audit 降为
+optional/post-resume，不阻塞后续实验。
 Exp15 已通过 Atomic/CUB GPU decode、filter、compaction、压缩 D2H、文件/相机三轮对照及
 Nsight Systems/Compute 验收。Variant B（CUB stable compaction）文件 wall FPS 提升19.19%，
 E2E mean/P95下降16.53%/14.97%，平均 D2H减少99.89%，相机 P95退化1.61%，保持冻结检测 digest，
-因此 `PASS` 并成为新的 FP16 C++ Runtime 后处理主线。模型、ONNX、Engine 与 CPU NMS语义不变。
+因此 `VERIFIED + ACCEPTED` 并成为新的 FP16 C++ Runtime 后处理主线。模型、ONNX、Engine 与 CPU
+NMS语义不变。必须保留“Kernel更快不等于Runtime更快”的边界。
 2026-08-09 的 Postprocess Gain Attribution Gate 未新增实验编号：在P0/P1同为pinned且同为235,200 B
 D2H后，GPU decode与CUB compaction对P95分别呈现约3.05%和1.11%的三轮一致改善，但FPS/mean方向
-混合，不能精确分摊Exp15的19.19%。P2主线决策不变；早期pageable P0混杂结果只作为预修复证据保留。
-Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon 仍为 `PLANNED`，执行前必须另行获得用户批准。
+混合，不能精确分摊Exp15的19.19%，也不能把全部收益归因于D2H缩减。P2主线决策不变；早期pageable
+P0混杂结果只作为预修复证据保留。该Gate已完成，不得重复执行。
+Exp16 已完成 IPluginV3、Creator/Registry、GraphSurgeon、显式workspace、Plugin `.so`、独立新进程
+`dlopen→deserialize→enqueueV3`、synthetic/fixture和dual-output同Engine零误差闭环，组件级能力为
+`IMPLEMENTED + VERIFIED`。原150帧跨Engine部署语义Gate出现151 vs 153检测和最大138 px报告差，
+因此原Exp16全图候选永久保持 `REJECTED`，正式三轮性能收益仍未验证；当前Runtime主线保持Exp15 B。
+普通无Plugin rebuild相对冻结Exp07 Engine也出现raw漂移，说明TensorRT rebuild/tactic selection是混杂
+变量，但不能据此自动通过部署语义Gate。
+
+当前待审批项为不新增实验编号的 `Exp16 Deployment Semantic Revalidation Gate`。该Gate只做窄范围
+forensic、跨Engine检测匹配、219张test模型级指标和至少两个普通baseline rebuild的build variance估计；
+不得重写Plugin、继续调CUDA Kernel、修改原Exp16 REJECT或放宽旧门槛。只有Plugin精度不差于正常rebuild
+波动且性能/复杂度满足采用条件时，才可把“主线采用”改为 `ACCEPTED`；否则保持 `VERIFIED + REJECTED`。
+
+能力证据统一使用四层模型：`IMPLEMENTED`表示已有实现；`VERIFIED`表示已有冻结输入下的正确性、生命周期
+或Profiling证据；`ACCEPTED`表示通过预冻结采用条件并进入主线；`REJECTED`表示不进入主线。单项能力可同时
+为`IMPLEMENTED + VERIFIED + REJECTED`。未完成或未验证能力不得写入简历成果。
 
 Codex 不得擅自重新选择模型主线。
 
@@ -447,7 +467,7 @@ Codex 不得擅自重新选择模型主线。
 
 # 6. 下一阶段推荐顺序
 
-后续部署阶段建议按以下顺序推进：
+后续部署阶段必须按证据重新校准，不得机械沿用旧规划：
 
 ```text
 Exp06  PyTorch → ONNX 导出与一致性验证
@@ -461,11 +481,27 @@ Exp13  Nsight Systems 端到端性能瓶颈画像与优化基线
 Exp14  Pinned Memory、Async 与 Double Buffer 流水线
 Exp15  CUDA GPU Decode/Filter/Compaction 与 Nsight Compute
 Exp16  TensorRT IPluginV3 与 ONNX GraphSurgeon
-Exp17  INT8 敏感性分析与 Mixed Precision
-Exp18  CUDA Graph 与最终 Runtime 优化
-Exp19  最终综合 Benchmark
+Gate   Exp16 Deployment Semantic Revalidation Gate（待审批，不新增实验编号）
+Exp17  Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision
+Exp18  CUDA Graph Decision Gate（无enqueue-bound证据则SKIPPED_BY_EVIDENCE）
+Exp19  仅比较baseline与ACCEPTED最终路线的综合Benchmark
 Exp20  README、学习路线、简历与面试材料
 ```
+
+Exp17不得重做Exp08的256图与tiny/small覆盖审计。先代码审计Exp08属于implicit calibrator/cache还是
+explicit Q/DQ；若为implicit，先建立Explicit Q/DQ PTQ baseline，再做activation/dynamic-range/clipping
+审计及P3/P4/P5、cls/reg/DFL、完整Detect Head粗粒度敏感性。比较三个检测尺度的score error、bbox error、
+relative L2和threshold-crossing，构建2～3个Mixed Precision候选，并至少重复构建最终候选一次。
+
+Exp18只在Exp17后真实最终主线上重新Nsight证明enqueue/kernel-launch overhead明显时实现。第一版只捕获
+device-side `CUDA preprocess→TensorRT enqueueV3→GPU decode/filter→CUB compaction`；H2D和count/payload
+D2H保持Graph外，不重新引入Exp14 pinned staging/Double Buffer。无明显enqueue-bound则记
+`SKIPPED_BY_EVIDENCE`。
+
+Exp19只比较baseline与已`ACCEPTED`路线。文件视频报告最大吞吐；30 FPS input-rate-bound相机重点报告
+`capture_wait_ms`、`post_capture_processing_ms`、`frame_total`和P95/P99，同时记录CPU/GPU、功耗、温度、
+RSS与energy/frame。动态调频是最终部署主轨，固定时钟只作低方差诊断；54,000帧/约30分钟稳定性仅对
+最终`V_Final`重跑。Exp20完成文档、架构图、结果表、简历和面试材料后停止开发。
 
 若用户另行指定编号，以用户最新指令为准。
 
@@ -1078,6 +1114,11 @@ Batch
 jetson_clocks 状态
 ```
 
+正式性能对照必须采用paired/interleaved顺序和独立进程，不挑最好一轮。动态调频是最终部署主结果；固定
+时钟仅作为低方差microbenchmark/代码差异诊断轨，两条轨道数字不得混用。Profiler只用于解释时间线与
+瓶颈，正式性能取无Profiler运行，并继续区分`Host API Duration`、`GPU Activity Duration`和
+`Critical Path Contribution`。
+
 若正式测试需要 `jetson_clocks`，锁频前必须先显式保存动态状态，例如：
 
 ```bash
@@ -1318,7 +1359,7 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. Exp13 已证实的瓶颈和后续 Exp14 推荐工作流；
+8. Exp13～Exp16 的分层证据、当前 Exp15 B 主线和待审批 Revalidation Gate；
 9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
 
 最后只输出检查结果和建议，不执行修改。
@@ -1343,7 +1384,7 @@ BLOCKED
 4. 数据集 YAML；
 5. Exp06 ONNX 文件及 SHA256 是否与冻结记录一致；
 6. Exp08 INT8 为何被 REJECT，且不得改写为运行时主线；
-7. Exp14 是否需要 AutoDL 侧提供新的输入产物（默认不需要）。
+7. Exp17 是否需要 AutoDL 侧建立 Explicit Q/DQ PTQ baseline（须先完成Exp08代码审计）。
 
 先给出执行计划和风险，不要直接开始。
 ```
@@ -1368,7 +1409,7 @@ Exp06～Exp12 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. Exp13 结论是否一致，以及 Exp14 流水线优化的最小执行计划（尚待用户审批）。
+8. Exp13～Exp16结论是否一致，以及Exp16 Deployment Semantic Revalidation Gate是否已获审批。
 
 先输出检查结果，不执行构建。
 ```
@@ -1394,13 +1435,13 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-以 Exp13 时间线证据为基线，等待用户审批 Exp14
+以 Exp15 B 为当前Runtime主线，保留原Exp16 REJECT并等待窄范围Revalidation Gate审批
         ↓
 Windows Codex
-审查时间线证据、瓶颈分类和后续优化假设
+审查forensic匹配、219张指标、build variance和后续量化假设
         ↓
 ChatGPT
-审查 Exp14 方案，用户审批后才进入实现
+审查Revalidation Gate；通过审批后才执行，之后再决定是否进入Exp17
 ```
 
 ---

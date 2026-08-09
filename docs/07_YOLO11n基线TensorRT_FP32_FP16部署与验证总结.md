@@ -208,3 +208,23 @@ Exp07 验收通过，FP16 作为后续 C++ Runtime 和端到端部署的优先�
 保留为正确性参考。下一步按路线进入 Exp08 INT8 PTQ，在固定 test split、预处理
 和计时范围下比较 FP32、FP16、INT8，不能用本次 GPU-only 数据替代 Exp12 综合
 性能结论。
+
+## 12. 2026-08-09 跨 Build 语义边界补充（不重做 Exp07）
+
+Exp07的`PASS`与冻结Engine结论不变，也不重新构建本实验。后续Exp09/Exp11使用同一份Serialized FP16
+Engine的独立进程和固定输入，进一步证明了“冻结Engine重复执行稳定”。Exp16诊断同时发现：从同一Exp06
+ONNX、同一TensorRT 10.3和相同显式Builder参数重新Build的普通无Plugin control，Engine哈希、raw输出及
+少量临界检测不保证与冻结Exp07 Engine bitwise一致；TensorRT rebuild/tactic selection是跨build比较中的
+真实变量。
+
+因此必须区分：
+
+```text
+Frozen Serialized Engine repeated execution stability
+!=
+Fresh rebuild from the same ONNX gives bitwise-identical raw output
+```
+
+该补充不否定Exp07已完成的模型级精度验收，也不允许把fresh rebuild漂移自动归因于任何Plugin。后续跨
+Engine比较应记录每次build及SHA256，使用image+class+IoU/Hungarian检测匹配、模型级P/R与AP，并用至少
+两个普通baseline rebuild估计build variance；不得依赖CSV行号或raw bitwise一致性做唯一裁决。
