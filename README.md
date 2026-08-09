@@ -48,12 +48,10 @@ Exp15 B。该结果不是“Plugin组件失败”：普通无Plugin control rebu
 漂移，说明跨独立Engine比较混入TensorRT rebuild/tactic selection变量；但系统级部署语义未过Gate的原始
 `REJECT`仍永久保留。
 
-当前下一项不是重写Plugin或继续调CUDA Kernel，而是待人工审批的不新增实验编号
-`Exp16 Deployment Semantic Revalidation Gate`：先对frame27、frame40和138 px报告差做candidate/raw box/
-confidence/inverse-letterbox/NMS forensic，并改用image+class+IoU/Hungarian跨Engine匹配；随后在同一219张
-test上比较Frozen Exp07+Exp15、至少两个Fresh baseline rebuild+Exp15和Fresh Plugin Engine的模型级精度、
-固定阈值TP/FP/FN、小目标召回、unmatched rate、bbox IoU与confidence delta。只有Plugin精度不差于正常
-rebuild波动且性能/复杂度满足采用条件时才可进入主线，否则保持组件`VERIFIED`、主线`REJECTED`。
+不新增实验编号的`Exp16 Deployment Semantic Revalidation Gate`已经完成：candidate forensic确认旧138 px
+报告差来自CSV行号错配，219张test与两个普通baseline rebuild证明Plugin检测语义处于正常build variance
+内；但三轮动态调频paired/interleaved性能没有稳定收益，因此组件和语义保持`VERIFIED`，性能与主线
+`REJECTED`。当前不重写Plugin、不继续调CUDA Kernel，下一实验为Exp17。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
@@ -131,7 +129,8 @@ Exp11 已完成文件视频与 IMX219 端到端 C++ 推理。文件视频三个�
 → 最终综合 Benchmark 与项目收尾
 ```
 
-后续冻结顺序为：先审批并执行窄范围Exp16 Deployment Semantic Revalidation Gate；再进行Exp17
+Exp16 Deployment Semantic Revalidation Gate已完成：Plugin模型级语义通过普通build variance envelope，
+但三轮动态调频性能未满足采用门槛，Exp15 CUB继续作为Runtime主线。后续冻结顺序为：进行Exp17
 Explicit Q/DQ/量化机制与粗粒度敏感性；Exp18仅在最终真实主线被Nsight证明enqueue-bound时实现
 device-side CUDA Graph，否则`SKIPPED_BY_EVIDENCE`；Exp19只比较baseline与`ACCEPTED`最终路线；Exp20
 完成发布材料后停止开发。Exp14 isolation audit仅为optional/post-resume。

@@ -47,7 +47,7 @@
 | Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT |
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PASS |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT |
-| Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | PLANNED / 待审批 |
+| Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT |
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | PLANNED |
 | Exp18 | CUDA Graph Decision Gate | PLANNED |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED |
@@ -73,7 +73,7 @@ Exp02 YOLO11n baseline best.pt
 → Exp14 异步流水线候选（REJECT，保留同步 FP16 Runtime）
 → Exp15 CUB stable compaction GPU 后处理（PASS，采用为 Runtime 主线）
 → Exp16 IPluginV3图内后处理（组件VERIFIED，全图候选REJECT）
-→ Exp16 Deployment Semantic Revalidation Gate（待审批，不改写原REJECT）
+→ Exp16 Deployment Semantic Revalidation Gate（语义PASS、性能REJECT，主线不采用）
 ```
 
 Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
@@ -95,6 +95,14 @@ Exp16 Deployment Semantic Revalidation Gate先对frame27、frame40和138 px报�
 baseline rebuild和Fresh Plugin Engine，报告模型级精度、小目标召回、固定阈值TP/FP/FN、unmatched rate、
 bbox IoU与confidence delta，并估计普通TensorRT build variance。只有Plugin不差于正常rebuild波动且满足
 性能/复杂度采用条件时才可`ACCEPTED`，否则保持`VERIFIED + REJECTED`。
+
+该Gate已于2026-08-09完成。forensic确认frame27/40均为candidate 8222在0.25附近的threshold crossing，
+旧138 px来自额外检测造成的CSV行号错配；B2普通rebuild与Fresh Plugin均让该候选过阈值，B1与F0均未过。
+219图R3中P的TP/FP/FN为731/169/109，tiny+small recall为0.79020979，Gate-local
+`mAP50@conf_floor_0.25`/`mAP50-95@conf_floor_0.25`为0.84351262/0.49550903，全部位于F0/B1/B2
+build-variance envelope内，故部署语义Gate通过。随后R4动态调频三轮配对中，P的聚合wall FPS相对F0
+为−1.0648%，E2E mean为+1.3053%，且仅1/3方向有利；虽然三轮P95均满足≤5%退化限制，仍未达到3%收益
+和至少2/3同向条件，因此主线采用`REJECT`，Exp15 CUB继续作为Runtime主线。
 
 Exp17不重做Exp08的256图覆盖审计：先审计implicit calibrator/cache与explicit Q/DQ；必要时建立Explicit
 Q/DQ PTQ baseline，再做activation/dynamic-range/clipping及P3/P4/P5、cls/reg/DFL、完整Detect Head

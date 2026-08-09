@@ -150,7 +150,10 @@ public:
         }
     }
 
-    PluginFrameResult process(float const* input, cudaStream_t stream) {
+    PluginFrameResult process(
+        float const* input,
+        cudaStream_t stream,
+        std::vector<GpuCandidate>* network_candidates) {
         if (input == nullptr || stream == nullptr ||
             !context_->setTensorAddress("images", const_cast<float*>(input))) {
             throw std::runtime_error("Plugin input setTensorAddress failed");
@@ -194,6 +197,10 @@ public:
         auto const* boxes = static_cast<float const*>(boxes_host_.data());
         auto const* classes = static_cast<int32_t const*>(classes_host_.data());
         auto const* indices = static_cast<int32_t const*>(indices_host_.data());
+        if (network_candidates != nullptr) {
+            network_candidates->clear();
+            network_candidates->reserve(count_size);
+        }
         std::vector<GpuCandidate> candidates;
         candidates.reserve(count_size);
         for (int32_t position = 0; position < count; ++position) {
@@ -211,6 +218,13 @@ public:
             candidate.y2 = std::clamp((box[3] - geometry_.padding_top) / geometry_.ratio,
                                       0.0F, static_cast<float>(geometry_.source_height));
             if (candidate.x2 > candidate.x1 && candidate.y2 > candidate.y1) {
+                if (network_candidates != nullptr) {
+                    network_candidates->push_back({
+                        candidate.candidate_index,
+                        candidate.class_id,
+                        candidate.confidence,
+                        box[0], box[1], box[2], box[3]});
+                }
                 candidates.push_back(candidate);
             }
         }
@@ -230,6 +244,14 @@ public:
         result.candidate_sync_host_ms = payload_sync;
         result.cpu_inverse_letterbox_ms = inverse_ms;
         return result;
+    }
+
+    void set_geometry(LetterboxGeometry geometry) {
+        if (geometry.source_width <= 0 || geometry.source_height <= 0 ||
+            geometry.target_size <= 0 || geometry.ratio <= 0.0F) {
+            throw std::runtime_error("invalid Plugin letterbox geometry");
+        }
+        geometry_ = geometry;
     }
 
 private:
@@ -268,8 +290,14 @@ TrtPluginRuntime::TrtPluginRuntime(
 TrtPluginRuntime::~TrtPluginRuntime() = default;
 TrtPluginRuntime::TrtPluginRuntime(TrtPluginRuntime&&) noexcept = default;
 TrtPluginRuntime& TrtPluginRuntime::operator=(TrtPluginRuntime&&) noexcept = default;
-PluginFrameResult TrtPluginRuntime::process(float const* input, cudaStream_t stream) {
-    return impl_->process(input, stream);
+PluginFrameResult TrtPluginRuntime::process(
+    float const* input,
+    cudaStream_t stream,
+    std::vector<GpuCandidate>* network_candidates) {
+    return impl_->process(input, stream, network_candidates);
+}
+void TrtPluginRuntime::set_geometry(LetterboxGeometry geometry) {
+    impl_->set_geometry(geometry);
 }
 
 }  // namespace ppe

@@ -38,7 +38,11 @@ public:
     TrtPluginRuntime(TrtPluginRuntime&&) noexcept;
     TrtPluginRuntime& operator=(TrtPluginRuntime&&) noexcept;
 
-    PluginFrameResult process(const float* device_input, cudaStream_t stream);
+    PluginFrameResult process(
+        const float* device_input,
+        cudaStream_t stream,
+        std::vector<GpuCandidate>* network_candidates = nullptr);
+    void set_geometry(LetterboxGeometry geometry);
 
 private:
     class Impl;

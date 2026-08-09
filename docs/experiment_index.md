@@ -25,7 +25,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT | `14_PinnedMemory_CUDAEvent_DoubleBuffer异步流水线总结.md` |
 | Exp15 | CUDA GPU Decode/Filter/Compaction 与 Nsight Compute | PASS | `15_CUDA_GPU后处理与NsightCompute总结.md` |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT | `16_TensorRT_IPluginV3与ONNX_GraphSurgeon总结.md` |
-| Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | PLANNED / 待审批 | 见Exp16总结第10节 |
+| Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT | 见Exp16总结第10～11节 |
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | PLANNED | 待审批 |
 | Exp18 | CUDA Graph Decision Gate | PLANNED | 待审批；可SKIPPED_BY_EVIDENCE |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED | 待审批 |
@@ -46,6 +46,11 @@ Revalidation Gate先forensic frame27、frame40和138 px报告差，并以image+c
 Engine的P/R、mAP50、mAP50-95、固定阈值TP/FP/FN、tiny/small/tiny+small recall、unmatched rate、bbox
 IoU及confidence delta。Plugin只有在模型级精度不差于普通rebuild波动且性能/复杂度满足采用条件时才可
 `ACCEPTED`，否则保持`VERIFIED + REJECTED`。
+
+Revalidation Gate已完成：R1/R2确认frame27/40的candidate 8222发生0.25阈值穿越，旧138 px是行号错配；
+R3统一219图评估证明Fresh Plugin模型级语义处于F0/B1/B2普通build variance内。R4动态调频三轮配对
+虽然P95全部通过，但Plugin相对F0聚合wall FPS为−1.0648%、E2E mean为+1.3053%，且仅1/3方向有利，
+未满足采用门槛，故Gate为`REJECT`，组件能力保持`IMPLEMENTED + VERIFIED`，主线采用保持`REJECTED`。
 
 ## 状态定义
 

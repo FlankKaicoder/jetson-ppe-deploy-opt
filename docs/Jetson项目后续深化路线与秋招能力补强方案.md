@@ -2,8 +2,8 @@
 
 > 文档版本：V3（2026-08-09依据Exp16真实结果重校准）。
 > 文档地位：本文件是仓库中后续技术路线、能力边界、优先级和验收原则的唯一 canonical 文档。
-> 当前阶段：Exp00～Exp16及Postprocess Gain Attribution Gate已完成；Exp16 Deployment Semantic
-> Revalidation Gate待审批；Exp17～Exp20尚未执行。
+> 当前阶段：Exp00～Exp16、Postprocess Gain Attribution Gate及Exp16 Deployment Semantic
+> Revalidation Gate已完成；Exp17～Exp20尚未执行。
 > 核心方法：**Measure → Identify → Optimize → Verify → Re-profile → Accept/Reject**。
 > 事实边界：计划、实现、验证和主线采用必须分开表述；没有代码和实验产物支撑的能力不得写成成果。
 
@@ -253,7 +253,7 @@ Exp15 的同日 E2E差值；该因果边界已由第7节完成的Postprocess Gai
 | IPluginV3、Creator/Registry、显式workspace | IMPLEMENTED / VERIFIED | Plugin `.so`、Engine、fixture/synthetic/dual同Engine | 可写工程闭环，不可写已采用加速 |
 | ONNX GraphSurgeon自定义图 | IMPLEMENTED / VERIFIED | 四输出ONNX、Parser/Engine构建、独立进程加载 | 可写工程闭环，不可写主线采用 |
 | Plugin全图替换Exp15 B | REJECTED | 原150帧Gate 151 vs 153及超限框差 | 只能写拒绝决策 |
-| Exp16 Deployment Semantic Revalidation | —（尚无VERIFIED证据） | 待审批的forensic、219图与build variance | 不可写成果 |
+| Exp16 Deployment Semantic Revalidation | VERIFIED / REJECTED | candidate forensic、Hungarian匹配、219图build variance与三轮动态调频性能 | 可写严谨验证与拒绝决策，不可写已采用加速 |
 | Explicit Q/DQ / Mixed Precision | —（尚无IMPLEMENTED/VERIFIED证据） | 尚无敏感性与Pareto结果 | 不可写成果 |
 | Runtime CUDA Graph | —（尚无IMPLEMENTED/VERIFIED证据） | trtexec使用不能替代自有Runtime集成 | 不可写成果 |
 | GPU NMS / NVMM zero-copy | —（停止扩展） | 无正式证据且不进入当前范围 | 不可写成果 |
@@ -279,7 +279,7 @@ Explicit Q/DQ 与 Mixed Precision Pareto
 ## 6.2 岗位映射
 
 - 嵌入式 AI / Edge AI：当前已经具备投递基础，继续强化 GPU Runtime、正确性和系统性能解释；
-- TensorRT / 模型部署：Exp16组件闭环已完成；Revalidation Gate与Exp17是下一关键补强；
+- TensorRT / 模型部署：Exp16组件和Revalidation闭环已完成；Exp17是下一关键补强；
 - AI Infra / 推理优化：重点是 critical path、内存、调度、Kernel、Plugin、量化和可重复 Benchmark；
 - CUDA 算子：当前只有融合预处理和后处理两个案例，不应夸大为通用算子专家；
 - AI Compiler：使用 TensorRT/GraphSurgeon 不等于掌握编译器 pass、lowering、scheduling 或 codegen。
@@ -345,12 +345,12 @@ Gate已完成且不新增实验编号。最终公平版本令P0/P1都使用pinne
 
 早期pageable P0与pinned P1的比较存在Host memory混杂，已保留但不用于最终归因。当前事实边界为：
 Exp15的系统收益来自pageable raw路径、CPU全量decode与完整payload被联合替换；P2仍为ACCEPTED主线，
-但不得把全部收益归因于D2H缩减，也不得声称已得到严格可加的因果百分比。Exp16已经完成，当前下一
-优先级改为第8.3节的Deployment Semantic Revalidation Gate审批。
+但不得把全部收益归因于D2H缩减，也不得声称已得到严格可加的因果百分比。Exp16及其Deployment
+Semantic Revalidation Gate均已完成，当前下一优先级为Exp17。
 
 ---
 
-# 8. Exp16：组件已验证、原部署候选已拒绝、窄范围重验证待审批
+# 8. Exp16：组件与部署语义已验证、性能采用已拒绝
 
 ## 8.1 永久保留的原Exp16裁决
 
@@ -391,7 +391,7 @@ Exp07无需重做。前者由Exp07/Exp09/Exp11的冻结Engine重复执行证据�
 rebuild反例否定。今后跨build比较必须记录Engine SHA256、Builder参数和build次数，并用检测级匹配、
 模型级精度和build variance，而不是要求raw bitwise一致或依赖CSV行号。
 
-## 8.3 Deployment Semantic Revalidation Gate（待审批，不新增实验编号）
+## 8.3 Deployment Semantic Revalidation Gate（已完成，不新增实验编号）
 
 该Gate只判断Plugin是否可能进入部署主线，不修改原Exp16 REJECT，不重写Plugin，不继续调CUDA Kernel，
 也不重复Postprocess Gain Attribution Gate。
@@ -427,6 +427,23 @@ tiny+small recall、unmatched rate、matched bbox IoU分布和confidence delta�
 只有当Plugin的模型级精度退化不差于普通baseline rebuild波动，并且paired/interleaved动态调频性能、
 部署复杂度和维护成本满足事前采用条件时，Plugin主线状态才可改为`ACCEPTED`。否则保持组件
 `IMPLEMENTED + VERIFIED`、主线`REJECTED`。任何结果都不得覆盖原Exp16正式失败目录、阈值和裁决。
+
+## 8.4 2026-08-09 Revalidation真实结果
+
+R1/R2确认frame27和frame40的差异均来自candidate 8222在`conf=0.25`附近发生threshold crossing；旧报告
+的138 source pixels最大框差是额外检测导致CSV行号错配，并非同一候选框真实漂移。跨Engine比较已改为
+确定性的`image + class + IoU≥0.50` Hungarian matching。
+
+同一219张test、840个GT上的F0/B1/P/B2正式比较中，四者Recall均为0.87023810，tiny+small recall均为
+0.79020979；Plugin的P/R、Gate-local AP、TP/FP/FN、unmatched rate、matched bbox IoU和confidence delta
+均落在两个普通baseline rebuild相对冻结F0形成的build variance envelope内。因此系统级检测语义记为
+`VERIFIED`。这里的AP因固定`conf=0.25`硬下限，仅用于Gate内公平比较，不替代Exp02/Exp07的标准全阈值mAP。
+
+三轮25W动态调频paired/interleaved性能中，Plugin聚合wall FPS相对F0为−1.064788%，E2E mean为
++1.305272%；仅1/3轮FPS和1/3轮mean方向有利，未达到预冻结的稳定收益门槛。虽然三轮P95回归均未超过
+5%，仍不足以抵偿额外Plugin ABI、`.so`加载和Engine维护复杂度。最终保持组件与语义
+`IMPLEMENTED + VERIFIED`，性能采用和Runtime主线`REJECTED`；Exp15 CUB stable compaction继续为
+`ACCEPTED`主线，不重跑挑选最好轮次，也不继续调整Plugin CUDA Kernel。
 
 ---
 
@@ -781,8 +798,8 @@ return code、配置、benchmark JSON/CSV、输入与产物SHA256、Git commit�
 Priority 0  本V3 canonical文档合并
 Priority 1  Postprocess Gain Attribution Gate（已完成）
 Priority 2  Exp16 IPluginV3 + GraphSurgeon（组件已VERIFIED，原候选REJECTED）
-Priority 3  Exp16 Deployment Semantic Revalidation Gate（待审批）
-Priority 4  Exp17 Explicit Q/DQ + Activation/Sensitivity + Mixed Precision
+Priority 3  Exp16 Deployment Semantic Revalidation Gate（已完成：语义VERIFIED、性能REJECTED）
+Priority 4  Exp17 Explicit Q/DQ + Activation/Sensitivity + Mixed Precision（下一实验）
 Priority 5  Exp18 CUDA Graph Decision Gate
 Priority 6  Exp19 Final Benchmark
 Priority 7  Exp20 Closeout并停止开发
@@ -791,8 +808,7 @@ Priority 7  Exp20 Closeout并停止开发
 如果秋招时间突然不足：
 
 ```text
-Exp16 Deployment Semantic Revalidation Gate
-→ Exp17最小粗粒度敏感性/Mixed Precision
+Exp17最小粗粒度敏感性/Mixed Precision
 → Exp19
 → Exp20
 ```
@@ -806,9 +822,10 @@ Exp14 isolation audit和未通过Decision Gate的Exp18可裁剪；已完成的Po
 > 当前项目已完成Exp00～Exp16及Postprocess Gain Attribution Gate。Exp13的计时边界可信；Exp14异步
 > 工程`IMPLEMENTED + VERIFIED`但性能`REJECTED`；Exp15 CUB stable后处理`ACCEPTED`，且不能把19.19%
 > 全部归因于D2H缩减；Exp16 Plugin工程、数学与独立进程闭环`IMPLEMENTED + VERIFIED`，原跨Engine部署
-> 语义Gate永久`REJECTED`。下一步先审批不新增实验编号的Exp16 Deployment Semantic Revalidation Gate，
-> 用candidate forensic、Hungarian检测匹配、219图模型级指标和至少两个普通baseline rebuild估计build
-> variance；不重写Plugin、不调CUDA Kernel。Exp17先审计implicit calibrator/cache与explicit Q/DQ，必要时
+> 语义Gate永久`REJECTED`。其后续Revalidation已用candidate forensic、Hungarian检测匹配、219图模型级
+> 指标和两个普通baseline rebuild证明Plugin检测语义落在build variance内，但三轮动态调频性能不满足采用
+> 条件，因此语义`VERIFIED`、性能与主线`REJECTED`；不重写Plugin、不调CUDA Kernel。下一步Exp17先审计
+> implicit calibrator/cache与explicit Q/DQ，必要时
 > 建Explicit Q/DQ baseline，再做activation/clipping与P3/P4/P5、cls/reg/DFL、完整Head粗粒度敏感性和
 > 2～3个Mixed Precision Pareto候选。Exp18只有在Exp17最终主线重新Nsight证明enqueue-bound时才捕获
 > device-side preprocess→enqueueV3→GPU decode/filter→CUB，H2D与D2H保持Graph外；否则

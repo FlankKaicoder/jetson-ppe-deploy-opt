@@ -148,10 +148,10 @@ box差均违反正式语义Gate。两个应用及基础validator返回0，semant
 
 本实验能够作为“实现并验证TensorRT Plugin工程闭环、用同Engine诊断隔离算子数学、最终因系统语义漂移
 拒绝部署候选”的学习证据，但不能写成已采用或已加速的项目成果。实验结束当时计划直接进入Exp17；
-2026-08-09的当前路线已由下述第10节重校准为先审批窄范围Deployment Semantic Revalidation Gate，再决定
-是否进入Exp17。Exp08已经完成的数据分布和tiny/small覆盖不重复从头做。
+Gate执行前的2026-08-09路线由下述第10节重校准为先做窄范围Deployment Semantic Revalidation，再决定
+是否进入Exp17。第11节记录Gate真实结果；Exp08已经完成的数据分布和tiny/small覆盖不重复从头做。
 
-## 10. Deployment Semantic Revalidation Gate（待审批，不改写原 REJECT）
+## 10. Deployment Semantic Revalidation Gate（实验前冻结计划，不改写原 REJECT）
 
 本节是2026-08-09基于真实结果追加的窄范围后续计划，不是对原Exp16结果的重判。原150帧正式Gate、
 `REJECT`、失败目录、检测门槛和“没有正式三轮性能结论”永久保留；Exp15 B继续是当前`ACCEPTED`主线。
@@ -202,3 +202,39 @@ Current runtime         : Exp15 B CUB stable compaction
 ```
 
 Gate执行前必须先追加学习手册实验前规划并获得人工批准；本轮文档重校准本身不启动Gate。
+
+## 11. Deployment Semantic Revalidation Gate 结果
+
+该Gate于2026-08-09在Jetson、动态调频25W/id 1下完成，不修改原Exp16 `REJECT`、Plugin Kernel、正式
+四输出ABI或历史失败目录。实验源码起点为`5415053`；Frozen ONNX/Exp07 Engine/Plugin ONNX/`.so`哈希
+均与实验前冻结值一致。B1、P、B2依次独立构建成功，Engine SHA256分别为
+`07a586f9…5b58a2a`、`4bc9bd2e…2bc23e9`、`aa90794d…fb0b8a`。
+
+R1默认路径回归保持历史5帧digest：F0为`5998153f…21cf0`，Plugin为`674565a4…2782`，未开启诊断时
+没有新增CSV或改变正常输出。frame27/40 forensic确认两帧均由`candidate_index=8222`在0.25附近发生
+threshold crossing：B1/F0未过阈值，B2/P均过阈值；NMS主目标候选及抑制拓扑没有发生旧报告所暗示的
+138 px同候选漂移。旧138 px是额外检测插入后继续按CSV行号比较造成的错配。纯Python确定性Hungarian
+fixture通过，跨Engine正式比较改用image+class+IoU≥0.50，不修改旧比较器及其失败证据。
+
+R3统一走现有C++图像读取、CUDA preprocess、inverse-letterbox和class-aware NMS，对同一219图/840 GT
+执行F0/B1/P/B2评估。以下AP均是硬过滤0.25后的Gate-local指标，不能写成标准全范围Ultralytics mAP：
+
+| 路径 | 预测 | P/R | mAP50@floor / mAP50-95@floor | TP/FP/FN | tiny+small recall |
+|---|---:|---:|---:|---:|---:|
+| F0 | 899 | 0.813126 / 0.870238 | 0.843540 / 0.495032 | 731/168/109 | 0.790210 |
+| B1 | 898 | 0.814031 / 0.870238 | 0.843514 / 0.495163 | 731/167/109 | 0.790210 |
+| P | 900 | 0.812222 / 0.870238 | 0.843513 / 0.495509 | 731/169/109 | 0.790210 |
+| B2 | 900 | 0.812222 / 0.870238 | 0.843513 / 0.495509 | 731/169/109 | 0.790210 |
+
+P的模型指标、unmatched rate、matched IoU、confidence delta和candidate-index agreement全部落在F0/B1/B2
+baseline envelope内，R3为`PASS`。这证明Fresh Plugin Engine的部署语义不差于普通rebuild波动，但不等于
+自动采用，也不把跨Engine raw漂移改写成零。
+
+R4只比较当前F0 Exp15 CUB与P，150帧、warmup=2，顺序为`F0→P / P→F0 / F0→P`。三轮P95变化
+分别为−7.141%、+1.277%、−0.803%，均满足不得退化超过5%；但P相对F0聚合wall FPS为−1.0648%，
+E2E mean为+1.3053%，FPS和mean均仅1/3轮方向有利。温度最高50.593°C，无90°C安全停止。由于未满足
+“至少2/3同向且FPS或mean聚合改善≥3%”，R4与主线采用均为`REJECTED`，不继续重跑挑最好结果。
+
+最终能力证据为：IPluginV3/GraphSurgeon/显式workspace/独立`dlopen→deserialize→enqueueV3`和数学语义
+保持`IMPLEMENTED + VERIFIED`；Deployment Semantic R3为`VERIFIED`；Plugin部署性能与主线采用为
+`REJECTED`。Exp15 CUB stable compaction继续是`ACCEPTED` Runtime主线，下一实验为Exp17。

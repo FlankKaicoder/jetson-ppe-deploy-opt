@@ -448,14 +448,16 @@ P0混杂结果只作为预修复证据保留。该Gate已完成，不得重复�
 Exp16 已完成 IPluginV3、Creator/Registry、GraphSurgeon、显式workspace、Plugin `.so`、独立新进程
 `dlopen→deserialize→enqueueV3`、synthetic/fixture和dual-output同Engine零误差闭环，组件级能力为
 `IMPLEMENTED + VERIFIED`。原150帧跨Engine部署语义Gate出现151 vs 153检测和最大138 px报告差，
-因此原Exp16全图候选永久保持 `REJECTED`，正式三轮性能收益仍未验证；当前Runtime主线保持Exp15 B。
+因此原Exp16全图候选永久保持 `REJECTED`；当前Runtime主线保持Exp15 B。
 普通无Plugin rebuild相对冻结Exp07 Engine也出现raw漂移，说明TensorRT rebuild/tactic selection是混杂
 变量，但不能据此自动通过部署语义Gate。
 
-当前待审批项为不新增实验编号的 `Exp16 Deployment Semantic Revalidation Gate`。该Gate只做窄范围
-forensic、跨Engine检测匹配、219张test模型级指标和至少两个普通baseline rebuild的build variance估计；
-不得重写Plugin、继续调CUDA Kernel、修改原Exp16 REJECT或放宽旧门槛。只有Plugin精度不差于正常rebuild
-波动且性能/复杂度满足采用条件时，才可把“主线采用”改为 `ACCEPTED`；否则保持 `VERIFIED + REJECTED`。
+不新增实验编号的 `Exp16 Deployment Semantic Revalidation Gate` 已完成。R1/R2确认frame27/40的
+candidate 8222在0.25附近发生threshold crossing，旧138 px是额外检测造成的CSV行号错配；B2普通rebuild
+与Fresh Plugin均让该候选过阈值。R3统一219图评估证明Plugin模型级语义处于F0/B1/B2 build variance内。
+R4动态调频三轮配对虽全部满足P95≤5%退化限制，但Plugin聚合wall FPS为−1.0648%、E2E mean为+1.3053%，
+且仅1/3方向有利，未满足采用门槛。因此Plugin保持`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 B继续主线，
+下一实验为Exp17。不得重跑该Gate挑最好结果、继续调Plugin Kernel或修改原Exp16 REJECT。
 
 能力证据统一使用四层模型：`IMPLEMENTED`表示已有实现；`VERIFIED`表示已有冻结输入下的正确性、生命周期
 或Profiling证据；`ACCEPTED`表示通过预冻结采用条件并进入主线；`REJECTED`表示不进入主线。单项能力可同时
@@ -481,7 +483,7 @@ Exp13  Nsight Systems 端到端性能瓶颈画像与优化基线
 Exp14  Pinned Memory、Async 与 Double Buffer 流水线
 Exp15  CUDA GPU Decode/Filter/Compaction 与 Nsight Compute
 Exp16  TensorRT IPluginV3 与 ONNX GraphSurgeon
-Gate   Exp16 Deployment Semantic Revalidation Gate（待审批，不新增实验编号）
+Gate   Exp16 Deployment Semantic Revalidation Gate（REJECT，不新增实验编号）
 Exp17  Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision
 Exp18  CUDA Graph Decision Gate（无enqueue-bound证据则SKIPPED_BY_EVIDENCE）
 Exp19  仅比较baseline与ACCEPTED最终路线的综合Benchmark
@@ -1359,7 +1361,7 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. Exp13～Exp16 的分层证据、当前 Exp15 B 主线和待审批 Revalidation Gate；
+8. Exp13～Exp16 的分层证据、已完成的Revalidation Gate和当前Exp15 B主线；
 9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
 
 最后只输出检查结果和建议，不执行修改。
@@ -1409,7 +1411,7 @@ Exp06～Exp12 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. Exp13～Exp16结论是否一致，以及Exp16 Deployment Semantic Revalidation Gate是否已获审批。
+8. Exp13～Exp16结论是否一致，以及Exp16 Deployment Semantic Revalidation Gate的最终REJECT证据。
 
 先输出检查结果，不执行构建。
 ```
@@ -1435,13 +1437,13 @@ main
 合并已验证内容
         ↓
 Jetson Codex
-以 Exp15 B 为当前Runtime主线，保留原Exp16 REJECT并等待窄范围Revalidation Gate审批
+以 Exp15 B 为当前Runtime主线，保留原Exp16与Revalidation Gate的REJECT并准备Exp17
         ↓
 Windows Codex
 审查forensic匹配、219张指标、build variance和后续量化假设
         ↓
 ChatGPT
-审查Revalidation Gate；通过审批后才执行，之后再决定是否进入Exp17
+审查已完成的Revalidation Gate证据；保持Plugin主线REJECT，并准备Exp17
 ```
 
 ---
