@@ -1,0 +1,13 @@
+case,mode,count,confidence_max_abs_error,box_max_abs_error,stable_order
+zero_candidates,atomic,0,0.000000000e+00,0.000000000e+00,1
+zero_candidates,cub,0,0.000000000e+00,0.000000000e+00,1
+zero_candidates,fixed,0,0.000000000e+00,0.000000000e+00,1
+single_candidate,atomic,1,0.000000000e+00,0.000000000e+00,1
+single_candidate,cub,1,0.000000000e+00,0.000000000e+00,1
+single_candidate,fixed,1,0.000000000e+00,0.000000000e+00,1
+threshold_tie_invalid,atomic,1,0.000000000e+00,0.000000000e+00,1
+threshold_tie_invalid,cub,1,0.000000000e+00,0.000000000e+00,1
+threshold_tie_invalid,fixed,1,0.000000000e+00,0.000000000e+00,1
+all_candidates,atomic,8400,0.000000000e+00,0.000000000e+00,0
+all_candidates,cub,8400,0.000000000e+00,0.000000000e+00,1
+all_candidates,fixed,8400,0.000000000e+00,0.000000000e+00,1

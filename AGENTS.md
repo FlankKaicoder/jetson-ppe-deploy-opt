@@ -436,6 +436,9 @@ Exp15 已通过 Atomic/CUB GPU decode、filter、compaction、压缩 D2H、文�
 Nsight Systems/Compute 验收。Variant B（CUB stable compaction）文件 wall FPS 提升19.19%，
 E2E mean/P95下降16.53%/14.97%，平均 D2H减少99.89%，相机 P95退化1.61%，保持冻结检测 digest，
 因此 `PASS` 并成为新的 FP16 C++ Runtime 后处理主线。模型、ONNX、Engine 与 CPU NMS语义不变。
+2026-08-09 的 Postprocess Gain Attribution Gate 未新增实验编号：在P0/P1同为pinned且同为235,200 B
+D2H后，GPU decode与CUB compaction对P95分别呈现约3.05%和1.11%的三轮一致改善，但FPS/mean方向
+混合，不能精确分摊Exp15的19.19%。P2主线决策不变；早期pageable P0混杂结果只作为预修复证据保留。
 Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon 仍为 `PLANNED`，执行前必须另行获得用户批准。
 
 Codex 不得擅自重新选择模型主线。

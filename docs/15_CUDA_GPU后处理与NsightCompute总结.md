@@ -96,3 +96,32 @@ Exp16～Exp18，不能写成当前成果。下一候选为 Exp16 IPluginV3 与 O
 面试时应能解释：为什么235 KB copy本身仅几十微秒但消除 CPU全量扫描后仍有系统收益；为什么
 Kernel更短不等于 Runtime更快；Atomic的非确定输出如何影响后续稳定语义；CUB temporary storage与
 stable compaction的代价；以及低 waves/SM为何说明“小工作量/固定开销”而非 GPU算力不足。
+
+## 8. Postprocess Gain Attribution Gate（2026-08-09）
+
+本 Gate 不新增 `Exp15.1` 编号，也不改变 Exp15 `PASS/ACCEPTED`。为拆分“GPU decode”与“压缩D2H”，
+新增 P1 fixed路径：GPU写满8400×28 B Candidate，无效项使用严格的 `index=-1` sentinel；P0和P1最终
+都使用pinned Host buffer并固定D2H 235,200 B，P2保持CUB count+可变长payload，平均263.84 B。三条
+路径均保持150帧、151检测和冻结digest。
+
+最终动态调频paired/interleaved结果如下：
+
+| 路径 | Wall FPS | E2E mean | E2E P95 | D2H B/帧 |
+|---|---:|---:|---:|---:|
+| P0 pinned raw + CPU decode/NMS | 64.306 | 14.346 ms | 15.686 ms | 235,200.00 |
+| P1 GPU decode + fixed D2H + CPU NMS | 66.544 | 13.795 ms | 15.208 ms | 235,200.00 |
+| P2 GPU decode + CUB compact + CPU NMS | 65.037 | 14.164 ms | 15.038 ms | 263.84 |
+
+P0→P1 的P95三轮均改善，paired平均为−3.05%；但FPS和mean三轮有正有负。P1→P2 的P95同样三轮均
+改善，平均−1.11%；FPS和mean仍混合。P0→P2 的P95三轮均改善，平均−4.13%，但不能稳定分摊吞吐和
+mean。冻结fixture的每路径1000次测试中，P0/P1/P2 total mean为0.2295/0.3634/0.1201 ms；P1固定
+扫描8400项的局部成本明显，P2通过stable compaction消除大部分fixed scan和payload成本。
+
+早期P0仍使用pageable `std::vector<float>`，与pinned P1比较会混入Host memory变量；这些目录作为
+预修复证据保留，不用于最终归因。最终结论是：Exp15实际主线收益来自pageable raw路径、CPU全量decode
+和完整raw传输被联合替换；在严格控制Host memory与字节后，GPU decode和compaction对P95各有小幅且
+方向一致的贡献，但动态调频下FPS/mean不足以支持精确百分比分摊。P2继续作为主线，因为它保持正确性、
+显著减少D2H与Host扫描，并已通过原Exp15采用门槛；不得把19.19%全部归因于235 KB copy。
+
+Compute Sanitizer首次因命令未加入PATH失败，使用绝对路径后又因Jetson禁用GPU debugging features而
+无法执行memcheck；测试程序自身通过，但该项明确记为“环境不支持”，不能表述为memcheck PASS。

@@ -39,6 +39,13 @@ target_link_libraries(exp15_gpu_postprocess_test PRIVATE
 target_compile_options(exp15_gpu_postprocess_test PRIVATE
     -Wall -Wextra -Wpedantic)
 
+add_executable(postprocess_gain_gate_benchmark
+    src/postprocess_gain_gate_benchmark.cpp)
+target_link_libraries(postprocess_gain_gate_benchmark PRIVATE
+    ppe_gpu_postprocess)
+target_compile_options(postprocess_gain_gate_benchmark PRIVATE
+    -Wall -Wextra -Wpedantic)
+
 add_executable(exp10_preprocess
     src/exp10_preprocess.cpp)
 target_include_directories(exp10_preprocess PRIVATE ${OpenCV_INCLUDE_DIRS})

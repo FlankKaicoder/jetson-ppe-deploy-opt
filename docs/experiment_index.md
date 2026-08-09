@@ -30,6 +30,10 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp19 | 最终综合 Benchmark | PLANNED | 待审批 |
 | Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 
+Postprocess Gain Attribution Gate 已于2026-08-09完成，不新增 `Exp15.1` 编号。最终公平对照保持P0/P1
+同为pinned且同为235,200 B D2H：GPU decode与CUB compaction对P95分别呈现约3.05%和1.11%的三轮
+一致改善，但FPS/mean不足以稳定分摊；Exp15 CUB主线结论不变。详见Exp15总结第8节。
+
 ## 状态定义
 
 - `PLANNED`：方案或推荐顺序已经确定，尚未产生正式结果；

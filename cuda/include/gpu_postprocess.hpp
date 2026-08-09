@@ -25,6 +25,7 @@ struct GpuCandidate {
 enum class GpuCompactionMode {
     kAtomic,
     kCubStable,
+    kFixed,
 };
 
 class GpuPostprocessor {
@@ -46,6 +47,7 @@ public:
 
     const int* device_count() const;
     const GpuCandidate* device_candidates() const;
+    const GpuCandidate* device_fixed_candidates() const;
     int capacity() const;
     std::size_t cub_temporary_storage_bytes() const;
 

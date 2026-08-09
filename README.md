@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-08，Exp00～Exp15 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-09，Exp00～Exp15 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -33,6 +33,11 @@ Exp14 已完成 pinned staging、CUDA Event、单缓冲异步与双缓冲三 Str
 60.270 提升至71.838（+19.19%），E2E mean/P95 分别下降16.53%/14.97%，平均 D2H 从235,200 B
 降至263.84 B（-99.89%），相机 P95仅退化1.61%。正确性 digest 保持冻结值，故 Exp15 `PASS`，
 Variant B 成为新的 FP16 C++ Runtime 后处理主线；模型、ONNX 与 Engine 主线不变。
+
+2026-08-09 的 Postprocess Gain Attribution Gate 进一步用 pinned P0/P1 相同235,200 B D2H拆分因果：
+GPU fixed decode相对CPU raw decode的P95三轮均改善、paired平均−3.05%；CUB压缩相对fixed路径的P95
+三轮均改善、平均−1.11%，但两段的FPS/mean均受动态调频和顺序噪声影响，不能把Exp15的19.19%精确
+分摊或全部归因于D2H缩减。P2 CUB主线决策不变。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
