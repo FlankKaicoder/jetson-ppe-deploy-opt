@@ -2,7 +2,7 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp13 复盘、设备重连
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp16 复盘、设备重连
 SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
@@ -24,15 +24,33 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp13 | Nsight Systems 端到端性能瓶颈画像 | PASS | `13_Nsight端到端性能瓶颈分析总结.md` |
 | Exp14 | Pinned Memory、CUDA Event 与 Double Buffer | REJECT | `14_PinnedMemory_CUDAEvent_DoubleBuffer异步流水线总结.md` |
 | Exp15 | CUDA GPU Decode/Filter/Compaction 与 Nsight Compute | PASS | `15_CUDA_GPU后处理与NsightCompute总结.md` |
-| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | PLANNED | 待审批 |
-| Exp17 | INT8 敏感性分析与 Mixed Precision | PLANNED | 待审批 |
-| Exp18 | CUDA Graph 与最终 Runtime 优化 | PLANNED | 待审批 |
-| Exp19 | 最终综合 Benchmark | PLANNED | 待审批 |
+| Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT | `16_TensorRT_IPluginV3与ONNX_GraphSurgeon总结.md` |
+| Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT | 见Exp16总结第10～11节 |
+| Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | PLANNED | 待审批 |
+| Exp18 | CUDA Graph Decision Gate | PLANNED | 待审批；可SKIPPED_BY_EVIDENCE |
+| Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED | 待审批 |
 | Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 
 Postprocess Gain Attribution Gate 已于2026-08-09完成，不新增 `Exp15.1` 编号。最终公平对照保持P0/P1
 同为pinned且同为235,200 B D2H：GPU decode与CUB compaction对P95分别呈现约3.05%和1.11%的三轮
 一致改善，但FPS/mean不足以稳定分摊；Exp15 CUB主线结论不变。详见Exp15总结第8节。
+
+Exp16 已完成IPluginV3/GraphSurgeon/显式workspace与独立新进程部署闭环，同Engine Plugin数学零误差，
+组件级标记为 `VERIFIED`；四输出全图候选在150帧正式Gate产生153而非151个检测并出现超限框差，故实验
+总体 `REJECT`。正确性失败后未执行剩余正式性能轮次，Exp15 B继续作为Runtime主线。普通无Plugin rebuild
+也相对冻结Exp07 raw漂移，因此原Exp16 REJECT永久保留，同时另设窄范围Deployment Semantic Revalidation
+Gate判断未来是否采用；该Gate不得重写Plugin、调CUDA Kernel或覆盖原裁决。
+
+Revalidation Gate先forensic frame27、frame40和138 px报告差，并以image+class+IoU/Hungarian做跨Engine
+匹配；再在同一219张test比较Frozen Exp07+Exp15、至少两个Fresh baseline rebuild+Exp15与Fresh Plugin
+Engine的P/R、mAP50、mAP50-95、固定阈值TP/FP/FN、tiny/small/tiny+small recall、unmatched rate、bbox
+IoU及confidence delta。Plugin只有在模型级精度不差于普通rebuild波动且性能/复杂度满足采用条件时才可
+`ACCEPTED`，否则保持`VERIFIED + REJECTED`。
+
+Revalidation Gate已完成：R1/R2确认frame27/40的candidate 8222发生0.25阈值穿越，旧138 px是行号错配；
+R3统一219图评估证明Fresh Plugin模型级语义处于F0/B1/B2普通build variance内。R4动态调频三轮配对
+虽然P95全部通过，但Plugin相对F0聚合wall FPS为−1.0648%、E2E mean为+1.3053%，且仅1/3方向有利，
+未满足采用门槛，故Gate为`REJECT`，组件能力保持`IMPLEMENTED + VERIFIED`，主线采用保持`REJECTED`。
 
 ## 状态定义
 
@@ -43,6 +61,28 @@ Postprocess Gain Attribution Gate 已于2026-08-09完成，不新增 `Exp15.1` �
 - `REJECT`：实验工程链路完成，但候选方案不进入最终主线；
 - `SKIPPED`：依据预设规则跳过；
 - `BLOCKED`：受到外部依赖或权限阻塞。
+
+## 能力证据定义
+
+- `IMPLEMENTED`：已有代码或工程链路，不表示已验证或已采用；
+- `VERIFIED`：已有冻结输入下的正确性、生命周期或Profiling证据；
+- `ACCEPTED`：已满足预冻结采用条件并进入当前主线；
+- `REJECTED`：实现或验证可以成立，但候选不进入主线。
+
+实验状态与能力证据是两条维度。例如Exp14为`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 CUB stable
+compaction为`VERIFIED + ACCEPTED`，Exp16 Plugin组件为`IMPLEMENTED + VERIFIED`而原全图主线候选为
+`REJECTED`。未完成或未验证能力不得写入简历成果。
+
+## 后续冻结路线
+
+- Exp17先审计Exp08是implicit calibrator/cache还是explicit Q/DQ；若为implicit，先建立Explicit Q/DQ
+  PTQ baseline，再做activation/dynamic-range/clipping及P3/P4/P5、cls/reg/DFL、完整Detect Head粗粒度
+  sensitivity，比较三个检测尺度的score/bbox/relative-L2/threshold crossing，形成2～3个Mixed Precision
+  Pareto候选并至少重复构建最终候选一次；
+- Exp18只在Exp17后最终主线上重新Nsight证明enqueue/kernel-launch overhead明显时实现device-side Graph；
+  H2D和count/payload D2H保持Graph外，无证据则`SKIPPED_BY_EVIDENCE`；
+- Exp19只比较baseline与`ACCEPTED`路线，动态调频为部署主轨，最终54,000帧只对`V_Final`重跑；
+- Exp20完成README、架构图、结果表、简历和面试材料后停止开发，不扩张新技术方向。
 
 ## 当前模型决策
 

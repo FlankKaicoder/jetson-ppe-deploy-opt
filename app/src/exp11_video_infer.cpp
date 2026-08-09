@@ -1,6 +1,7 @@
 #include "cuda_preprocess.hpp"
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
 #include "gpu_postprocess.hpp"
+#include "trt_plugin_runtime.hpp"
 #endif
 #include "ppe_nvtx.hpp"
 #include "trt_runtime.hpp"
@@ -11,6 +12,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cctype>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -23,6 +25,7 @@
 #include <memory>
 #include <numeric>
 #include <sstream>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -37,6 +40,13 @@ struct Detection {
     float y1{};
     float x2{};
     float y2{};
+};
+
+struct NmsTraceRow {
+    Detection candidate;
+    bool kept{};
+    int suppressed_by_candidate_index{-1};
+    float suppression_iou{};
 };
 
 struct Stats {
@@ -61,12 +71,14 @@ std::map<std::string, std::string> parse_args(int argc, char** argv) {
             throw std::runtime_error(std::string("missing argument: ") + required);
         }
     }
-    if (args.at("--source-type") == "file" && !args.count("--source")) {
-        throw std::runtime_error("file input requires --source");
+    if ((args.at("--source-type") == "file" ||
+         args.at("--source-type") == "images") && !args.count("--source")) {
+        throw std::runtime_error("file/images input requires --source");
     }
     if (args.at("--source-type") != "file" &&
+        args.at("--source-type") != "images" &&
         args.at("--source-type") != "camera") {
-        throw std::runtime_error("--source-type must be file or camera");
+        throw std::runtime_error("--source-type must be file, images, or camera");
     }
     return args;
 }
@@ -85,8 +97,29 @@ double double_arg(
     return args.count(key) ? std::stod(args.at(key)) : fallback;
 }
 
+std::set<int> parse_frame_set(
+    const std::map<std::string, std::string>& args,
+    const std::string& key) {
+    std::set<int> result;
+    if (!args.count(key) || args.at(key).empty()) {
+        return result;
+    }
+    std::stringstream stream(args.at(key));
+    std::string token;
+    while (std::getline(stream, token, ',')) {
+        if (token.empty()) {
+            throw std::runtime_error(key + " contains an empty frame index");
+        }
+        const int frame = std::stoi(token);
+        if (frame < 0 || !result.insert(frame).second) {
+            throw std::runtime_error(key + " requires unique non-negative indices");
+        }
+    }
+    return result;
+}
+
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
-enum class PostprocessMode { kBaseline, kRawPinned, kAtomic, kCub, kFixed };
+enum class PostprocessMode { kBaseline, kRawPinned, kAtomic, kCub, kFixed, kPlugin };
 
 PostprocessMode parse_postprocess_mode(
     const std::map<std::string, std::string>& args) {
@@ -107,8 +140,11 @@ PostprocessMode parse_postprocess_mode(
     if (value == "fixed") {
         return PostprocessMode::kFixed;
     }
+    if (value == "plugin") {
+        return PostprocessMode::kPlugin;
+    }
     throw std::runtime_error(
-        "--postprocess must be baseline, raw_pinned, atomic, cub, or fixed");
+        "--postprocess must be baseline, raw_pinned, atomic, cub, fixed, or plugin");
 }
 
 const char* postprocess_mode_name(PostprocessMode mode) {
@@ -123,6 +159,8 @@ const char* postprocess_mode_name(PostprocessMode mode) {
             return "cub";
         case PostprocessMode::kFixed:
             return "fixed";
+        case PostprocessMode::kPlugin:
+            return "plugin";
     }
     throw std::runtime_error("invalid postprocess mode");
 }
@@ -203,7 +241,8 @@ std::vector<Detection> decode_detections(
     float nms_threshold,
     int* decoded_count = nullptr,
     double* decode_filter_ms = nullptr,
-    double* nms_ms = nullptr) {
+    double* nms_ms = nullptr,
+    std::vector<NmsTraceRow>* nms_trace = nullptr) {
     constexpr int candidates = 8400;
     constexpr int classes = 3;
     constexpr int channels = 7;
@@ -278,15 +317,23 @@ std::vector<Detection> decode_detections(
         kept.reserve(decoded.size());
         for (const auto& candidate : decoded) {
             bool suppressed = false;
+            int suppressor = -1;
+            float suppression_iou = 0.0F;
             for (const auto& accepted : kept) {
-                if (candidate.class_id == accepted.class_id &&
-                    intersection_over_union(candidate, accepted) > nms_threshold) {
+                const float overlap = intersection_over_union(candidate, accepted);
+                if (candidate.class_id == accepted.class_id && overlap > nms_threshold) {
                     suppressed = true;
+                    suppressor = accepted.candidate_index;
+                    suppression_iou = overlap;
                     break;
                 }
             }
             if (!suppressed) {
                 kept.push_back(candidate);
+            }
+            if (nms_trace != nullptr) {
+                nms_trace->push_back({
+                    candidate, !suppressed, suppressor, suppression_iou});
             }
         }
     }
@@ -309,10 +356,11 @@ std::vector<Detection> decode_detections(
     float nms_threshold,
     int* decoded_count = nullptr,
     double* decode_filter_ms = nullptr,
-    double* nms_ms = nullptr) {
+    double* nms_ms = nullptr,
+    std::vector<NmsTraceRow>* nms_trace = nullptr) {
     return decode_detections(
         output.data(), output.size(), geometry, confidence_threshold,
-        nms_threshold, decoded_count, decode_filter_ms, nms_ms);
+        nms_threshold, decoded_count, decode_filter_ms, nms_ms, nms_trace);
 }
 
 cv::Mat annotate(const cv::Mat& frame, const std::vector<Detection>& detections) {
@@ -666,7 +714,8 @@ std::vector<Detection> nms_gpu_candidates(
     bool allow_invalid_sentinel = false,
     int* valid_count = nullptr,
     double* candidate_scan_ms = nullptr,
-    double* nms_ms = nullptr) {
+    double* nms_ms = nullptr,
+    std::vector<NmsTraceRow>* nms_trace = nullptr) {
     std::vector<Detection> decoded;
     decoded.reserve(candidates.size());
     const auto scan_start = std::chrono::steady_clock::now();
@@ -711,15 +760,23 @@ std::vector<Detection> nms_gpu_candidates(
     kept.reserve(decoded.size());
     for (const auto& candidate : decoded) {
         bool suppressed = false;
+        int suppressor = -1;
+        float suppression_iou = 0.0F;
         for (const auto& accepted : kept) {
-            if (candidate.class_id == accepted.class_id &&
-                intersection_over_union(candidate, accepted) > nms_threshold) {
+            const float overlap = intersection_over_union(candidate, accepted);
+            if (candidate.class_id == accepted.class_id && overlap > nms_threshold) {
                 suppressed = true;
+                suppressor = accepted.candidate_index;
+                suppression_iou = overlap;
                 break;
             }
         }
         if (!suppressed) {
             kept.push_back(candidate);
+        }
+        if (nms_trace != nullptr) {
+            nms_trace->push_back({
+                candidate, !suppressed, suppressor, suppression_iou});
         }
     }
     const auto nms_end = std::chrono::steady_clock::now();
@@ -732,6 +789,106 @@ std::vector<Detection> nms_gpu_candidates(
             nms_end - nms_start).count();
     }
     return kept;
+}
+
+void write_raw_forensic_rows(
+    std::ofstream& output,
+    int frame_index,
+    const std::string& mode,
+    const float* raw,
+    std::size_t elements,
+    const ppe::LetterboxGeometry& geometry,
+    float confidence_threshold) {
+    constexpr int candidates = ppe::kYoloCandidateCount;
+    constexpr int classes = ppe::kYoloClassCount;
+    constexpr int channels = 4 + classes;
+    if (raw == nullptr || elements != static_cast<std::size_t>(channels * candidates)) {
+        throw std::runtime_error("unexpected forensic raw tensor size");
+    }
+    for (int index = 0; index < candidates; ++index) {
+        int class_id = 0;
+        float confidence = raw[4 * candidates + index];
+        for (int category = 1; category < classes; ++category) {
+            const float value = raw[(4 + category) * candidates + index];
+            if (value > confidence) {
+                confidence = value;
+                class_id = category;
+            }
+        }
+        const float cx = raw[index];
+        const float cy = raw[candidates + index];
+        const float width = raw[2 * candidates + index];
+        const float height = raw[3 * candidates + index];
+        const bool valid = std::isfinite(confidence) && std::isfinite(cx) &&
+            std::isfinite(cy) && std::isfinite(width) && std::isfinite(height) &&
+            width > 0.0F && height > 0.0F;
+        const bool threshold_pass = valid && confidence >= confidence_threshold;
+        const float nx1 = cx - width * 0.5F;
+        const float ny1 = cy - height * 0.5F;
+        const float nx2 = cx + width * 0.5F;
+        const float ny2 = cy + height * 0.5F;
+        const float sx1 = std::clamp(
+            (nx1 - geometry.padding_left) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_width));
+        const float sy1 = std::clamp(
+            (ny1 - geometry.padding_top) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_height));
+        const float sx2 = std::clamp(
+            (nx2 - geometry.padding_left) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_width));
+        const float sy2 = std::clamp(
+            (ny2 - geometry.padding_top) / geometry.ratio,
+            0.0F, static_cast<float>(geometry.source_height));
+        output << frame_index << ',' << mode << ',' << index << ',' << class_id
+               << ',' << confidence << ',' << cx << ',' << cy << ',' << width
+               << ',' << height << ',' << nx1 << ',' << ny1 << ',' << nx2 << ','
+               << ny2 << ',' << sx1 << ',' << sy1 << ',' << sx2 << ',' << sy2
+               << ',' << static_cast<int>(threshold_pass) << ','
+               << static_cast<int>(valid) << '\n';
+    }
+}
+
+void write_plugin_forensic_rows(
+    std::ofstream& output,
+    int frame_index,
+    const std::vector<ppe::GpuCandidate>& network_candidates,
+    const std::vector<ppe::GpuCandidate>& source_candidates) {
+    if (network_candidates.size() != source_candidates.size()) {
+        throw std::runtime_error("plugin forensic coordinate vector size mismatch");
+    }
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    for (std::size_t index = 0; index < source_candidates.size(); ++index) {
+        const auto& network = network_candidates[index];
+        const auto& source = source_candidates[index];
+        if (network.candidate_index != source.candidate_index ||
+            network.class_id != source.class_id ||
+            network.confidence != source.confidence) {
+            throw std::runtime_error("plugin forensic candidate identity mismatch");
+        }
+        output << frame_index << ",plugin," << source.candidate_index << ','
+               << source.class_id << ',' << source.confidence << ',' << nan << ','
+               << nan << ',' << nan << ',' << nan << ',' << network.x1 << ','
+               << network.y1 << ',' << network.x2 << ',' << network.y2 << ','
+               << source.x1 << ',' << source.y1 << ',' << source.x2 << ','
+               << source.y2 << ",1,1\n";
+    }
+}
+
+void write_nms_forensic_rows(
+    std::ofstream& output,
+    int frame_index,
+    const std::string& mode,
+    const std::vector<NmsTraceRow>& rows) {
+    for (std::size_t rank = 0; rank < rows.size(); ++rank) {
+        const auto& row = rows[rank];
+        output << frame_index << ',' << mode << ',' << rank << ','
+               << row.candidate.candidate_index << ',' << row.candidate.class_id
+               << ',' << row.candidate.confidence << ',' << row.candidate.x1 << ','
+               << row.candidate.y1 << ',' << row.candidate.x2 << ','
+               << row.candidate.y2 << ',' << static_cast<int>(row.kept) << ','
+               << row.suppressed_by_candidate_index << ',' << row.suppression_iou
+               << '\n';
+    }
 }
 #endif
 
@@ -750,15 +907,29 @@ int main(int argc, char** argv) {
             double_arg(args, "--confidence", 0.25));
         const float nms_iou = static_cast<float>(
             double_arg(args, "--nms-iou", 0.70));
+        const std::set<int> trace_frames = parse_frame_set(args, "--trace-frames");
         if (max_frames < 0 || warmup < 0 || confidence < 0.0F ||
             confidence > 1.0F || nms_iou < 0.0F || nms_iou > 1.0F) {
             throw std::runtime_error("invalid numeric arguments");
+        }
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        if (!trace_frames.empty() && postprocess_mode != PostprocessMode::kBaseline &&
+            postprocess_mode != PostprocessMode::kRawPinned &&
+            postprocess_mode != PostprocessMode::kPlugin) {
+            throw std::runtime_error(
+                "--trace-frames supports baseline, raw_pinned, or plugin only");
+        }
+#endif
+        if (!trace_frames.empty() && max_frames > 0 &&
+            *trace_frames.rbegin() >= max_frames) {
+            throw std::runtime_error("--max-frames does not reach every trace frame");
         }
         const std::filesystem::path output_dir(args.at("--output-dir"));
         std::filesystem::create_directories(output_dir);
 
         cv::VideoCapture capture;
         std::string source_description;
+        std::vector<std::filesystem::path> image_files;
         if (source_type == "file") {
             const std::filesystem::path source(args.at("--source"));
             if (!std::filesystem::is_regular_file(source)) {
@@ -766,6 +937,28 @@ int main(int argc, char** argv) {
             }
             source_description = file_pipeline(source);
             capture.open(source_description, cv::CAP_GSTREAMER);
+        } else if (source_type == "images") {
+            const std::filesystem::path source(args.at("--source"));
+            if (!std::filesystem::is_directory(source)) {
+                throw std::runtime_error("image directory does not exist: " + source.string());
+            }
+            for (const auto& entry : std::filesystem::directory_iterator(source)) {
+                if (!entry.is_regular_file()) {
+                    continue;
+                }
+                std::string extension = entry.path().extension().string();
+                std::transform(extension.begin(), extension.end(), extension.begin(),
+                    [](unsigned char value) { return static_cast<char>(std::tolower(value)); });
+                if (extension == ".jpg" || extension == ".jpeg" ||
+                    extension == ".png" || extension == ".bmp") {
+                    image_files.push_back(entry.path());
+                }
+            }
+            std::sort(image_files.begin(), image_files.end());
+            if (image_files.empty()) {
+                throw std::runtime_error("image directory contains no supported images");
+            }
+            source_description = source.string();
         } else {
             const int sensor = integer_arg(args, "--sensor-id", 0);
             const int width = integer_arg(args, "--width", 1920);
@@ -774,7 +967,7 @@ int main(int argc, char** argv) {
             source_description = camera_pipeline(sensor, width, height, fps);
             capture.open(source_description, cv::CAP_GSTREAMER);
         }
-        if (!capture.isOpened()) {
+        if (source_type != "images" && !capture.isOpened()) {
             throw std::runtime_error("GStreamer VideoCapture open failed");
         }
 
@@ -782,7 +975,11 @@ int main(int argc, char** argv) {
         const auto first_capture_start = std::chrono::steady_clock::now();
         {
             PPE_NVTX_RANGE("capture");
-            if (!capture.read(frame) || frame.empty()) {
+            const bool acquired = source_type == "images"
+                ? (frame = cv::imread(image_files.front().string(), cv::IMREAD_COLOR),
+                   !frame.empty())
+                : capture.read(frame);
+            if (!acquired || frame.empty()) {
                 throw std::runtime_error("failed to acquire first frame");
             }
         }
@@ -793,24 +990,43 @@ int main(int argc, char** argv) {
         if (!frame.isContinuous()) {
             frame = frame.clone();
         }
-        const auto geometry = ppe::make_letterbox_geometry(frame.cols, frame.rows, 640);
-        ppe::TrtRuntime runtime(args.at("--engine"));
+        auto geometry = ppe::make_letterbox_geometry(frame.cols, frame.rows, 640);
+        std::unique_ptr<ppe::TrtRuntime> runtime;
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        std::unique_ptr<ppe::TrtPluginRuntime> plugin_runtime;
+        if (postprocess_mode == PostprocessMode::kPlugin) {
+            if (!args.count("--plugin")) {
+                throw std::runtime_error("plugin mode requires --plugin");
+            }
+            plugin_runtime = std::make_unique<ppe::TrtPluginRuntime>(
+                args.at("--engine"), args.at("--plugin"), geometry);
+        } else {
+            runtime = std::make_unique<ppe::TrtRuntime>(args.at("--engine"));
+        }
+#else
+        runtime = std::make_unique<ppe::TrtRuntime>(args.at("--engine"));
+#endif
         ppe::CudaPreprocessor preprocessor(geometry);
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
         std::unique_ptr<RawPinnedPostprocessPath> raw_pinned_path;
         std::unique_ptr<GpuPostprocessPath> gpu_postprocess_path;
         if (postprocess_mode == PostprocessMode::kRawPinned) {
-            raw_pinned_path = std::make_unique<RawPinnedPostprocessPath>(runtime);
-        } else if (postprocess_mode != PostprocessMode::kBaseline) {
-            gpu_postprocess_path = std::make_unique<GpuPostprocessPath>(runtime);
+            raw_pinned_path = std::make_unique<RawPinnedPostprocessPath>(*runtime);
+        } else if (postprocess_mode != PostprocessMode::kBaseline &&
+                   postprocess_mode != PostprocessMode::kPlugin) {
+            gpu_postprocess_path = std::make_unique<GpuPostprocessPath>(*runtime);
         }
 #endif
         for (int index = 0; index < warmup; ++index) {
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
-            if (postprocess_mode == PostprocessMode::kBaseline) {
+            if (postprocess_mode == PostprocessMode::kPlugin) {
+                const auto compacted = plugin_runtime->process(
+                    prepared.device_output, preprocessor.stream());
+                static_cast<void>(nms_gpu_candidates(compacted.candidates, nms_iou));
+            } else if (postprocess_mode == PostprocessMode::kBaseline) {
 #endif
-            const auto inferred = runtime.infer_device(
+            const auto inferred = runtime->infer_device(
                 prepared.device_output, preprocessor.stream());
             if (!std::all_of(
                     inferred.output.begin(), inferred.output.end(),
@@ -855,6 +1071,38 @@ int main(int argc, char** argv) {
 #endif
         detections_csv << std::fixed << std::setprecision(9);
         frames_csv << std::fixed << std::setprecision(9);
+        std::ofstream image_predictions_csv;
+        if (source_type == "images") {
+            image_predictions_csv.open(output_dir / "predictions.csv");
+            if (!image_predictions_csv) {
+                throw std::runtime_error("cannot open image predictions CSV");
+            }
+            image_predictions_csv
+                << "image,detection_index,candidate_index,class_id,confidence,"
+                   "x1,y1,x2,y2\n"
+                << std::fixed << std::setprecision(9);
+        }
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        std::ofstream forensic_raw_csv;
+        std::ofstream forensic_nms_csv;
+        if (!trace_frames.empty()) {
+            forensic_raw_csv.open(output_dir / "forensic_raw.csv");
+            forensic_nms_csv.open(output_dir / "forensic_nms.csv");
+            if (!forensic_raw_csv || !forensic_nms_csv) {
+                throw std::runtime_error("cannot open forensic CSV outputs");
+            }
+            forensic_raw_csv
+                << "frame_index,mode,candidate_index,class_id,confidence,raw_cx,raw_cy,"
+                   "raw_w,raw_h,network_x1,network_y1,network_x2,network_y2,"
+                   "source_x1,source_y1,source_x2,source_y2,threshold_pass,valid\n";
+            forensic_nms_csv
+                << "frame_index,mode,rank,candidate_index,class_id,confidence,"
+                   "source_x1,source_y1,source_x2,source_y2,kept,"
+                   "suppressed_by_candidate_index,suppression_iou\n";
+            forensic_raw_csv << std::fixed << std::setprecision(9);
+            forensic_nms_csv << std::fixed << std::setprecision(9);
+        }
+#endif
         const std::vector<std::string> class_names = {
             "person", "helmet", "safety_vest"};
         std::vector<double> capture_times;
@@ -887,6 +1135,17 @@ int main(int argc, char** argv) {
         while (true) {
             PPE_NVTX_RANGE("frame_total");
             const auto frame_start = std::chrono::steady_clock::now();
+            if (source_type == "images" &&
+                (frame.cols != geometry.source_width ||
+                 frame.rows != geometry.source_height)) {
+                geometry = ppe::make_letterbox_geometry(frame.cols, frame.rows, 640);
+                preprocessor = ppe::CudaPreprocessor(geometry);
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+                if (plugin_runtime) {
+                    plugin_runtime->set_geometry(geometry);
+                }
+#endif
+            }
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
             double inference_host_ms = 0.0;
@@ -900,12 +1159,43 @@ int main(int argc, char** argv) {
             double cpu_candidate_scan_ms = 0.0;
             double cpu_nms_ms = 0.0;
             int candidate_count = 0;
-            std::size_t d2h_bytes = runtime.output_info().bytes;
+            const bool trace_this_frame = trace_frames.count(frame_index) != 0;
+            std::vector<NmsTraceRow> nms_trace;
+            std::size_t d2h_bytes = postprocess_mode == PostprocessMode::kPlugin
+                ? 0U : runtime->output_info().bytes;
             std::vector<Detection> detections;
             double post_ms = 0.0;
-            if (postprocess_mode == PostprocessMode::kBaseline) {
+            if (postprocess_mode == PostprocessMode::kPlugin) {
+                std::vector<ppe::GpuCandidate> network_candidates;
+                const auto compacted = plugin_runtime->process(
+                    prepared.device_output, preprocessor.stream(),
+                    trace_this_frame ? &network_candidates : nullptr);
+                const auto nms_start = std::chrono::steady_clock::now();
+                detections = nms_gpu_candidates(
+                    compacted.candidates, nms_iou, false, &candidate_count,
+                    &cpu_candidate_scan_ms, &cpu_nms_ms,
+                    trace_this_frame ? &nms_trace : nullptr);
+                if (trace_this_frame) {
+                    write_plugin_forensic_rows(
+                        forensic_raw_csv, frame_index, network_candidates,
+                        compacted.candidates);
+                    write_nms_forensic_rows(
+                        forensic_nms_csv, frame_index, "plugin", nms_trace);
+                }
+                post_ms = compacted.cpu_inverse_letterbox_ms +
+                    std::chrono::duration<double, std::milli>(
+                        std::chrono::steady_clock::now() - nms_start).count();
+                inference_host_ms = compacted.host_total_ms;
+                inference_cuda_ms = compacted.inference_cuda_ms;
+                count_copy_cuda_ms = compacted.count_copy_cuda_ms;
+                count_sync_host_ms = compacted.count_sync_host_ms;
+                candidate_copy_cuda_ms = compacted.candidate_copy_cuda_ms;
+                candidate_sync_host_ms = compacted.candidate_sync_host_ms;
+                cpu_decode_filter_ms = compacted.cpu_inverse_letterbox_ms;
+                d2h_bytes = compacted.d2h_bytes;
+            } else if (postprocess_mode == PostprocessMode::kBaseline) {
 #endif
-            const auto inferred = runtime.infer_device(
+            const auto inferred = runtime->infer_device(
                 prepared.device_output, preprocessor.stream());
             const bool finite = std::all_of(
                 inferred.output.begin(), inferred.output.end(),
@@ -936,7 +1226,16 @@ int main(int argc, char** argv) {
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
             detections = decode_detections(
                 inferred.output, geometry, confidence, nms_iou,
-                &candidate_count, &cpu_decode_filter_ms, &cpu_nms_ms);
+                &candidate_count, &cpu_decode_filter_ms, &cpu_nms_ms,
+                trace_this_frame ? &nms_trace : nullptr);
+            if (trace_this_frame) {
+                write_raw_forensic_rows(
+                    forensic_raw_csv, frame_index, "baseline",
+                    inferred.output.data(), inferred.output.size(), geometry,
+                    confidence);
+                write_nms_forensic_rows(
+                    forensic_nms_csv, frame_index, "baseline", nms_trace);
+            }
 #else
             const auto detections = decode_detections(
                 inferred.output, geometry, confidence, nms_iou);
@@ -981,14 +1280,21 @@ int main(int argc, char** argv) {
                 detections = decode_detections(
                     inferred.output, inferred.elements, geometry, confidence,
                     nms_iou, &candidate_count, &cpu_decode_filter_ms,
-                    &cpu_nms_ms);
+                    &cpu_nms_ms, trace_this_frame ? &nms_trace : nullptr);
+                if (trace_this_frame) {
+                    write_raw_forensic_rows(
+                        forensic_raw_csv, frame_index, "raw_pinned",
+                        inferred.output, inferred.elements, geometry, confidence);
+                    write_nms_forensic_rows(
+                        forensic_nms_csv, frame_index, "raw_pinned", nms_trace);
+                }
                 post_ms = std::chrono::duration<double, std::milli>(
                     std::chrono::steady_clock::now() - post_start).count();
                 inference_host_ms = inferred.host_total_ms;
                 inference_cuda_ms = inferred.inference_cuda_ms;
                 candidate_copy_cuda_ms = inferred.raw_copy_cuda_ms;
                 candidate_sync_host_ms = inferred.raw_sync_host_ms;
-                d2h_bytes = runtime.output_info().bytes;
+                d2h_bytes = runtime->output_info().bytes;
             } else {
                 const auto compacted = gpu_postprocess_path->process(
                     prepared.device_output, preprocessor.stream(), geometry,
@@ -1034,6 +1340,13 @@ int main(int argc, char** argv) {
                         << ',' << detection.confidence << ',' << detection.x1 << ','
                         << detection.y1 << ',' << detection.x2 << ',' << detection.y2
                         << '\n';
+                    if (source_type == "images") {
+                        image_predictions_csv << image_files[frame_index].filename().string()
+                            << ',' << index << ',' << detection.candidate_index << ','
+                            << detection.class_id << ',' << detection.confidence << ','
+                            << detection.x1 << ',' << detection.y1 << ',' << detection.x2
+                            << ',' << detection.y2 << '\n';
+                    }
                 }
                 frames_csv << frame_index << ',' << detections.size() << ','
                     << current_capture_ms << ',' << prepared.host_total_ms << ','
@@ -1094,7 +1407,16 @@ int main(int argc, char** argv) {
             bool acquired = false;
             {
                 PPE_NVTX_RANGE("capture");
-                acquired = capture.read(frame);
+                if (source_type == "images") {
+                    const std::size_t next_index = static_cast<std::size_t>(frame_index);
+                    if (next_index < image_files.size()) {
+                        frame = cv::imread(
+                            image_files[next_index].string(), cv::IMREAD_COLOR);
+                        acquired = !frame.empty();
+                    }
+                } else {
+                    acquired = capture.read(frame);
+                }
             }
             const auto capture_end = std::chrono::steady_clock::now();
             if (!acquired || frame.empty()) {
@@ -1103,8 +1425,10 @@ int main(int argc, char** argv) {
                 }
                 break;
             }
-            if (frame.type() != CV_8UC3 || frame.cols != geometry.source_width ||
-                frame.rows != geometry.source_height) {
+            if (frame.type() != CV_8UC3 ||
+                (source_type != "images" &&
+                 (frame.cols != geometry.source_width ||
+                  frame.rows != geometry.source_height))) {
                 throw std::runtime_error("frame format or dimensions changed");
             }
             if (!frame.isContinuous()) {
@@ -1165,7 +1489,8 @@ int main(int argc, char** argv) {
                 << "  \"gpu_candidate_bytes\": "
                 << sizeof(ppe::GpuCandidate) << ",\n"
                 << "  \"raw_output_d2h_bytes_per_frame\": "
-                << runtime.output_info().bytes << ",\n"
+                << (postprocess_mode == PostprocessMode::kPlugin
+                        ? 0U : runtime->output_info().bytes) << ",\n"
 #endif
                 << "  \"source\": \"" << json_escape(source_description) << "\",\n"
                 << "  \"engine\": \"" << json_escape(args.at("--engine")) << "\",\n"

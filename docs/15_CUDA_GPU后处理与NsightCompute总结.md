@@ -5,7 +5,8 @@
 Exp15 状态为 `PASS`。Variant A（Atomic）和 Variant B（CUB stable compaction）均完成 GPU
 class-max、confidence filter、box decode、可变长候选压缩 D2H 和 CPU class-aware NMS，并通过
 synthetic、固定视频、IMX219、Nsight Systems 与 Nsight Compute 验收。Variant B 满足全部冻结门槛，
-采用为新的 FP16 C++ Runtime 后处理主线；YOLO11n baseline、Exp06 ONNX、Exp07 FP16 Engine 和
+能力状态为`VERIFIED + ACCEPTED`，采用为新的 FP16 C++ Runtime 后处理主线；YOLO11n baseline、Exp06
+ONNX、Exp07 FP16 Engine 和
 CPU NMS 语义不变。Atomic 实现作为低 Kernel 开销对照保留。
 
 ## 2. 环境、输入与公平边界

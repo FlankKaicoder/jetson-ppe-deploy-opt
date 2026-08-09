@@ -45,6 +45,17 @@ target_link_libraries(exp15_gpu_postprocess PRIVATE
 target_compile_options(exp15_gpu_postprocess PRIVATE
     -Wall -Wextra -Wpedantic)
 
+add_executable(exp16_plugin_video_infer src/exp11_video_infer.cpp)
+target_include_directories(exp16_plugin_video_infer PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../profiling/include)
+target_compile_definitions(exp16_plugin_video_infer PRIVATE
+    PPE_ENABLE_GPU_POSTPROCESS=1)
+target_link_libraries(exp16_plugin_video_infer PRIVATE
+    ppe_cuda_preprocess ppe_gpu_postprocess ppe_trt_runtime ${OpenCV_LIBS})
+target_compile_options(exp16_plugin_video_infer PRIVATE
+    -Wall -Wextra -Wpedantic)
+
 add_executable(exp14_async_pipeline src/exp14_async_pipeline.cpp)
 target_include_directories(exp14_async_pipeline PRIVATE
     ${OpenCV_INCLUDE_DIRS}
