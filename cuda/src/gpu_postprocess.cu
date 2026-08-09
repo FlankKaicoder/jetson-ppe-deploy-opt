@@ -117,6 +117,26 @@ __global__ void decode_flag_kernel(
     }
 }
 
+__global__ void decode_fixed_kernel(
+    const float* raw,
+    LetterboxGeometry geometry,
+    float confidence_threshold,
+    GpuCandidate* candidates_by_index) {
+    const int index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= kYoloCandidateCount) {
+        return;
+    }
+    GpuCandidate candidate{};
+    candidate.candidate_index = -1;
+    candidate.class_id = -1;
+    if (decode_candidate(
+            raw, index, geometry, confidence_threshold, &candidate)) {
+        candidates_by_index[index] = candidate;
+        return;
+    }
+    candidates_by_index[index] = candidate;
+}
+
 }  // namespace
 
 class GpuPostprocessor::Impl {
@@ -167,12 +187,19 @@ public:
             confidence_threshold < 0.0F || confidence_threshold > 1.0F) {
             throw std::runtime_error("invalid GPU postprocess launch argument");
         }
-        check_cuda(
-            cudaMemsetAsync(device_count_, 0, sizeof(int), stream),
-            "cudaMemsetAsync candidate count");
         constexpr int threads = 256;
         constexpr int blocks =
             (kYoloCandidateCount + threads - 1) / threads;
+        if (mode == GpuCompactionMode::kFixed) {
+            decode_fixed_kernel<<<blocks, threads, 0, stream>>>(
+                raw, geometry, confidence_threshold,
+                device_candidates_by_index_);
+            check_cuda(cudaGetLastError(), "launch fixed decode/filter kernel");
+            return;
+        }
+        check_cuda(
+            cudaMemsetAsync(device_count_, 0, sizeof(int), stream),
+            "cudaMemsetAsync candidate count");
         if (mode == GpuCompactionMode::kAtomic) {
             decode_filter_atomic_kernel<<<blocks, threads, 0, stream>>>(
                 raw, geometry, confidence_threshold, device_compacted_,
@@ -195,6 +222,9 @@ public:
 
     const int* count() const { return device_count_; }
     const GpuCandidate* candidates() const { return device_compacted_; }
+    const GpuCandidate* fixed_candidates() const {
+        return device_candidates_by_index_;
+    }
     int capacity() const { return capacity_; }
     std::size_t cub_bytes() const { return cub_temporary_bytes_; }
 
@@ -227,6 +257,9 @@ void GpuPostprocessor::launch(
 const int* GpuPostprocessor::device_count() const { return impl_->count(); }
 const GpuCandidate* GpuPostprocessor::device_candidates() const {
     return impl_->candidates();
+}
+const GpuCandidate* GpuPostprocessor::device_fixed_candidates() const {
+    return impl_->fixed_candidates();
 }
 int GpuPostprocessor::capacity() const { return impl_->capacity(); }
 std::size_t GpuPostprocessor::cub_temporary_storage_bytes() const {

@@ -147,6 +147,18 @@ struct ModeResult {
     bool stable_order{};
 };
 
+const char* mode_name(ppe::GpuCompactionMode mode) {
+    switch (mode) {
+        case ppe::GpuCompactionMode::kAtomic:
+            return "atomic";
+        case ppe::GpuCompactionMode::kCubStable:
+            return "cub";
+        case ppe::GpuCompactionMode::kFixed:
+            return "fixed";
+    }
+    throw std::runtime_error("invalid GPU postprocess mode");
+}
+
 ModeResult run_mode(
     const TestCase& test,
     const ppe::LetterboxGeometry& geometry,
@@ -162,24 +174,50 @@ ModeResult run_mode(
         "copy synthetic raw tensor");
     postprocessor.launch(device_raw.data(), geometry, 0.25F, mode, stream.get());
     int count = -1;
-    check_cuda(
-        cudaMemcpyAsync(
-            &count, postprocessor.device_count(), sizeof(count),
-            cudaMemcpyDeviceToHost, stream.get()),
-        "copy synthetic candidate count");
-    check_cuda(cudaStreamSynchronize(stream.get()), "sync candidate count");
-    if (count < 0 || count > postprocessor.capacity()) {
-        throw std::runtime_error(test.name + ": invalid candidate count");
-    }
-    std::vector<ppe::GpuCandidate> actual(static_cast<std::size_t>(count));
-    if (count > 0) {
+    std::vector<ppe::GpuCandidate> actual;
+    if (mode == ppe::GpuCompactionMode::kFixed) {
+        std::vector<ppe::GpuCandidate> fixed(ppe::kYoloCandidateCount);
         check_cuda(
             cudaMemcpyAsync(
-                actual.data(), postprocessor.device_candidates(),
-                actual.size() * sizeof(ppe::GpuCandidate),
+                fixed.data(), postprocessor.device_fixed_candidates(),
+                fixed.size() * sizeof(ppe::GpuCandidate),
                 cudaMemcpyDeviceToHost, stream.get()),
-            "copy synthetic candidates");
-        check_cuda(cudaStreamSynchronize(stream.get()), "sync candidates");
+            "copy fixed synthetic candidates");
+        check_cuda(cudaStreamSynchronize(stream.get()), "sync fixed candidates");
+        actual.reserve(reference.size());
+        for (const auto& candidate : fixed) {
+            if (candidate.candidate_index == -1) {
+                if (candidate.class_id != -1 || candidate.confidence != 0.0F ||
+                    candidate.x1 != 0.0F || candidate.y1 != 0.0F ||
+                    candidate.x2 != 0.0F || candidate.y2 != 0.0F) {
+                    throw std::runtime_error(
+                        test.name + ": invalid fixed sentinel fields");
+                }
+                continue;
+            }
+            actual.push_back(candidate);
+        }
+        count = static_cast<int>(actual.size());
+    } else {
+        check_cuda(
+            cudaMemcpyAsync(
+                &count, postprocessor.device_count(), sizeof(count),
+                cudaMemcpyDeviceToHost, stream.get()),
+            "copy synthetic candidate count");
+        check_cuda(cudaStreamSynchronize(stream.get()), "sync candidate count");
+        if (count < 0 || count > postprocessor.capacity()) {
+            throw std::runtime_error(test.name + ": invalid candidate count");
+        }
+        actual.resize(static_cast<std::size_t>(count));
+        if (count > 0) {
+            check_cuda(
+                cudaMemcpyAsync(
+                    actual.data(), postprocessor.device_candidates(),
+                    actual.size() * sizeof(ppe::GpuCandidate),
+                    cudaMemcpyDeviceToHost, stream.get()),
+                "copy synthetic candidates");
+            check_cuda(cudaStreamSynchronize(stream.get()), "sync candidates");
+        }
     }
     const bool stable_order = std::is_sorted(
         actual.begin(), actual.end(),
@@ -209,8 +247,9 @@ ModeResult run_mode(
     if (confidence_error > 1.0e-6F || box_error > 1.0e-3F) {
         throw std::runtime_error(test.name + ": numeric tolerance exceeded");
     }
-    if (mode == ppe::GpuCompactionMode::kCubStable && !stable_order) {
-        throw std::runtime_error(test.name + ": CUB output is not stable");
+    if ((mode == ppe::GpuCompactionMode::kCubStable ||
+         mode == ppe::GpuCompactionMode::kFixed) && !stable_order) {
+        throw std::runtime_error(test.name + ": stable output order violated");
     }
     return {count, confidence_error, box_error, stable_order};
 }
@@ -244,6 +283,48 @@ std::vector<TestCase> make_cases() {
     }
     cases.push_back(std::move(all));
     return cases;
+}
+
+void verify_fixed_overwrite(
+    const TestCase& all,
+    const TestCase& zero,
+    const ppe::LetterboxGeometry& geometry,
+    DeviceRaw& device_raw,
+    Stream& stream) {
+    ppe::GpuPostprocessor postprocessor;
+    check_cuda(
+        cudaMemcpyAsync(
+            device_raw.data(), all.raw.data(), DeviceRaw::bytes(),
+            cudaMemcpyHostToDevice, stream.get()),
+        "copy all-valid overwrite tensor");
+    postprocessor.launch(
+        device_raw.data(), geometry, 0.25F,
+        ppe::GpuCompactionMode::kFixed, stream.get());
+    check_cuda(cudaStreamSynchronize(stream.get()), "sync all-valid fixed frame");
+    check_cuda(
+        cudaMemcpyAsync(
+            device_raw.data(), zero.raw.data(), DeviceRaw::bytes(),
+            cudaMemcpyHostToDevice, stream.get()),
+        "copy zero-valid overwrite tensor");
+    postprocessor.launch(
+        device_raw.data(), geometry, 0.25F,
+        ppe::GpuCompactionMode::kFixed, stream.get());
+    std::vector<ppe::GpuCandidate> fixed(ppe::kYoloCandidateCount);
+    check_cuda(
+        cudaMemcpyAsync(
+            fixed.data(), postprocessor.device_fixed_candidates(),
+            fixed.size() * sizeof(ppe::GpuCandidate),
+            cudaMemcpyDeviceToHost, stream.get()),
+        "copy overwritten fixed candidates");
+    check_cuda(cudaStreamSynchronize(stream.get()), "sync overwritten fixed frame");
+    for (const auto& candidate : fixed) {
+        if (candidate.candidate_index != -1 || candidate.class_id != -1 ||
+            candidate.confidence != 0.0F || candidate.x1 != 0.0F ||
+            candidate.y1 != 0.0F || candidate.x2 != 0.0F ||
+            candidate.y2 != 0.0F) {
+            throw std::runtime_error("fixed path retained stale candidate data");
+        }
+    }
 }
 
 int profile_fixture(
@@ -283,17 +364,30 @@ int profile_fixture(
     }
     check_cuda(cudaStreamSynchronize(stream.get()), "sync profiling kernels");
     check_cuda(cudaProfilerStop(), "cudaProfilerStop");
-    int count = -1;
-    check_cuda(
-        cudaMemcpy(
-            &count, postprocessor.device_count(), sizeof(count),
-            cudaMemcpyDeviceToHost),
-        "copy profiling result count");
+    int count = 0;
+    if (mode == ppe::GpuCompactionMode::kFixed) {
+        std::vector<ppe::GpuCandidate> fixed(ppe::kYoloCandidateCount);
+        check_cuda(
+            cudaMemcpy(
+                fixed.data(), postprocessor.device_fixed_candidates(),
+                fixed.size() * sizeof(ppe::GpuCandidate),
+                cudaMemcpyDeviceToHost),
+            "copy fixed profiling candidates");
+        count = static_cast<int>(std::count_if(
+            fixed.begin(), fixed.end(), [](const auto& candidate) {
+                return candidate.candidate_index != -1;
+            }));
+    } else {
+        check_cuda(
+            cudaMemcpy(
+                &count, postprocessor.device_count(), sizeof(count),
+                cudaMemcpyDeviceToHost),
+            "copy profiling result count");
+    }
     if (count < 0 || count > ppe::kYoloCandidateCount) {
         throw std::runtime_error("invalid profiling result count");
     }
-    std::cout << "result=PASS mode="
-              << (mode == ppe::GpuCompactionMode::kAtomic ? "atomic" : "cub")
+    std::cout << "result=PASS mode=" << mode_name(mode)
               << " iterations=" << iterations << " count=" << count << '\n';
     return 0;
 }
@@ -306,19 +400,22 @@ int main(int argc, char** argv) {
             std::string(argv[3]) == "--mode" &&
             std::string(argv[5]) == "--iterations") {
             const std::string mode_name(argv[4]);
-            if (mode_name != "atomic" && mode_name != "cub") {
-                throw std::runtime_error("profile mode must be atomic or cub");
+            if (mode_name != "atomic" && mode_name != "cub" &&
+                mode_name != "fixed") {
+                throw std::runtime_error(
+                    "profile mode must be atomic, cub, or fixed");
             }
+            const auto mode = mode_name == "atomic"
+                ? ppe::GpuCompactionMode::kAtomic
+                : (mode_name == "fixed" ? ppe::GpuCompactionMode::kFixed
+                                          : ppe::GpuCompactionMode::kCubStable);
             return profile_fixture(
-                argv[2],
-                mode_name == "atomic" ? ppe::GpuCompactionMode::kAtomic
-                                       : ppe::GpuCompactionMode::kCubStable,
-                std::stoi(argv[6]));
+                argv[2], mode, std::stoi(argv[6]));
         }
         if (argc != 3 || std::string(argv[1]) != "--output-dir") {
             throw std::runtime_error(
                 "usage: exp15_gpu_postprocess_test --output-dir DIR | "
-                "--profile-fixture FILE --mode atomic|cub --iterations N");
+                "--profile-fixture FILE --mode atomic|cub|fixed --iterations N");
         }
         const std::filesystem::path output_dir(argv[2]);
         std::filesystem::create_directories(output_dir);
@@ -332,15 +429,18 @@ int main(int argc, char** argv) {
         for (const auto& test : cases) {
             for (const auto mode : {
                      ppe::GpuCompactionMode::kAtomic,
-                     ppe::GpuCompactionMode::kCubStable}) {
+                     ppe::GpuCompactionMode::kCubStable,
+                     ppe::GpuCompactionMode::kFixed}) {
                 const auto result = run_mode(
                     test, geometry, mode, device_raw, stream);
                 csv << test.name << ','
-                    << (mode == ppe::GpuCompactionMode::kAtomic ? "atomic" : "cub")
+                    << mode_name(mode)
                     << ',' << result.count << ',' << result.confidence_error << ','
                     << result.box_error << ',' << (result.stable_order ? 1 : 0) << '\n';
             }
         }
+        verify_fixed_overwrite(
+            cases.back(), cases.front(), geometry, device_raw, stream);
         ppe::GpuPostprocessor guard_workspace(8);
         const auto& all = cases.back();
         check_cuda(
@@ -365,12 +465,13 @@ int main(int argc, char** argv) {
         summary << "{\n"
                 << "  \"result\": \"PASS\",\n"
                 << "  \"cases\": " << cases.size() << ",\n"
-                << "  \"modes\": 2,\n"
+                << "  \"modes\": 3,\n"
+                << "  \"fixed_overwrite_guard\": \"PASS\",\n"
                 << "  \"candidate_size_bytes\": " << sizeof(ppe::GpuCandidate) << ",\n"
                 << "  \"capacity_guard_count\": " << overflow_count << "\n"
                 << "}\n";
         std::cout << "result=PASS cases=" << cases.size()
-                  << " modes=2 overflow_count=" << overflow_count << '\n';
+                  << " modes=3 overflow_count=" << overflow_count << '\n';
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "ERROR: " << error.what() << '\n';

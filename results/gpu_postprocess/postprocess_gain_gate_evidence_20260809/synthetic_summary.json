@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "cases": 4,
+  "modes": 3,
+  "fixed_overwrite_guard": "PASS",
+  "candidate_size_bytes": 28,
+  "capacity_guard_count": 8400
+}

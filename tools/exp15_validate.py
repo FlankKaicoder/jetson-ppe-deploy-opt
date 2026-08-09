@@ -23,7 +23,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir", type=Path)
     parser.add_argument("--expected-frames", type=int, required=True)
-    parser.add_argument("--mode", choices=("baseline", "atomic", "cub"), required=True)
+    parser.add_argument(
+        "--mode",
+        choices=("baseline", "raw_pinned", "atomic", "cub", "fixed"),
+        required=True,
+    )
     parser.add_argument("--require-file-digest", action="store_true")
     args = parser.parse_args()
     app = args.run_dir / "app_output"
@@ -65,9 +69,9 @@ def main() -> int:
                 break
     mean_bytes = float(summary.get("transfer", {}).get(
         "d2h_bytes_per_frame", {}).get("mean", math.inf))
-    if args.mode == "baseline" and mean_bytes != RAW_BYTES:
-        errors.append("baseline D2H byte count mismatch")
-    if args.mode != "baseline" and 1.0 - mean_bytes / RAW_BYTES < 0.80:
+    if args.mode in ("baseline", "raw_pinned", "fixed") and mean_bytes != RAW_BYTES:
+        errors.append(f"{args.mode} D2H byte count mismatch")
+    if args.mode in ("atomic", "cub") and 1.0 - mean_bytes / RAW_BYTES < 0.80:
         errors.append("candidate D2H reduction is below 80%")
     result = {
         "result": "PASS" if not errors else "FAIL",
