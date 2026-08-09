@@ -324,6 +324,17 @@ P0 → P1 → P2 → P2 → P1 → P0
 host blocking、E2E、P95、wall FPS、温度和频率状态。报告每组配对差值、均值、median、CV和min/max，
 不挑最好一轮。
 
+## 7.4 2026-08-09 实际结果
+
+Gate已完成且不新增实验编号。最终公平版本令P0/P1都使用pinned Host buffer并都复制235,200 B；P2平均
+复制263.84 B。P0→P1和P1→P2的P95三轮方向一致，paired平均分别为−3.05%和−1.11%；但FPS和mean
+均出现跨轮正负混合，不能精确分摊Exp15的19.19%。冻结fixture中P0/P1/P2 total mean为
+0.2295/0.3634/0.1201 ms，说明fixed 8400项Host扫描有明显局部成本，CUB compact路径局部最优。
+
+早期pageable P0与pinned P1的比较存在Host memory混杂，已保留但不用于最终归因。当前事实边界为：
+Exp15的系统收益来自pageable raw路径、CPU全量decode与完整payload被联合替换；P2仍为ACCEPTED主线，
+但不得把全部收益归因于D2H缩减，也不得声称已得到严格可加的因果百分比。下一优先级进入Exp16方案冻结。
+
 ---
 
 # 8. Exp16：IPluginV3 + ONNX GraphSurgeon
@@ -773,7 +784,7 @@ return code、配置、benchmark JSON/CSV、输入与产物SHA256、Git commit�
 
 ```text
 Priority 0  本V3 canonical文档合并
-Priority 1  Postprocess Gain Attribution Gate
+Priority 1  Postprocess Gain Attribution Gate（已完成）
 Priority 2  Exp16 IPluginV3 + GraphSurgeon
 Priority 3  Exp17 Activation/Sensitivity + Mixed Precision
 Priority 4  Exp18 CUDA Graph Decision Gate

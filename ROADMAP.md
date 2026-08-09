@@ -79,5 +79,9 @@ CPU staging、资源竞争和排队显著放大 P95；候选未满足冻结性�
 stable compaction 保持 CPU NMS 和冻结检测语义，把文件平均 D2H 压缩99.89%，文件 wall FPS
 提升19.19%，同时满足文件/相机 P95门槛，故 `PASS` 并成为当前 Runtime 主线。Exp16 仍为待审批计划。
 
+不新增实验编号的 Postprocess Gain Attribution Gate 已完成：在P0/P1都使用pinned Host buffer且都传输
+235,200 B后，P0→P1和P1→P2的P95三轮均改善，paired平均分别为−3.05%和−1.11%；FPS/mean方向混合，
+因此不强行精确分摊Exp15的19.19%。P2仍因完整正确性、D2H/Host扫描缩减和原采用门槛保持主线地位。
+
 不得用 RTX 3080 Ti 的验证速度代替 Jetson 性能结论，也不得提前把计划项表述为
 已经完成。
