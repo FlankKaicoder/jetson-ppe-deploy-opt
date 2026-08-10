@@ -1,0 +1,81 @@
+{
+  "experiment": "Exp17 Explicit Q/DQ, sensitivity and mixed precision",
+  "date": "2026-08-09",
+  "status": "IN_PROGRESS",
+  "source_commit": "729e2d9",
+  "r0": {
+    "directory": "results/quantization/exp17_0_audit_20260809_221258",
+    "result": "PASS",
+    "exp08_mode": "implicit",
+    "source_markers": [
+      "trt.IInt8EntropyCalibrator2",
+      "trt.BuilderFlag.INT8",
+      "config.int8_calibrator"
+    ],
+    "frozen_onnx_nodes": 353,
+    "quantize_linear_count": 0,
+    "dequantize_linear_count": 0
+  },
+  "preserved_failures": [
+    {
+      "directory": "results/quantization/exp17_1_qdq_smoke_20260809_221952",
+      "reason": "ORT 1.20 Softmax range adjustment required Softmax outputs in the calibrated tensor set"
+    },
+    {
+      "directory": "results/quantization/exp17_1_qdq_smoke_20260809_222309",
+      "reason": "TensorRT 10.3 rejected ORT INT32 bias DequantizeLinear; fixed with QuantizeBias=false"
+    },
+    {
+      "directory": "results/quantization/exp17_2_qdq_formal_20260809_223108",
+      "reason": "monolithic 256-image ORT Entropy collection was killed with exit 137; fixed by 8-image chunks without reducing the dataset"
+    }
+  ],
+  "r1_smoke": {
+    "directory": "results/quantization/exp17_1_qdq_smoke_20260809_223753",
+    "result": "PASS",
+    "configuration": "8-image Entropy QDQ, QInt8 activation/weight, per-channel weight, FP32 bias, Conv/MatMul output QDQ excluded, strongly typed TensorRT"
+  },
+  "r2_formal": {
+    "directory": "results/quantization/exp17_2_qdq_formal_20260809_224138",
+    "result": "PASS",
+    "calibration_images": 256,
+    "calibration_chunk_size": 8,
+    "calibration_chunks": 32,
+    "quantization_seconds": 322.2673516110008,
+    "build_seconds": 164,
+    "quantize_linear_count": 95,
+    "dequantize_linear_count": 183,
+    "scales_positive_finite": true,
+    "zero_points_all_zero": true,
+    "qdq_onnx_sha256": "5a28c30b0f92db1a94be7f290a781ff182df757fb71e36d749a5b64d1daf8325",
+    "qdq_engine_sha256": "43db95c68e9dd23d00b2c35e0cfe19a9d61ca75a1a92ffbf70245f530ceb66c9",
+    "qdq_engine_bytes": 4684780
+  },
+  "r3_accuracy": {
+    "directory": "results/quantization/exp17_3_qdq_full_test_20260809_225245",
+    "result": "PASS",
+    "images": 219,
+    "instances": 840,
+    "fp16": {
+      "precision": 0.9068424815192405,
+      "recall": 0.8143740660108642,
+      "map50": 0.884373548440543,
+      "map50_95": 0.5219288063799808,
+      "tiny_small_recall": 0.7902097902097902
+    },
+    "explicit_qdq": {
+      "precision": 0.9008535803010159,
+      "recall": 0.8280765963915256,
+      "map50": 0.8834429621307672,
+      "map50_95": 0.5280199938663673,
+      "tiny_small_recall": 0.7552447552447552
+    },
+    "explicit_qdq_minus_fp16": {
+      "map50": -0.0009305863097757161,
+      "map50_95": 0.0060911874863864846,
+      "tiny_small_recall": -0.034965034965035
+    },
+    "all_frozen_accuracy_gates_pass": true
+  },
+  "decision": "Explicit Q/DQ baseline is IMPLEMENTED and accuracy-VERIFIED, but not ACCEPTED pending performance, activation/scale mechanism audit, coarse sensitivity, and repeat-build evidence."
+}

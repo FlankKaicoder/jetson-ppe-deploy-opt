@@ -387,6 +387,7 @@ Exp13 Nsight Systems 端到端性能瓶颈画像与优化基线
 Exp14 Pinned Memory、CUDA Event 与 Double Buffer 异步流水线消融
 Exp15 CUDA GPU Decode/Filter/Compaction 与 Nsight Compute
 Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon
+Exp17 Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision
 ```
 
 当前模型决策：
@@ -456,8 +457,15 @@ Exp16 已完成 IPluginV3、Creator/Registry、GraphSurgeon、显式workspace、
 candidate 8222在0.25附近发生threshold crossing，旧138 px是额外检测造成的CSV行号错配；B2普通rebuild
 与Fresh Plugin均让该候选过阈值。R3统一219图评估证明Plugin模型级语义处于F0/B1/B2 build variance内。
 R4动态调频三轮配对虽全部满足P95≤5%退化限制，但Plugin聚合wall FPS为−1.0648%、E2E mean为+1.3053%，
-且仅1/3方向有利，未满足采用门槛。因此Plugin保持`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 B继续主线，
-下一实验为Exp17。不得重跑该Gate挑最好结果、继续调Plugin Kernel或修改原Exp16 REJECT。
+且仅1/3方向有利，未满足采用门槛。因此Plugin保持`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 B继续主线。
+不得重跑该Gate挑最好结果、继续调Plugin Kernel或修改原Exp16 REJECT。
+
+Exp17已确认Exp08为implicit calibrator/cache，并建立95Q/183DQ Explicit Q/DQ baseline。219图精度Gate通过，
+但paired GPU-only相对FP16中位劣化12.82%。旧implicit INT8的P3 score relative-L2为0.771425并产生
+1138次向下阈值穿越；Explicit QDQ降至0.137478和93次。三个正式Mixed候选均通过精度门槛但GPU性能
+劣化9.49%～40.57%，没有Pareto候选，故Exp17总体`REJECT`，能力为
+`IMPLEMENTED + VERIFIED + REJECTED`。没有最终候选，不执行repeat build或动态端到端采用测试；FP16 Engine
+与Exp15 B主线保持不变。下一实验为Exp18 CUDA Graph Decision Gate，必须先在真实最终主线上重新Nsight。
 
 能力证据统一使用四层模型：`IMPLEMENTED`表示已有实现；`VERIFIED`表示已有冻结输入下的正确性、生命周期
 或Profiling证据；`ACCEPTED`表示通过预冻结采用条件并进入主线；`REJECTED`表示不进入主线。单项能力可同时
@@ -490,10 +498,8 @@ Exp19  仅比较baseline与ACCEPTED最终路线的综合Benchmark
 Exp20  README、学习路线、简历与面试材料
 ```
 
-Exp17不得重做Exp08的256图与tiny/small覆盖审计。先代码审计Exp08属于implicit calibrator/cache还是
-explicit Q/DQ；若为implicit，先建立Explicit Q/DQ PTQ baseline，再做activation/dynamic-range/clipping
-审计及P3/P4/P5、cls/reg/DFL、完整Detect Head粗粒度敏感性。比较三个检测尺度的score error、bbox error、
-relative L2和threshold-crossing，构建2～3个Mixed Precision候选，并至少重复构建最终候选一次。
+Exp17已完成，不得为了寻找PASS重做、降低门槛或删除Full/Mixed性能负向结果。若未来仅作post-resume诊断，
+必须保持原Engine/数据/阈值并另建编号外Gate，不能改写Exp17总体`REJECT`。
 
 Exp18只在Exp17后真实最终主线上重新Nsight证明enqueue/kernel-launch overhead明显时实现。第一版只捕获
 device-side `CUDA preprocess→TensorRT enqueueV3→GPU decode/filter→CUB compaction`；H2D和count/payload

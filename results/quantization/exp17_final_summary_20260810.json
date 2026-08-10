@@ -1,0 +1,33 @@
+{
+  "experiment": "Exp17 Explicit Q/DQ, INT8 mechanism audit and Mixed Precision",
+  "date": "2026-08-10",
+  "source_commit": "729e2d9",
+  "result": "REJECT",
+  "capability_evidence": ["IMPLEMENTED", "VERIFIED", "REJECTED"],
+  "explicit_qdq": {
+    "onnx_sha256": "5a28c30b0f92db1a94be7f290a781ff182df757fb71e36d749a5b64d1daf8325",
+    "engine_sha256": "43db95c68e9dd23d00b2c35e0cfe19a9d61ca75a1a92ffbf70245f530ceb66c9",
+    "quantize_linear": 95,
+    "dequantize_linear": 183,
+    "map50": 0.8834429621,
+    "map50_95": 0.5280199939,
+    "tiny_small_recall": 0.7552447552,
+    "gpu_paired_median_latency_reduction_vs_fp16": -0.128159493655,
+    "engine_size_reduction_vs_fp16": 0.476650944977
+  },
+  "mechanism": {
+    "max_head_activation_clipping_ratio": 0.000024871826171875,
+    "implicit_p3_score_relative_l2": 0.7714246558,
+    "explicit_p3_score_relative_l2": 0.1374779799,
+    "implicit_p3_threshold_cross_down": 1138,
+    "explicit_p3_threshold_cross_down": 93
+  },
+  "mixed_candidates": {
+    "p3_classification": {"map50_95": 0.5286194846, "tiny_small_recall": 0.7552447552, "gpu_latency_reduction": -0.2670951654, "accepted": false},
+    "classification": {"map50_95": 0.5296279826, "tiny_small_recall": 0.7552447552, "gpu_latency_reduction": -0.4057254627, "accepted": false},
+    "dfl": {"map50_95": 0.5267999597, "tiny_small_recall": 0.7552447552, "gpu_latency_reduction": -0.0949404187, "accepted": false}
+  },
+  "decision": "NO_MIXED_CANDIDATE_ACCEPTED",
+  "mainline": "Frozen Exp07 FP16 Engine plus Exp15 CUB stable compaction",
+  "next": "Exp18 CUDA Graph Decision Gate"
+}

@@ -48,7 +48,7 @@
 | Exp15 | CUDA GPU 后处理与 Nsight Compute | PASS |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT |
 | Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT |
-| Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | PLANNED |
+| Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT |
 | Exp18 | CUDA Graph Decision Gate | PLANNED |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED |
 
@@ -74,6 +74,7 @@ Exp02 YOLO11n baseline best.pt
 → Exp15 CUB stable compaction GPU 后处理（PASS，采用为 Runtime 主线）
 → Exp16 IPluginV3图内后处理（组件VERIFIED，全图候选REJECT）
 → Exp16 Deployment Semantic Revalidation Gate（语义PASS、性能REJECT，主线不采用）
+→ Exp17 Explicit Q/DQ与Mixed Precision（工程/精度VERIFIED、性能REJECT，保留FP16）
 ```
 
 Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
@@ -104,10 +105,11 @@ build-variance envelope内，故部署语义Gate通过。随后R4动态调频三
 为−1.0648%，E2E mean为+1.3053%，且仅1/3方向有利；虽然三轮P95均满足≤5%退化限制，仍未达到3%收益
 和至少2/3同向条件，因此主线采用`REJECT`，Exp15 CUB继续作为Runtime主线。
 
-Exp17不重做Exp08的256图覆盖审计：先审计implicit calibrator/cache与explicit Q/DQ；必要时建立Explicit
-Q/DQ PTQ baseline，再做activation/dynamic-range/clipping及P3/P4/P5、cls/reg/DFL、完整Detect Head
-粗粒度敏感性，构建2～3个Mixed Precision Pareto候选并重复构建最终候选。Exp18仅在Exp17后最终主线上
-重新Nsight证明enqueue/kernel-launch overhead明显时实现，只捕获device-side preprocess→enqueueV3→GPU
+Exp17已确认Exp08为implicit calibrator/cache，并建立95Q/183DQ的Explicit Q/DQ baseline。它将
+tiny+small recall从旧implicit的0.489510恢复到0.755245，但paired GPU-only相对FP16中位劣化12.82%。
+三个完整219图Mixed候选均通过精度门槛，但GPU性能劣化9.49%～40.57%，没有Pareto候选，故无“最终候选”
+进入repeat build或部署Gate。Exp18仅在保持不变的FP16+Exp15 CUB真实最终主线上重新Nsight证明
+enqueue/kernel-launch overhead明显时实现，只捕获device-side preprocess→enqueueV3→GPU
 decode/filter→CUB，H2D和count/payload D2H保持Graph外；否则记`SKIPPED_BY_EVIDENCE`。
 
 Exp19只比较baseline与已`ACCEPTED`路线。文件视频用于最大吞吐；30 FPS相机重点报告capture wait、

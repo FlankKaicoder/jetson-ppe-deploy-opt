@@ -2,7 +2,7 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp16 复盘、设备重连
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp17 复盘、设备重连
 SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
@@ -26,7 +26,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp15 | CUDA GPU Decode/Filter/Compaction 与 Nsight Compute | PASS | `15_CUDA_GPU后处理与NsightCompute总结.md` |
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT | `16_TensorRT_IPluginV3与ONNX_GraphSurgeon总结.md` |
 | Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT | 见Exp16总结第10～11节 |
-| Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | PLANNED | 待审批 |
+| Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT | `17_ExplicitQDQ_INT8机制审计与MixedPrecision总结.md` |
 | Exp18 | CUDA Graph Decision Gate | PLANNED | 待审批；可SKIPPED_BY_EVIDENCE |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED | 待审批 |
 | Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
@@ -73,12 +73,16 @@ R3统一219图评估证明Fresh Plugin模型级语义处于F0/B1/B2普通build v
 compaction为`VERIFIED + ACCEPTED`，Exp16 Plugin组件为`IMPLEMENTED + VERIFIED`而原全图主线候选为
 `REJECTED`。未完成或未验证能力不得写入简历成果。
 
+## Exp17 最终裁决
+
+Exp08代码审计确认为implicit calibrator/cache。Exp17建立256图Explicit Q/DQ baseline并完成静态Q/DQ、
+activation/clipping、P3/P4/P5 raw误差、粗粒度fallback、三个Mixed候选219图精度和两轮正反序GPU性能审计。
+Explicit QDQ精度通过但GPU-only中位劣化12.82%；三个Mixed候选精度均通过但性能劣化9.49%～40.57%，
+没有候选满足Pareto/采用门槛。状态为`REJECT`，能力为`IMPLEMENTED + VERIFIED + REJECTED`，FP16 Engine与
+Exp15 CUB Runtime主线不变。没有最终候选，因此repeat build与动态端到端采用测试按证据停止。
+
 ## 后续冻结路线
 
-- Exp17先审计Exp08是implicit calibrator/cache还是explicit Q/DQ；若为implicit，先建立Explicit Q/DQ
-  PTQ baseline，再做activation/dynamic-range/clipping及P3/P4/P5、cls/reg/DFL、完整Detect Head粗粒度
-  sensitivity，比较三个检测尺度的score/bbox/relative-L2/threshold crossing，形成2～3个Mixed Precision
-  Pareto候选并至少重复构建最终候选一次；
 - Exp18只在Exp17后最终主线上重新Nsight证明enqueue/kernel-launch overhead明显时实现device-side Graph；
   H2D和count/payload D2H保持Graph外，无证据则`SKIPPED_BY_EVIDENCE`；
 - Exp19只比较baseline与`ACCEPTED`路线，动态调频为部署主轨，最终54,000帧只对`V_Final`重跑；

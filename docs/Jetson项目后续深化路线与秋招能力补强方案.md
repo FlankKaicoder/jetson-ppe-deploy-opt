@@ -509,6 +509,26 @@ Mixed-2
 小目标指标时，才评估QAT；不得一开始直接扩大到QAT。最终候选至少重复Build一次，并与至少一次普通
 对照rebuild交叉比较，避免把TensorRT tactic variation误写成量化或fallback收益。
 
+## 9.4 2026-08-10 真实结果与路线裁决
+
+Exp08代码审计确认它使用`IInt8EntropyCalibrator2 + BuilderFlag.INT8 + int8_calibrator`，冻结ONNX中没有
+Q/DQ。Exp17随后在Jetson以原256张train-only校准图建立Explicit Q/DQ baseline：95Q/183DQ、对称QInt8、
+activation per-tensor、weight per-channel、FP32 bias与FP32 raw I/O、strongly typed TensorRT。219图
+mAP50/mAP50-95/tiny+small recall为0.883443/0.528020/0.755245，三项精度门槛通过；但三轮paired
+GPU-only相对FP16中位劣化12.82%，即精度恢复并未形成部署Pareto。
+
+256图Detect Head activation审计中最大clipping ratio仅约2.49e-5，最高模拟量化relative-L2集中在P5/P3
+classification而非DFL。219图同candidate-index raw审计进一步显示，旧implicit INT8在P3的score
+relative-L2为0.771425，并有1138次从FP16的`>=0.25`掉到阈值下；Explicit QDQ对应值降到0.137478和93次，
+这给出了tiny/small recall从0.489510恢复到0.755245的主要机制证据，但不构成单一scale算法的独占因果。
+
+按证据构建P3-classification、all-classification、DFL和完整Detect Head四个fallback Engine。前三个完整
+219图精度均通过门槛，tiny+small仍同为0.755245；两轮正反序GPU-only相对FP16中位延迟分别劣化26.71%、
+40.57%、9.49%，完整Head筛选劣化57.99%。因此没有Mixed候选进入accuracy-latency Pareto，状态统一为
+`IMPLEMENTED + VERIFIED + REJECTED`。不存在“最终候选”，所以不启动repeat build、动态端到端采用Gate或
+QAT；冻结FP16 Engine与Exp15 CUB Runtime继续主线。简历可写显式量化/敏感性分析方法与负向决策能力，
+不得写成“INT8/Mixed Precision加速落地”。
+
 ---
 
 # 10. Exp18：CUDA Graph Decision Gate
