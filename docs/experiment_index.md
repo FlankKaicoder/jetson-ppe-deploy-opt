@@ -2,7 +2,7 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp17 复盘、设备重连
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp18 复盘、设备重连
 SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
@@ -27,7 +27,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT | `16_TensorRT_IPluginV3与ONNX_GraphSurgeon总结.md` |
 | Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT | 见Exp16总结第10～11节 |
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT | `17_ExplicitQDQ_INT8机制审计与MixedPrecision总结.md` |
-| Exp18 | CUDA Graph Decision Gate | PLANNED | 待审批；可SKIPPED_BY_EVIDENCE |
+| Exp18 | CUDA Graph Decision Gate | REJECT | `18_CUDA_Graph_Decision_Gate总结.md` |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED | 待审批 |
 | Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 
@@ -81,10 +81,19 @@ Explicit QDQ精度通过但GPU-only中位劣化12.82%；三个Mixed候选精度�
 没有候选满足Pareto/采用门槛。状态为`REJECT`，能力为`IMPLEMENTED + VERIFIED + REJECTED`，FP16 Engine与
 Exp15 CUB Runtime主线不变。没有最终候选，因此repeat build与动态端到端采用测试按证据停止。
 
+## Exp18 最终裁决
+
+当前FP16+Exp15 CUB主线的Decision Gate通过，因而实现了只捕获device-side preprocess、enqueueV3、GPU
+decode/filter与CUB compaction的CUDA Graph；H2D、count/payload D2H和CPU NMS保持Graph外。Normal与Graph
+的150帧pre-NMS候选轨迹及最终检测逐字节一致，节点级Nsight也确认每帧launch由67次降至1次、GPU gap
+median下降93.4%。但动态调频三组paired/interleaved中wall FPS、E2E mean、P95均仅1/3方向有利，未达到
+至少3%且2/3同向的采用门槛。Exp18状态为`REJECT`，能力为`IMPLEMENTED + VERIFIED + REJECTED`，Graph不进入
+主线或简历成果。
+
 ## 后续冻结路线
 
-- Exp18只在Exp17后最终主线上重新Nsight证明enqueue/kernel-launch overhead明显时实现device-side Graph；
-  H2D和count/payload D2H保持Graph外，无证据则`SKIPPED_BY_EVIDENCE`；
+- Exp18已完成：Graph正确性与节点级Profiling通过，但三组动态调频端到端采用Gate失败，状态`REJECT`，
+  能力为`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 CUB继续主线；
 - Exp19只比较baseline与`ACCEPTED`路线，动态调频为部署主轨，最终54,000帧只对`V_Final`重跑；
 - Exp20完成README、架构图、结果表、简历和面试材料后停止开发，不扩张新技术方向。
 

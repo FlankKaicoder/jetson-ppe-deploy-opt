@@ -1,0 +1,95 @@
+{
+  "result": "PASS",
+  "normal": {
+    "sqlite": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_profile_normal_file_20260810_171634/report.sqlite",
+    "launch_api_ms": {
+      "instances": 150,
+      "mean_ms": 1.2481467733333333,
+      "p50_ms": 1.239712,
+      "p95_ms": 1.3600047999999996,
+      "min_ms": 1.139936,
+      "max_ms": 1.571264
+    },
+    "launch_api_calls_per_frame": {
+      "instances": 150,
+      "mean_ms": 67.0,
+      "p50_ms": 67.0,
+      "p95_ms": 67.0,
+      "min_ms": 67.0,
+      "max_ms": 67.0
+    },
+    "device_span_ms": {
+      "instances": 150,
+      "mean_ms": 9.81394368,
+      "p50_ms": 9.413343999999999,
+      "p95_ms": 12.314788799999999,
+      "min_ms": 7.707424,
+      "max_ms": 12.809568
+    },
+    "device_busy_ms": {
+      "instances": 150,
+      "mean_ms": 8.989608746666667,
+      "p50_ms": 8.617792,
+      "p95_ms": 11.35944,
+      "min_ms": 6.98528,
+      "max_ms": 11.36816
+    },
+    "device_gap_ms": {
+      "instances": 150,
+      "mean_ms": 0.8243349333333333,
+      "p50_ms": 0.79408,
+      "p95_ms": 0.9594224,
+      "min_ms": 0.708864,
+      "max_ms": 1.467712
+    }
+  },
+  "graph": {
+    "sqlite": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_profile_graph_file_20260810_172004/report.sqlite",
+    "launch_api_ms": {
+      "instances": 150,
+      "mean_ms": 0.7039579733333333,
+      "p50_ms": 0.660704,
+      "p95_ms": 0.9483632,
+      "min_ms": 0.55024,
+      "max_ms": 1.114336
+    },
+    "launch_api_calls_per_frame": {
+      "instances": 150,
+      "mean_ms": 1.0,
+      "p50_ms": 1.0,
+      "p95_ms": 1.0,
+      "min_ms": 1.0,
+      "max_ms": 1.0
+    },
+    "device_span_ms": {
+      "instances": 150,
+      "mean_ms": 9.02832192,
+      "p50_ms": 7.93928,
+      "p95_ms": 10.49444,
+      "min_ms": 7.91552,
+      "max_ms": 10.501088
+    },
+    "device_busy_ms": {
+      "instances": 150,
+      "mean_ms": 8.970164573333333,
+      "p50_ms": 7.887131,
+      "p95_ms": 10.42929255,
+      "min_ms": 7.863771,
+      "max_ms": 10.434459
+    },
+    "device_gap_ms": {
+      "instances": 150,
+      "mean_ms": 0.058157346666666665,
+      "p50_ms": 0.052421,
+      "p95_ms": 0.066981,
+      "min_ms": 0.050789,
+      "max_ms": 0.067237
+    }
+  },
+  "median_reduction_percent": {
+    "launch_api_ms": 46.70504117085258,
+    "device_span_ms": 15.659302369062459,
+    "device_gap_ms": 93.39852407817851
+  },
+  "conclusion": "Graph reduces host submissions and profiled launch gaps, but the dynamic-frequency paired E2E gate remains the adoption authority."
+}

@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-10，Exp00～Exp17 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-10，Exp00～Exp18 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -60,6 +60,13 @@ mAP50-95为0.528020、tiny+small recall为0.755245，精度门槛通过；但三
 Explicit QDQ降至93次，解释了小目标召回恢复。三个完整219图Mixed候选虽均通过精度门槛，但GPU compute
 比FP16慢9.49%～40.57%，最终`NO_MIXED_CANDIDATE_ACCEPTED`。量化工程能力为
 `IMPLEMENTED + VERIFIED + REJECTED`，FP16主线不变。
+
+Exp18在当前FP16+Exp15 CUB主线上重新Nsight后通过实现Decision Gate，并完成固定地址的device-side
+`CUDA preprocess→enqueueV3→GPU decode/filter→CUB compaction` Graph；H2D、count/payload D2H和CPU NMS
+保持Graph外。Normal/Graph的150帧pre-NMS候选轨迹与最终检测均逐字节一致。节点级Nsight显示每帧launch
+由67次降至1次，launch API median下降46.7%，GPU gap median下降93.4%；但三组动态调频paired/interleaved
+中wall FPS、E2E mean和P95都仅1/3方向有利，聚合中位变化为−0.780%/−1.081%/−1.092%，未达到采用门槛。
+因此Exp18为`IMPLEMENTED + VERIFIED + REJECTED`，CUDA Graph不进入Runtime主线。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 

@@ -1,0 +1,75 @@
+{
+  "result": "PASS",
+  "decision": "REJECTED",
+  "order": [
+    "N1",
+    "G1",
+    "G2",
+    "N2",
+    "N3",
+    "G3"
+  ],
+  "correctness_gate": true,
+  "performance_gates": {
+    "wall_fps": false,
+    "e2e_mean": false,
+    "e2e_p95_no_more_than_3_percent_regression": true
+  },
+  "aggregate": {
+    "wall_fps_improvement_median_percent": -0.7795677228544928,
+    "wall_fps_favorable_pairs": 1,
+    "e2e_mean_improvement_median_percent": -1.081234949251661,
+    "e2e_mean_favorable_pairs": 1,
+    "e2e_p95_improvement_median_percent": -1.0920514712129488,
+    "e2e_p95_favorable_pairs": 1
+  },
+  "pairs": [
+    {
+      "pair": 1,
+      "normal_dir": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_benchmark_normal_file_20260810_171232",
+      "graph_dir": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_benchmark_graph_file_20260810_171236",
+      "normal_wall_fps": 70.965392847,
+      "graph_wall_fps": 62.527286882,
+      "wall_fps_improvement_percent": -11.890451988608582,
+      "normal_e2e_mean_ms": 12.832696627,
+      "graph_e2e_mean_ms": 14.7575086,
+      "e2e_mean_improvement_percent": -14.999279020982959,
+      "normal_e2e_p95_ms": 14.9122189,
+      "graph_e2e_p95_ms": 15.1216998,
+      "e2e_p95_improvement_percent": -1.4047600924098618
+    },
+    {
+      "pair": 2,
+      "normal_dir": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_benchmark_normal_file_20260810_171242",
+      "graph_dir": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_benchmark_graph_file_20260810_171239",
+      "normal_wall_fps": 69.729092384,
+      "graph_wall_fps": 71.808728616,
+      "wall_fps_improvement_percent": 2.9824513139327635,
+      "normal_e2e_mean_ms": 13.064275567,
+      "graph_e2e_mean_ms": 12.74664108,
+      "e2e_mean_improvement_percent": 2.4313210891106385,
+      "normal_e2e_p95_ms": 14.9285116,
+      "graph_e2e_p95_ms": 13.2890506,
+      "e2e_p95_improvement_percent": 10.982079419089581
+    },
+    {
+      "pair": 3,
+      "normal_dir": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_benchmark_normal_file_20260810_171246",
+      "graph_dir": "/home/nvidia/projects/jetson-ppe-deploy-opt/results/profiling/exp18_benchmark_graph_file_20260810_171249",
+      "normal_wall_fps": 63.036486067,
+      "graph_wall_fps": 62.545073968,
+      "wall_fps_improvement_percent": -0.7795677228544928,
+      "normal_e2e_mean_ms": 14.582908193,
+      "graph_e2e_mean_ms": 14.740583693,
+      "e2e_mean_improvement_percent": -1.081234949251661,
+      "normal_e2e_p95_ms": 15.3162973,
+      "graph_e2e_p95_ms": 15.48355915,
+      "e2e_p95_improvement_percent": -1.0920514712129488
+    }
+  ],
+  "notes": [
+    "Positive percentages mean Graph is better.",
+    "Dynamic-frequency paired/interleaved results are the adoption evidence.",
+    "A single best run is never used to override the frozen gate."
+  ]
+}
