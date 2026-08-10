@@ -49,7 +49,7 @@
 | Exp16 | TensorRT IPluginV3 与 ONNX GraphSurgeon | REJECT |
 | Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT |
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT |
-| Exp18 | CUDA Graph Decision Gate | PLANNED |
+| Exp18 | CUDA Graph Decision Gate | REJECT |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED |
 
 ## M5：项目发布
@@ -75,6 +75,7 @@ Exp02 YOLO11n baseline best.pt
 → Exp16 IPluginV3图内后处理（组件VERIFIED，全图候选REJECT）
 → Exp16 Deployment Semantic Revalidation Gate（语义PASS、性能REJECT，主线不采用）
 → Exp17 Explicit Q/DQ与Mixed Precision（工程/精度VERIFIED、性能REJECT，保留FP16）
+→ Exp18 CUDA Graph（正确性/Profiling VERIFIED、端到端性能REJECT，主线不采用）
 ```
 
 Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
@@ -111,6 +112,11 @@ tiny+small recall从旧implicit的0.489510恢复到0.755245，但paired GPU-only
 进入repeat build或部署Gate。Exp18仅在保持不变的FP16+Exp15 CUB真实最终主线上重新Nsight证明
 enqueue/kernel-launch overhead明显时实现，只捕获device-side preprocess→enqueueV3→GPU
 decode/filter→CUB，H2D和count/payload D2H保持Graph外；否则记`SKIPPED_BY_EVIDENCE`。
+
+Exp18已完成。Decision Gate测得launch API median 1.577 ms、Graph候选GPU gap median 0.820 ms，允许实现
+固定边界Graph；150帧候选轨迹和最终检测与Normal逐字节一致。节点级Nsight确认launch由67次/帧降至1次/帧，
+但三组动态调频paired/interleaved的wall FPS/E2E mean/P95均仅1/3方向有利，聚合中位变化为
+−0.780%/−1.081%/−1.092%，故端到端采用`REJECT`。当前主线仍为FP16+Exp15 CUB。
 
 Exp19只比较baseline与已`ACCEPTED`路线。文件视频用于最大吞吐；30 FPS相机重点报告capture wait、
 post-capture processing、frame total与P95/P99，同时记录CPU/GPU、功耗、温度、RSS和energy/frame。动态调频

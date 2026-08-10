@@ -851,3 +851,16 @@ Exp14 isolation audit和未通过Decision Gate的Exp18可裁剪；已完成的Po
 > device-side preprocess→enqueueV3→GPU decode/filter→CUB，H2D与D2H保持Graph外；否则
 > `SKIPPED_BY_EVIDENCE`。Exp19只比较baseline和ACCEPTED路线，Exp20统一收尾后停止开发。全程使用
 > `IMPLEMENTED / VERIFIED / ACCEPTED / REJECTED`，未验证能力不得进入简历，旧失败和旧门槛不得改写。
+
+## 21. Exp18 真实结果校准（2026-08-10）
+
+Exp18已经完成，不再处于Priority 5待执行状态。最终主线上的Decision Gate证明launch/API与GPU gap足以支持
+一次受控实现；首版严格保持H2D、count/payload D2H和CPU NMS在Graph外，只捕获固定地址的CUDA preprocess、
+`enqueueV3()`、GPU decode/filter与CUB compaction。全150帧pre-NMS候选及最终检测与Normal逐字节一致，
+节点级Nsight显示launch由67次/帧降到1次/帧，launch API median下降46.7%，GPU gap median下降93.4%。
+
+然而三组动态调频paired/interleaved正式实验的wall FPS、E2E mean和P95都只有1/3方向有利，聚合中位变化
+分别为−0.780%、−1.081%和−1.092%，没有达到≥3%且≥2/3同向的采用条件。因此能力矩阵中CUDA Graph应写为
+`IMPLEMENTED + VERIFIED + REJECTED`，不得写为`ACCEPTED`或简历部署成果；Exp19的V_Final继续使用Exp07 FP16
+Engine + Exp15 CUB stable compaction。该结果新增一条项目故事：减少Host launch和GPU bubble是真实局部收益，
+但局部时间线收益仍须接受动态端到端Gate，不能机械外推为Runtime加速。

@@ -24,6 +24,7 @@
 #include <map>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <sstream>
 #include <set>
 #include <stdexcept>
@@ -119,7 +120,15 @@ std::set<int> parse_frame_set(
 }
 
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
-enum class PostprocessMode { kBaseline, kRawPinned, kAtomic, kCub, kFixed, kPlugin };
+enum class PostprocessMode {
+    kBaseline,
+    kRawPinned,
+    kAtomic,
+    kCub,
+    kFixed,
+    kPlugin,
+    kGraph,
+};
 
 PostprocessMode parse_postprocess_mode(
     const std::map<std::string, std::string>& args) {
@@ -143,8 +152,11 @@ PostprocessMode parse_postprocess_mode(
     if (value == "plugin") {
         return PostprocessMode::kPlugin;
     }
+    if (value == "graph") {
+        return PostprocessMode::kGraph;
+    }
     throw std::runtime_error(
-        "--postprocess must be baseline, raw_pinned, atomic, cub, fixed, or plugin");
+        "--postprocess must be baseline, raw_pinned, atomic, cub, fixed, plugin, or graph");
 }
 
 const char* postprocess_mode_name(PostprocessMode mode) {
@@ -161,6 +173,8 @@ const char* postprocess_mode_name(PostprocessMode mode) {
             return "fixed";
         case PostprocessMode::kPlugin:
             return "plugin";
+        case PostprocessMode::kGraph:
+            return "graph";
     }
     throw std::runtime_error("invalid postprocess mode");
 }
@@ -460,6 +474,18 @@ private:
     cudaEvent_t event_{nullptr};
 };
 
+class CudaStream {
+public:
+    CudaStream() { check_cuda(cudaStreamCreate(&stream_), "cudaStreamCreate Exp18"); }
+    ~CudaStream() { cudaStreamDestroy(stream_); }
+    CudaStream(const CudaStream&) = delete;
+    CudaStream& operator=(const CudaStream&) = delete;
+    cudaStream_t get() const { return stream_; }
+
+private:
+    cudaStream_t stream_{nullptr};
+};
+
 double event_elapsed_ms(const CudaEvent& begin, const CudaEvent& end) {
     float milliseconds = 0.0F;
     check_cuda(
@@ -708,6 +734,250 @@ private:
     CudaEvent candidate_copy_end_;
 };
 
+struct CudaGraphFrameResult {
+    GpuFrameResult compacted;
+    double preprocess_host_ms{};
+    double preprocess_cuda_ms{};
+};
+
+class CudaGraphPostprocessPath {
+public:
+    CudaGraphPostprocessPath(
+        ppe::TrtRuntime& runtime,
+        const ppe::LetterboxGeometry& geometry)
+        : runtime_(runtime),
+          geometry_(geometry),
+          input_bytes_(
+              static_cast<std::size_t>(geometry.source_width) *
+              static_cast<std::size_t>(geometry.source_height) * 3U),
+          device_bgr_(input_bytes_),
+          device_model_input_(runtime.input_info().bytes),
+          raw_output_(runtime.output_info().bytes),
+          host_count_(sizeof(int)),
+          host_candidates_(
+              static_cast<std::size_t>(ppe::kYoloCandidateCount) *
+              sizeof(ppe::GpuCandidate)) {
+        const std::size_t expected_input_bytes =
+            static_cast<std::size_t>(geometry.target_size) *
+            static_cast<std::size_t>(geometry.target_size) * 3U * sizeof(float);
+        if (runtime.input_info().bytes != expected_input_bytes ||
+            runtime.output_info().elements !=
+                static_cast<std::size_t>(ppe::kYoloOutputChannels) *
+                    ppe::kYoloCandidateCount) {
+            throw std::runtime_error("unexpected tensor ABI for Exp18 CUDA Graph");
+        }
+    }
+
+    ~CudaGraphPostprocessPath() {
+        cudaStreamSynchronize(stream_.get());
+        if (graph_exec_ != nullptr) {
+            cudaGraphExecDestroy(graph_exec_);
+        }
+        if (graph_ != nullptr) {
+            cudaGraphDestroy(graph_);
+        }
+    }
+
+    CudaGraphPostprocessPath(const CudaGraphPostprocessPath&) = delete;
+    CudaGraphPostprocessPath& operator=(const CudaGraphPostprocessPath&) = delete;
+
+    void warmup(const std::uint8_t* host_bgr, float confidence_threshold) {
+        if (captured_) {
+            throw std::runtime_error("Exp18 warmup cannot run after Graph capture");
+        }
+        enqueue_h2d(host_bgr);
+        ppe::launch_cuda_preprocess_async(
+            static_cast<const std::uint8_t*>(device_bgr_.data()),
+            static_cast<float*>(device_model_input_.data()), geometry_, stream_.get());
+        runtime_.enqueue_device_async(
+            static_cast<const float*>(device_model_input_.data()),
+            static_cast<float*>(raw_output_.data()), stream_.get());
+        postprocessor_.launch(
+            static_cast<const float*>(raw_output_.data()), geometry_,
+            confidence_threshold, ppe::GpuCompactionMode::kCubStable,
+            stream_.get());
+        check_cuda(
+            cudaMemcpyAsync(
+                host_count_.data(), postprocessor_.device_count(), sizeof(int),
+                cudaMemcpyDeviceToHost, stream_.get()),
+            "copy Exp18 warmup candidate count");
+        check_cuda(cudaStreamSynchronize(stream_.get()), "synchronize Exp18 warmup");
+        validate_count();
+        ++warmup_count_;
+    }
+
+    void capture(float confidence_threshold) {
+        if (captured_ || warmup_count_ <= 0) {
+            throw std::runtime_error("Exp18 Graph capture requires completed warmup");
+        }
+        check_cuda(
+            cudaStreamBeginCapture(stream_.get(), cudaStreamCaptureModeThreadLocal),
+            "begin Exp18 CUDA Graph capture");
+        ppe::launch_cuda_preprocess_async(
+            static_cast<const std::uint8_t*>(device_bgr_.data()),
+            static_cast<float*>(device_model_input_.data()), geometry_, stream_.get());
+        runtime_.enqueue_device_async(
+            static_cast<const float*>(device_model_input_.data()),
+            static_cast<float*>(raw_output_.data()), stream_.get());
+        postprocessor_.launch(
+            static_cast<const float*>(raw_output_.data()), geometry_,
+            confidence_threshold, ppe::GpuCompactionMode::kCubStable,
+            stream_.get());
+        check_cuda(
+            cudaStreamEndCapture(stream_.get(), &graph_),
+            "end Exp18 CUDA Graph capture");
+        if (graph_ == nullptr) {
+            throw std::runtime_error("Exp18 CUDA Graph capture returned null graph");
+        }
+        check_cuda(
+            cudaGraphInstantiate(&graph_exec_, graph_, 0),
+            "instantiate Exp18 CUDA Graph");
+        captured_confidence_ = confidence_threshold;
+        captured_ = true;
+    }
+
+    CudaGraphFrameResult process(
+        const std::uint8_t* host_bgr,
+        float confidence_threshold) {
+        if (!captured_ || graph_exec_ == nullptr) {
+            throw std::runtime_error("Exp18 CUDA Graph must be captured before replay");
+        }
+        if (confidence_threshold != captured_confidence_) {
+            throw std::runtime_error("Exp18 CUDA Graph confidence changed after capture");
+        }
+        const auto preprocess_host_start = std::chrono::steady_clock::now();
+        enqueue_h2d(host_bgr);
+        const double preprocess_host_ms =
+            std::chrono::duration<double, std::milli>(
+                std::chrono::steady_clock::now() - preprocess_host_start).count();
+
+        const auto graph_host_start = std::chrono::steady_clock::now();
+        {
+            PPE_NVTX_RANGE("cuda_graph_launch");
+            check_cuda(
+                cudaGraphLaunch(graph_exec_, stream_.get()),
+                "launch Exp18 CUDA Graph");
+        }
+
+        check_cuda(
+            cudaEventRecord(count_copy_start_.get(), stream_.get()),
+            "record Exp18 count copy start");
+        {
+            PPE_NVTX_RANGE("candidate_count_d2h");
+            check_cuda(
+                cudaMemcpyAsync(
+                    host_count_.data(), postprocessor_.device_count(), sizeof(int),
+                    cudaMemcpyDeviceToHost, stream_.get()),
+                "copy Exp18 candidate count");
+        }
+        check_cuda(
+            cudaEventRecord(count_copy_end_.get(), stream_.get()),
+            "record Exp18 count copy end");
+        const auto count_sync_start = std::chrono::steady_clock::now();
+        {
+            PPE_NVTX_RANGE("candidate_count_sync");
+            check_cuda(
+                cudaEventSynchronize(count_copy_end_.get()),
+                "synchronize Exp18 candidate count");
+        }
+        const double count_sync_host_ms =
+            std::chrono::duration<double, std::milli>(
+                std::chrono::steady_clock::now() - count_sync_start).count();
+        const int count = validate_count();
+
+        const std::size_t candidate_bytes =
+            static_cast<std::size_t>(count) * sizeof(ppe::GpuCandidate);
+        check_cuda(
+            cudaEventRecord(candidate_copy_start_.get(), stream_.get()),
+            "record Exp18 payload copy start");
+        if (candidate_bytes > 0) {
+            PPE_NVTX_RANGE("candidate_payload_d2h");
+            check_cuda(
+                cudaMemcpyAsync(
+                    host_candidates_.data(), postprocessor_.device_candidates(),
+                    candidate_bytes, cudaMemcpyDeviceToHost, stream_.get()),
+                "copy Exp18 candidates");
+        }
+        check_cuda(
+            cudaEventRecord(candidate_copy_end_.get(), stream_.get()),
+            "record Exp18 payload copy end");
+        const auto candidate_sync_start = std::chrono::steady_clock::now();
+        {
+            PPE_NVTX_RANGE("candidate_payload_sync");
+            check_cuda(
+                cudaEventSynchronize(candidate_copy_end_.get()),
+                "synchronize Exp18 candidates");
+        }
+        const double candidate_sync_host_ms =
+            std::chrono::duration<double, std::milli>(
+                std::chrono::steady_clock::now() - candidate_sync_start).count();
+        check_cuda(cudaGetLastError(), "Exp18 CUDA Graph replay status");
+
+        const auto* begin =
+            static_cast<const ppe::GpuCandidate*>(host_candidates_.data());
+        GpuFrameResult compacted;
+        compacted.candidates.assign(begin, begin + count);
+        compacted.candidate_count = count;
+        compacted.d2h_bytes = sizeof(int) + candidate_bytes;
+        compacted.host_total_ms = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - graph_host_start).count();
+        // Per-stage CUDA Events inside this captured TensorRT graph are not
+        // readable on the deployed CUDA 12.6 stack.  Nsight provides the
+        // stage-level GPU evidence; zero here means unavailable, not free.
+        compacted.inference_cuda_ms = 0.0;
+        compacted.gpu_postprocess_cuda_ms = 0.0;
+        compacted.count_copy_cuda_ms =
+            event_elapsed_ms(count_copy_start_, count_copy_end_);
+        compacted.count_sync_host_ms = count_sync_host_ms;
+        compacted.candidate_copy_cuda_ms =
+            event_elapsed_ms(candidate_copy_start_, candidate_copy_end_);
+        compacted.candidate_sync_host_ms = candidate_sync_host_ms;
+        return {
+            std::move(compacted), preprocess_host_ms, 0.0};
+    }
+
+private:
+    void enqueue_h2d(const std::uint8_t* host_bgr) {
+        if (host_bgr == nullptr) {
+            throw std::runtime_error("null Exp18 BGR frame");
+        }
+        PPE_NVTX_RANGE("h2d");
+        check_cuda(
+            cudaMemcpyAsync(
+                device_bgr_.data(), host_bgr, input_bytes_,
+                cudaMemcpyHostToDevice, stream_.get()),
+            "copy Exp18 BGR input");
+    }
+
+    int validate_count() const {
+        const int count = *static_cast<const int*>(host_count_.data());
+        if (count < 0 || count > postprocessor_.capacity()) {
+            throw std::runtime_error("Exp18 candidate count overflow");
+        }
+        return count;
+    }
+
+    ppe::TrtRuntime& runtime_;
+    ppe::LetterboxGeometry geometry_;
+    std::size_t input_bytes_{};
+    CudaStream stream_;
+    DeviceBuffer device_bgr_;
+    DeviceBuffer device_model_input_;
+    DeviceBuffer raw_output_;
+    ppe::GpuPostprocessor postprocessor_;
+    PinnedBuffer host_count_;
+    PinnedBuffer host_candidates_;
+    CudaEvent count_copy_start_;
+    CudaEvent count_copy_end_;
+    CudaEvent candidate_copy_start_;
+    CudaEvent candidate_copy_end_;
+    cudaGraph_t graph_{nullptr};
+    cudaGraphExec_t graph_exec_{nullptr};
+    int warmup_count_{};
+    float captured_confidence_{std::numeric_limits<float>::quiet_NaN()};
+    bool captured_{};
+};
+
 std::vector<Detection> nms_gpu_candidates(
     const std::vector<ppe::GpuCandidate>& candidates,
     float nms_threshold,
@@ -890,6 +1160,20 @@ void write_nms_forensic_rows(
                << '\n';
     }
 }
+
+void write_candidate_trace_rows(
+    std::ofstream& output,
+    int frame_index,
+    const std::vector<ppe::GpuCandidate>& candidates) {
+    for (std::size_t rank = 0; rank < candidates.size(); ++rank) {
+        const auto& candidate = candidates[rank];
+        output << frame_index << ',' << rank << ','
+               << candidate.candidate_index << ',' << candidate.class_id << ','
+               << candidate.confidence << ',' << candidate.x1 << ','
+               << candidate.y1 << ',' << candidate.x2 << ',' << candidate.y2
+               << '\n';
+    }
+}
 #endif
 
 }  // namespace
@@ -918,6 +1202,10 @@ int main(int argc, char** argv) {
             postprocess_mode != PostprocessMode::kPlugin) {
             throw std::runtime_error(
                 "--trace-frames supports baseline, raw_pinned, or plugin only");
+        }
+        if (postprocess_mode == PostprocessMode::kGraph && source_type == "images") {
+            throw std::runtime_error(
+                "Exp18 CUDA Graph requires a fixed-shape file or camera source");
         }
 #endif
         if (!trace_frames.empty() && max_frames > 0 &&
@@ -1010,14 +1298,24 @@ int main(int argc, char** argv) {
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
         std::unique_ptr<RawPinnedPostprocessPath> raw_pinned_path;
         std::unique_ptr<GpuPostprocessPath> gpu_postprocess_path;
+        std::unique_ptr<CudaGraphPostprocessPath> cuda_graph_path;
         if (postprocess_mode == PostprocessMode::kRawPinned) {
             raw_pinned_path = std::make_unique<RawPinnedPostprocessPath>(*runtime);
+        } else if (postprocess_mode == PostprocessMode::kGraph) {
+            cuda_graph_path = std::make_unique<CudaGraphPostprocessPath>(
+                *runtime, geometry);
         } else if (postprocess_mode != PostprocessMode::kBaseline &&
                    postprocess_mode != PostprocessMode::kPlugin) {
             gpu_postprocess_path = std::make_unique<GpuPostprocessPath>(*runtime);
         }
 #endif
         for (int index = 0; index < warmup; ++index) {
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            if (postprocess_mode == PostprocessMode::kGraph) {
+                cuda_graph_path->warmup(frame.ptr<std::uint8_t>(), confidence);
+                continue;
+            }
+#endif
             const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
             if (postprocess_mode == PostprocessMode::kPlugin) {
@@ -1050,6 +1348,11 @@ int main(int argc, char** argv) {
             }
 #endif
         }
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+        if (postprocess_mode == PostprocessMode::kGraph) {
+            cuda_graph_path->capture(confidence);
+        }
+#endif
 
         std::ofstream detections_csv(output_dir / "detections.csv");
         std::ofstream frames_csv(output_dir / "frames.csv");
@@ -1085,6 +1388,7 @@ int main(int argc, char** argv) {
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
         std::ofstream forensic_raw_csv;
         std::ofstream forensic_nms_csv;
+        std::ofstream candidate_trace_csv;
         if (!trace_frames.empty()) {
             forensic_raw_csv.open(output_dir / "forensic_raw.csv");
             forensic_nms_csv.open(output_dir / "forensic_nms.csv");
@@ -1101,6 +1405,21 @@ int main(int argc, char** argv) {
                    "suppressed_by_candidate_index,suppression_iou\n";
             forensic_raw_csv << std::fixed << std::setprecision(9);
             forensic_nms_csv << std::fixed << std::setprecision(9);
+        }
+        if (args.count("--candidate-trace")) {
+            if (postprocess_mode != PostprocessMode::kCub &&
+                postprocess_mode != PostprocessMode::kGraph) {
+                throw std::runtime_error(
+                    "--candidate-trace supports cub or graph only");
+            }
+            candidate_trace_csv.open(output_dir / "candidates.csv");
+            if (!candidate_trace_csv) {
+                throw std::runtime_error("cannot open candidate trace CSV");
+            }
+            candidate_trace_csv
+                << "frame_index,rank,candidate_index,class_id,confidence,"
+                   "x1,y1,x2,y2\n";
+            candidate_trace_csv << std::fixed << std::setprecision(9);
         }
 #endif
         const std::vector<std::string> class_names = {
@@ -1146,7 +1465,20 @@ int main(int argc, char** argv) {
                 }
 #endif
             }
-            const auto prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+            ppe::DevicePreprocessResult prepared{};
+#ifdef PPE_ENABLE_GPU_POSTPROCESS
+            std::optional<CudaGraphFrameResult> graph_frame;
+            if (postprocess_mode == PostprocessMode::kGraph) {
+                graph_frame = cuda_graph_path->process(
+                    frame.ptr<std::uint8_t>(), confidence);
+                prepared.host_total_ms = graph_frame->preprocess_host_ms;
+                prepared.cuda_total_ms = graph_frame->preprocess_cuda_ms;
+            } else {
+                prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+            }
+#else
+            prepared = preprocessor.process(frame.ptr<std::uint8_t>());
+#endif
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
             double inference_host_ms = 0.0;
             double inference_cuda_ms = 0.0;
@@ -1295,10 +1627,34 @@ int main(int argc, char** argv) {
                 candidate_copy_cuda_ms = inferred.raw_copy_cuda_ms;
                 candidate_sync_host_ms = inferred.raw_sync_host_ms;
                 d2h_bytes = runtime->output_info().bytes;
+            } else if (postprocess_mode == PostprocessMode::kGraph) {
+                const auto& compacted = graph_frame->compacted;
+                if (candidate_trace_csv) {
+                    write_candidate_trace_rows(
+                        candidate_trace_csv, frame_index, compacted.candidates);
+                }
+                const auto nms_start = std::chrono::steady_clock::now();
+                detections = nms_gpu_candidates(
+                    compacted.candidates, nms_iou, false, &candidate_count,
+                    &cpu_candidate_scan_ms, &cpu_nms_ms);
+                post_ms = std::chrono::duration<double, std::milli>(
+                    std::chrono::steady_clock::now() - nms_start).count();
+                inference_host_ms = compacted.host_total_ms;
+                inference_cuda_ms = compacted.inference_cuda_ms;
+                gpu_postprocess_cuda_ms = compacted.gpu_postprocess_cuda_ms;
+                count_copy_cuda_ms = compacted.count_copy_cuda_ms;
+                count_sync_host_ms = compacted.count_sync_host_ms;
+                candidate_copy_cuda_ms = compacted.candidate_copy_cuda_ms;
+                candidate_sync_host_ms = compacted.candidate_sync_host_ms;
+                d2h_bytes = compacted.d2h_bytes;
             } else {
                 const auto compacted = gpu_postprocess_path->process(
                     prepared.device_output, preprocessor.stream(), geometry,
                     confidence, postprocess_mode);
+                if (candidate_trace_csv) {
+                    write_candidate_trace_rows(
+                        candidate_trace_csv, frame_index, compacted.candidates);
+                }
                 const auto nms_start = std::chrono::steady_clock::now();
                 detections = nms_gpu_candidates(
                     compacted.candidates, nms_iou,
@@ -1486,6 +1842,14 @@ int main(int argc, char** argv) {
 #ifdef PPE_ENABLE_GPU_POSTPROCESS
                 << "  \"postprocess_mode\": \""
                 << postprocess_mode_name(postprocess_mode) << "\",\n"
+                << "  \"graph_stage_cuda_timings_available\": "
+                << (postprocess_mode == PostprocessMode::kGraph ? "false" : "true")
+                << ",\n"
+                << "  \"graph_preprocess_host_scope\": \""
+                << (postprocess_mode == PostprocessMode::kGraph
+                        ? "H2D submission only; stage CUDA timings use Nsight"
+                        : "H2D+kernel+sync")
+                << "\",\n"
                 << "  \"gpu_candidate_bytes\": "
                 << sizeof(ppe::GpuCandidate) << ",\n"
                 << "  \"raw_output_d2h_bytes_per_frame\": "

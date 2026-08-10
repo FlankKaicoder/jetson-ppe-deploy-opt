@@ -1,0 +1,110 @@
+{
+  "result": "PASS",
+  "decision": "IMPLEMENT_GRAPH",
+  "expected_frames": 150,
+  "app_e2e_mean_ms": 14.686534587,
+  "app_capture_mean_ms": 2.42403218,
+  "post_capture_processing_mean_ms": 12.262502407,
+  "launch_api_share_of_post_capture_percent": 12.861844570156178,
+  "predicted_e2e_upper_bound_percent": 5.583672548089577,
+  "gates": {
+    "host_launch_ms": true,
+    "host_launch_share": true,
+    "gpu_gap": true,
+    "predicted_e2e_upper_bound": true
+  },
+  "metrics": {
+    "frame_total_ms": {
+      "instances": 150,
+      "mean_ms": 15.980581973333335,
+      "p50_ms": 16.00728,
+      "p95_ms": 16.668102400000002,
+      "p99_ms": 18.18397088,
+      "min_ms": 12.4048,
+      "max_ms": 20.086208
+    },
+    "enqueue_host_range_ms": {
+      "instances": 150,
+      "mean_ms": 8.10442154666667,
+      "p50_ms": 8.078944,
+      "p95_ms": 8.377891199999999,
+      "p99_ms": 8.799125759999999,
+      "min_ms": 7.691616,
+      "max_ms": 8.949536
+    },
+    "launch_api_sum_ms": {
+      "instances": 150,
+      "mean_ms": 1.5780800000000006,
+      "p50_ms": 1.577184,
+      "p95_ms": 1.6384767999999998,
+      "p99_ms": 1.6652288,
+      "min_ms": 1.479776,
+      "max_ms": 1.694912
+    },
+    "graph_device_span_ms": {
+      "instances": 150,
+      "mean_ms": 10.426867413333333,
+      "p50_ms": 9.44392,
+      "p95_ms": 12.3175728,
+      "p99_ms": 12.33287776,
+      "min_ms": 9.40816,
+      "max_ms": 12.366464
+    },
+    "graph_device_busy_ms": {
+      "instances": 150,
+      "mean_ms": 9.568017279999998,
+      "p50_ms": 8.625456,
+      "p95_ms": 11.366969600000001,
+      "p99_ms": 11.3747152,
+      "min_ms": 8.606048,
+      "max_ms": 11.37744
+    },
+    "graph_device_gap_ms": {
+      "instances": 150,
+      "mean_ms": 0.8588501333333333,
+      "p50_ms": 0.820048,
+      "p95_ms": 0.9681375999999999,
+      "p99_ms": 1.0138771199999996,
+      "min_ms": 0.789696,
+      "max_ms": 1.163488
+    },
+    "graph_device_gap_percent": {
+      "instances": 150,
+      "mean_ms": 8.299548823857402,
+      "p50_ms": 8.520989385295326,
+      "p95_ms": 8.845499237643207,
+      "p99_ms": 9.841148303152842,
+      "min_ms": 7.259978876258797,
+      "max_ms": 11.901356124162447
+    },
+    "count_sync_host_ms": {
+      "instances": 150,
+      "mean_ms": 1.8207805866666664,
+      "p50_ms": 0.970944,
+      "p95_ms": 3.7214864,
+      "p99_ms": 3.79322464,
+      "min_ms": 0.416672,
+      "max_ms": 4.065888
+    },
+    "payload_sync_host_ms": {
+      "instances": 150,
+      "mean_ms": 0.009081173333333333,
+      "p50_ms": 0.00928,
+      "p95_ms": 0.011168,
+      "p99_ms": 0.012404799999999997,
+      "min_ms": 0.005376,
+      "max_ms": 0.012864
+    }
+  },
+  "boundaries": {
+    "host_api_duration": "CUDA launch API self time inside the permitted submission boundary",
+    "gpu_activity": "union of kernels/memcpy from fused preprocess start through final CUB kernel end",
+    "critical_path_upper_bound": "median GPU gap divided by profiled app E2E mean; diagnostic upper bound only"
+  },
+  "notes": [
+    "enqueue_host_range_ms is reported separately and is never treated as GPU activity.",
+    "Nsight instrumentation inflates host API duration; adoption still requires paired no-profiler verification.",
+    "The graph_device_gap estimate includes the existing preprocess synchronization boundary.",
+    "H2D, count/payload D2H, CPU candidate scan, and CPU NMS remain outside the proposed Graph."
+  ]
+}
