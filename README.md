@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-09，Exp00～Exp16 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-10，Exp00～Exp17 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -51,7 +51,15 @@ Exp15 B。该结果不是“Plugin组件失败”：普通无Plugin control rebu
 不新增实验编号的`Exp16 Deployment Semantic Revalidation Gate`已经完成：candidate forensic确认旧138 px
 报告差来自CSV行号错配，219张test与两个普通baseline rebuild证明Plugin检测语义处于正常build variance
 内；但三轮动态调频paired/interleaved性能没有稳定收益，因此组件和语义保持`VERIFIED`，性能与主线
-`REJECTED`。当前不重写Plugin、不继续调CUDA Kernel，下一实验为Exp17。
+`REJECTED`。当前不重写Plugin、不继续调CUDA Kernel。
+
+Exp17 已确认 Exp08 是 implicit calibrator/cache 路径，并在 Jetson 建立了256图Entropy、对称QInt8、
+per-channel weight、FP32 bias/I/O的 Explicit Q/DQ baseline。正式QDQ图含95Q/183DQ，219图
+mAP50-95为0.528020、tiny+small recall为0.755245，精度门槛通过；但三轮paired GPU-only均慢于FP16，
+中位劣化12.82%，仅Engine缩小47.67%，故性能`REJECTED`。旧implicit INT8在P3发生1138次向下阈值穿越，
+Explicit QDQ降至93次，解释了小目标召回恢复。三个完整219图Mixed候选虽均通过精度门槛，但GPU compute
+比FP16慢9.49%～40.57%，最终`NO_MIXED_CANDIDATE_ACCEPTED`。量化工程能力为
+`IMPLEMENTED + VERIFIED + REJECTED`，FP16主线不变。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
@@ -129,9 +137,9 @@ Exp11 已完成文件视频与 IMX219 端到端 C++ 推理。文件视频三个�
 → 最终综合 Benchmark 与项目收尾
 ```
 
-Exp16 Deployment Semantic Revalidation Gate已完成：Plugin模型级语义通过普通build variance envelope，
-但三轮动态调频性能未满足采用门槛，Exp15 CUB继续作为Runtime主线。后续冻结顺序为：进行Exp17
-Explicit Q/DQ/量化机制与粗粒度敏感性；Exp18仅在最终真实主线被Nsight证明enqueue-bound时实现
+Exp16 Deployment Semantic Revalidation Gate与Exp17均已完成：Plugin语义通过但性能未满足采用门槛；
+Explicit Q/DQ恢复精度但Full/Mixed GPU性能均被证据拒绝。Exp15 CUB继续作为Runtime主线，FP16 Engine
+不变。后续冻结顺序为：Exp18仅在最终真实主线被Nsight证明enqueue-bound时实现
 device-side CUDA Graph，否则`SKIPPED_BY_EVIDENCE`；Exp19只比较baseline与`ACCEPTED`最终路线；Exp20
 完成发布材料后停止开发。Exp14 isolation audit仅为optional/post-resume。
 
