@@ -2,9 +2,9 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp19 复盘、设备重连
-SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
-真实结果与学习复盘，不覆盖原计划。
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp20 复盘和设备重连
+SOP。Exp20后项目停止开发；若用户明确批准新的维护或实验任务，仍须先追加计划，再追加
+真实结果与学习复盘，不覆盖历史计划。
 
 | 实验 | 名称 | 状态 | 文档 |
 |---|---|---|---|
@@ -29,7 +29,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT | `17_ExplicitQDQ_INT8机制审计与MixedPrecision总结.md` |
 | Exp18 | CUDA Graph Decision Gate | REJECT | `18_CUDA_Graph_Decision_Gate总结.md` |
 | Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PASS | `19_最终综合Benchmark总结.md` |
-| Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
+| Exp20 | 项目发布、架构、结果表、简历与面试材料 | PASS | `20_项目发布与求职材料总结.md` |
 
 Postprocess Gain Attribution Gate 已于2026-08-09完成，不新增 `Exp15.1` 编号。最终公平对照保持P0/P1
 同为pinned且同为235,200 B D2H：GPU decode与CUB compaction对P95分别呈现约3.05%和1.11%的三轮
@@ -90,18 +90,24 @@ median下降93.4%。但动态调频三组paired/interleaved中wall FPS、E2E mea
 至少3%且2/3同向的采用门槛。Exp18状态为`REJECT`，能力为`IMPLEMENTED + VERIFIED + REJECTED`，Graph不进入
 主线或简历成果。
 
-## 后续冻结路线
+## 最终冻结路线
 
 - Exp18已完成：Graph正确性与节点级Profiling通过，但三组动态调频端到端采用Gate失败，状态`REJECT`，
   能力为`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 CUB继续主线；
 - Exp19只比较baseline与`ACCEPTED`路线，动态调频为部署主轨，最终54,000帧只对`V_Final`重跑；
-- Exp20完成README、架构图、结果表、简历和面试材料后停止开发，不扩张新技术方向。
+- Exp20已完成README、架构图、结果表、简历和面试材料，项目开发停止，不扩张新技术方向。
 
 ## Exp19 最终裁决
 
 V0与V_Final冻结语义一致。文件wall FPS/post-capture mean中位改善3.638%/3.352%；相机post-capture mean中位
 改善1.768%，P95/P99变化+0.044%/−1.075%。V_Final动态54,000帧以30.003 wall FPS、33.984/34.833 ms
-P95/P99和57.031°C最高温度通过全部门槛。Exp19状态`PASS`，Exp15继续`ACCEPTED`，下一步Exp20收尾。
+P95/P99和57.031°C最高温度通过全部门槛。Exp19状态`PASS`，Exp15继续`ACCEPTED`。
+
+## Exp20 最终裁决
+
+Exp20在Windows完成发布文档收口，不产生新的训练或板端指标。README、三端与V_Final架构、最终结果表、
+能力—证据矩阵、项目讲解、中英文简历材料、STAR案例和面试题库均已形成，并与ROADMAP、AGENTS、canonical
+V3、实验注册表和学习手册交叉核对。Exp20状态`PASS`，Exp00～Exp20路线冻结，项目开发停止。
 
 ## 当前模型决策
 

@@ -56,7 +56,7 @@
 
 | 实验 | 内容 | 状态 |
 |---|---|---|
-| Exp20 | README、学习路线、简历与面试材料 | PLANNED |
+| Exp20 | README、架构图、结果表、学习路线、简历与面试材料 | PASS |
 
 ## 当前部署主线
 
@@ -76,6 +76,8 @@ Exp02 YOLO11n baseline best.pt
 → Exp16 Deployment Semantic Revalidation Gate（语义PASS、性能REJECT，主线不采用）
 → Exp17 Explicit Q/DQ与Mixed Precision（工程/精度VERIFIED、性能REJECT，保留FP16）
 → Exp18 CUDA Graph（正确性/Profiling VERIFIED、端到端性能REJECT，主线不采用）
+→ Exp19 动态调频最终Benchmark与V_Final 54,000帧稳定性（PASS）
+→ Exp20 发布文档与求职材料（PASS，停止开发）
 ```
 
 Exp13 已证明文件链路主要受阶段同步限制，相机链路主要受 30 FPS 输入节拍限制且仍存在
@@ -120,11 +122,15 @@ Exp18已完成。Decision Gate测得launch API median 1.577 ms、Graph候选GPU 
 
 Exp19只比较baseline与已`ACCEPTED`路线。文件视频用于最大吞吐；30 FPS相机重点报告capture wait、
 post-capture processing、frame total与P95/P99，同时记录CPU/GPU、功耗、温度、RSS和energy/frame。动态调频
-为最终部署主轨，固定时钟只作诊断；54,000帧稳定性只对最终`V_Final`重跑。Exp20完成后停止扩展。
+为最终部署主轨，固定时钟只作诊断；54,000帧稳定性只对最终`V_Final`重跑。Exp20已完成，项目停止扩展。
 
 Exp19已完成：文件wall FPS/post-capture mean中位改善3.638%/3.352%，相机post-capture mean中位改善1.768%；
 V_Final动态54,000帧长稳态全部强制门槛PASS。固定时钟诊断因sudo交互权限记`BLOCKED_PERMISSION`，未改变
 动态主结果或设备governor。
+
+Exp20已完成README、Mermaid架构图、最终结果与能力证据矩阵、项目讲解、简历材料和面试题库。Exp00～Exp20
+路线至此冻结；后续只接受事实修正、依赖安全维护或用户明确批准的新任务，不自动恢复被拒绝候选，也不新增
+YOLO结构、GPU NMS、NVMM、DeepStream、剪枝、蒸馏、TVM/MLIR/Triton等方向。
 
 全仓统一使用`IMPLEMENTED / VERIFIED / ACCEPTED / REJECTED`能力证据模型；实验表中的`PASS/REJECT`仍保留
 历史裁决。未完成或未验证能力不得写入简历，旧负向结果、门槛和失败现场不得改写或删除。

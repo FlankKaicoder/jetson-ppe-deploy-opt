@@ -1,197 +1,144 @@
-# Jetson PPE Deploy Optimization
+# Jetson PPE 小目标检测与 TensorRT/CUDA 推理优化
 
-基于 Jetson Orin Nano Super 的 PPE 小目标检测、TensorRT 量化部署与
-CUDA 推理优化项目。
+这是一个面向 Jetson Orin Nano Super 的端到端部署优化项目：从 PPE 数据集审计、YOLO11n 训练与结构消融出发，完成 ONNX、TensorRT、C++/CUDA Runtime、IMX219 摄像头和 30 分钟稳定性验证，并用可复现证据决定每项优化是否进入最终主线。
 
-## 当前状态
+> 项目状态：Exp00～Exp20 已完成，最终部署版本已冻结。后续仅做事实修正和必要维护，不继续扩展模型或部署技术栈。
 
-截至 2026-08-10，Exp00～Exp19 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
-Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
-继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
-验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
-测试集一致性验证和 GPU-only 诊断 benchmark。Exp08 完成 train-only 校准、目标 Jetson
-INT8 Engine 构建、219 张 test 精度/尺度审计和 GPU-only benchmark；INT8 虽降低延迟
-25.44%、缩小 Engine 39.82%，但 mAP50-95 下降 0.01391、tiny+small recall 下降
-0.30070，超过预冻结门槛，因此候选 `REJECT`，运行时主线继续使用 FP16。Exp09 已完成
-TensorRT 10.3 C++ Runtime、Python/C++ 原始输出一致性和三独立进程生命周期验证；三份输出
-与 Python TensorRT 参考逐字节一致。Exp10 已完成 CUDA 融合 letterbox、padding、BGR→RGB、
-归一化和 NCHW 转换；5 种输入形状均与 Jetson OpenCV 4.10 Reference 逐元素一致。正式
-`hd_wide` 计时中 CPU/kernel-only/含 pageable 传输总耗时分别为 2.28212/0.200761/1.88307 ms，
-kernel-only 平均耗时下降 91.20%。Exp11 已完成文件视频三进程确定性和 IMX219
-300 帧端到端功能验收。Exp12 已完成25W固定时钟三进程性能与54,000帧/约30分钟稳定性
-验证：P95/P99为32.885/33.521 ms，最高温度57.968°C，VDD_IN mean 9.100 W，RSS斜率
-0.00368 MiB/min。锁频相对未锁频没有加速且平均功耗增加14.76%，默认部署保持动态调频。
-项目收尾已按用户批准顺延到 Exp20。Exp13 已用 Nsight Systems 完成同步 Runtime 的端到端
-瓶颈画像：文件三轮 pipeline wall 吞吐均值61.583 FPS；相机三轮均值30.174 FPS、CV 0.028%。
-文件模式 GPU idle 33.81%，相机模式 GPU idle 63.31%，两种场景 Kernel/Memcpy 重叠均为0；
-文件归类为 synchronization-bound，相机归类为 input-rate-bound + synchronization-bound。
-Exp14 已完成 pinned staging、CUDA Event、单缓冲异步与双缓冲三 Stream 的 A/B/C 消融。
-所有文件正式轮均保持150帧、151检测和冻结 digest；Variant C 虽在文件/相机时间线中分别观察到
-2.961/0.860 ms Kernel/Memcpy 重叠，但文件吞吐仅提升4.51%，P95退化159.28%，相机 P95退化
-173.51%，因此候选 `REJECT`。Exp15 已完成 Atomic/CUB GPU decode、filter、compaction、压缩 D2H
-与 Nsight Systems/Compute 验证；Variant B（CUB stable compaction）文件三轮 wall FPS 从
-60.270 提升至71.838（+19.19%），E2E mean/P95 分别下降16.53%/14.97%，平均 D2H 从235,200 B
-降至263.84 B（-99.89%），相机 P95仅退化1.61%。正确性 digest 保持冻结值，故 Exp15 `PASS`，
-Variant B 成为新的 FP16 C++ Runtime 后处理主线；模型、ONNX 与 Engine 主线不变。
+## 项目亮点
 
-2026-08-09 的 Postprocess Gain Attribution Gate 进一步用 pinned P0/P1 相同235,200 B D2H拆分因果：
-GPU fixed decode相对CPU raw decode的P95三轮均改善、paired平均−3.05%；CUB压缩相对fixed路径的P95
-三轮均改善、平均−1.11%，但两段的FPS/mean均受动态调频和顺序噪声影响，不能把Exp15的19.19%精确
-分摊或全部归因于D2H缩减。P2 CUB主线决策不变。
+- 建立 Windows、AutoDL、Jetson 三端串行协作和产物哈希链路，代码、小型结果与模型产物分通道管理。
+- 使用固定数据划分和独立 test 集验证模型；保留 P2、重参数化、Attention/Focal、INT8 等负向实验，不为“全 PASS”回写门槛。
+- 在 Jetson 上完成 TensorRT FP32/FP16、C++ Runtime、CUDA 融合预处理、GPU 后处理与 IMX219 实时推理。
+- 使用 Nsight Systems / Compute 区分 Host API、GPU Activity 与 Critical Path，并坚持 `Measure → Identify → Optimize → Verify → Re-profile → Accept/Reject`。
+- 对 Plugin、Explicit Q/DQ、Mixed Precision、CUDA Graph 等候选完成工程和正确性验证；性能不满足采用条件时保留为 `REJECTED`。
+- 最终版本完成 54,000 帧、约 30 分钟相机稳定性测试，并记录延迟、吞吐、功耗、温度、RSS 和 energy/frame。
 
-Exp16 已完成 TensorRT 10.3 IPluginV3、ONNX GraphSurgeon四输出图、显式workspace和独立新进程先加载
-Plugin `.so` 再反序列化Engine的工程闭环；synthetic、冻结raw fixture和dual同Engine raw→Plugin均为
-逐项零误差，组件级能力记为 `VERIFIED`。但正式150帧第一轮中Exp15 B control保持151检测，Plugin候选
-产生153检测，并存在两个刚越过0.25阈值的额外检测及最大138 source pixels框差，违反事前冻结的语义Gate。
-正式编排因此停止，未形成三轮性能结论；Exp16总体 `REJECT`，不得宣称Plugin加速，Runtime主线继续使用
-Exp15 B。该结果不是“Plugin组件失败”：普通无Plugin control rebuild相对冻结Exp07 Engine同样出现raw
-漂移，说明跨独立Engine比较混入TensorRT rebuild/tactic selection变量；但系统级部署语义未过Gate的原始
-`REJECT`仍永久保留。
+## 最终部署链路
 
-不新增实验编号的`Exp16 Deployment Semantic Revalidation Gate`已经完成：candidate forensic确认旧138 px
-报告差来自CSV行号错配，219张test与两个普通baseline rebuild证明Plugin检测语义处于正常build variance
-内；但三轮动态调频paired/interleaved性能没有稳定收益，因此组件和语义保持`VERIFIED`，性能与主线
-`REJECTED`。当前不重写Plugin、不继续调CUDA Kernel。
-
-Exp17 已确认 Exp08 是 implicit calibrator/cache 路径，并在 Jetson 建立了256图Entropy、对称QInt8、
-per-channel weight、FP32 bias/I/O的 Explicit Q/DQ baseline。正式QDQ图含95Q/183DQ，219图
-mAP50-95为0.528020、tiny+small recall为0.755245，精度门槛通过；但三轮paired GPU-only均慢于FP16，
-中位劣化12.82%，仅Engine缩小47.67%，故性能`REJECTED`。旧implicit INT8在P3发生1138次向下阈值穿越，
-Explicit QDQ降至93次，解释了小目标召回恢复。三个完整219图Mixed候选虽均通过精度门槛，但GPU compute
-比FP16慢9.49%～40.57%，最终`NO_MIXED_CANDIDATE_ACCEPTED`。量化工程能力为
-`IMPLEMENTED + VERIFIED + REJECTED`，FP16主线不变。
-
-Exp18在当前FP16+Exp15 CUB主线上重新Nsight后通过实现Decision Gate，并完成固定地址的device-side
-`CUDA preprocess→enqueueV3→GPU decode/filter→CUB compaction` Graph；H2D、count/payload D2H和CPU NMS
-保持Graph外。Normal/Graph的150帧pre-NMS候选轨迹与最终检测均逐字节一致。节点级Nsight显示每帧launch
-由67次降至1次，launch API median下降46.7%，GPU gap median下降93.4%；但三组动态调频paired/interleaved
-中wall FPS、E2E mean和P95都仅1/3方向有利，聚合中位变化为−0.780%/−1.081%/−1.092%，未达到采用门槛。
-因此Exp18为`IMPLEMENTED + VERIFIED + REJECTED`，CUDA Graph不进入Runtime主线。
-
-Exp19完成动态调频最终Benchmark。文件V_Final相对V0的wall FPS/post-capture mean中位改善3.638%/3.352%；
-相机吞吐保持约30 FPS，post-capture mean中位改善1.768%，P95/P99变化+0.044%/−1.075%。V_Final完成
-54,000帧长稳态：wall 30.003 FPS、P95/P99 33.984/34.833 ms、VDD_IN mean 8.171 W、最高57.031°C，
-无SWAP增长或持续RSS泄漏证据。Exp19状态`PASS`。
-
-快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
-
-```text
-docs/项目全流程快速学习手册.md
+```mermaid
+flowchart LR
+    A["文件 / IMX219"] --> B["CUDA fused preprocess"]
+    B --> C["TensorRT FP16 enqueueV3"]
+    C --> D["GPU decode / filter"]
+    D --> E["CUB stable compaction"]
+    E --> F["count + compact payload D2H"]
+    F --> G["CPU inverse-letterbox + class-aware NMS"]
+    G --> H["检测结果 / Benchmark"]
 ```
 
-AutoDL 和 Jetson 均允许在不用时关机；重新开机后必须先按学习手册和 `AGENTS.md`
-执行 SSH 重连、机器身份、Git、环境和输入哈希检查，再继续实验。
+最终主线固定为：原始 YOLO11n baseline、静态 FP32 ONNX、Jetson 本机构建的 TensorRT FP16 Engine、TensorRT 10.3 C++ Runtime、CUDA 融合预处理和 Exp15 CUB 稳定压缩后处理。INT8、Plugin、Double Buffer 和 CUDA Graph 均未进入最终部署版本。
 
-冻结基线：
+详细架构、三端职责和计时边界见 [系统架构与数据流](docs/20_系统架构与数据流.md)。
 
-| 项目 | 数值 |
+## 核心结果
+
+### 模型与 Engine
+
+| 指标 | 结果 | 计量范围 |
+|---|---:|---|
+| Precision / Recall | 0.921618 / 0.820407 | Exp02 独立 test |
+| mAP50 / mAP50-95 | 0.892701 / 0.520479 | Exp02 独立 test |
+| tiny+small recall | 0.790210 | Exp02 尺度审计 |
+| TensorRT FP16 mAP50-95 | 0.521929 | Exp07 完整 219 图 |
+| FP32 / FP16 Engine 大小 | 14.88 / 8.95 MB | Jetson 本机构建 |
+| FP32 / FP16 GPU-only mean | 10.2415 / 3.4797 ms | `trtexec --noDataTransfers`，非端到端 |
+
+### 部署优化与最终 Benchmark
+
+| 项目 | 结果 | 计量范围 |
+|---|---:|---|
+| CUDA preprocess | 2.2821 → 0.2008 ms，−91.20% | CPU reference 对比 kernel-only |
+| 后处理 D2H | 235,200 → 263.84 B/frame，−99.888% | Exp15/Exp19 文件输入 |
+| 文件 wall FPS | 中位 +3.638%，2/3 有利 | Exp19 动态调频 paired/interleaved |
+| 文件 post-capture mean | 中位 +3.352%，3/3 有利 | Exp19 动态调频 paired/interleaved |
+| 相机 wall FPS | −0.008%，约 30 FPS | IMX219 input-rate-bound |
+| 相机 post-capture mean | 中位 +1.768%，3/3 有利 | Exp19 动态调频 paired/interleaved |
+
+Exp15 曾在其当日验收中得到文件 wall FPS `60.270 → 71.838`（+19.19%），但该数字与 Exp19 的最终配对编排不应拼接为累计收益；最终对外结果以 Exp19 为准。Kernel 更快不等于 Runtime 更快，D2H 缩减也不能单独解释全部收益。
+
+### 最终稳定性
+
+| 项目 | V_Final 结果 |
 |---|---:|
-| Precision | 0.92161767 |
-| Recall | 0.82040743 |
-| mAP50 | 0.89270104 |
-| mAP50-95 | 0.52047856 |
-| tiny+small recall | 0.79020979 |
-| 参数量 | 2,590,425 |
+| 帧数 / 时长 | 54,000 / 1,801.995 s |
+| wall FPS | 30.003 |
+| frame mean / P50 | 32.016 / 31.960 ms |
+| P95 / P99 | 33.984 / 34.833 ms |
+| VDD_IN mean / P95 / max | 8.171 / 8.200 / 8.580 W |
+| energy/frame | 0.2723 J |
+| 最高温度 | 57.031 °C |
+| RSS slope | 0.208 MiB/min |
+| Swap 增长 | 0 |
 
-冻结 `best.pt` SHA256：
+完整结果、范围说明和能力状态见 [最终结果与能力证据矩阵](docs/20_最终结果与能力证据矩阵.md)。
 
-```text
-79dad73ccad09d46299083078f6d7e19c38541bc19ac86a8d3f11e49661d6ae6
-```
+## 关键决策
 
-Exp06 冻结 ONNX SHA256：
+| 候选 | 证据结论 | 主线决策 |
+|---|---|---|
+| P2、重参数化、Attention/Focal | 完成公平消融，综合指标未过门槛 | `REJECTED` |
+| Full INT8 PTQ | 更快、更小，但 tiny+small recall `0.7902 → 0.4895` | `REJECTED` |
+| Pinned / Async / Double Buffer | 重叠已验证，P95 明显退化 | `IMPLEMENTED + VERIFIED + REJECTED` |
+| CUB stable compaction | 正确性、传输压缩和最终 E2E 收益成立 | `IMPLEMENTED + VERIFIED + ACCEPTED` |
+| TensorRT IPluginV3 | 组件与语义通过；系统性能不满足采用门槛 | `IMPLEMENTED + VERIFIED + REJECTED` |
+| Explicit Q/DQ / Mixed Precision | 精度机制得到解释，但 GPU 性能均慢于 FP16 | `IMPLEMENTED + VERIFIED + REJECTED` |
+| CUDA Graph | launch `67 → 1`、GPU gap −93.4%，E2E 无稳定收益 | `IMPLEMENTED + VERIFIED + REJECTED` |
 
-```text
-305e23c65aa3b1d01e7b1a784c355665228f435f0b904b92ed2618954736d1f8
-```
-
-Exp07 Engine（仅保存在 Jetson，不进入 Git）：
-
-| 精度 | Engine SHA256 | 大小 | GPU-only mean |
-|---|---|---:|---:|
-| FP32 | `01616a8144228db5edbf8948227e3bbaee43b22c495aba3c6c44212e43efe0f1` | 14,880,428 bytes | 10.2415 ms |
-| FP16 | `88dcc29d2c66b77bdf5b3ac90f327f793516365d5967b51155987a5b736c0a83` | 8,951,540 bytes | 3.4797 ms |
-
-Exp07 的诊断计时固定为 batch 1、640×640、500 ms warmup、200 次迭代、
-CUDA Graph、spin wait 且关闭 H2D/D2H；未锁定 `jetson_clocks`，不是端到端
-延迟。完整测试集 mAP50-95：
-
-| 后端 | mAP50-95 |
-|---|---:|
-| Jetson PyTorch FP32 | 0.52189519 |
-| TensorRT FP32 | 0.52160406 |
-| TensorRT FP16 | 0.52192881 |
-
-Exp07证明的是冻结Serialized Engine在相同输入和Runtime条件下可重复执行；Exp16后续诊断同时证明，
-即使使用同一ONNX、TensorRT版本和显式Builder参数，重新Build也不保证生成bitwise相同的Engine或raw。
-两种结论不冲突，跨build比较必须显式估计build/tactic variance并使用检测级匹配与模型级指标。
-
-Exp11 已完成文件视频与 IMX219 端到端 C++ 推理。文件视频三个独立进程均处理
-150 帧、151 个检测，检测 CSV SHA256 一致；IMX219 1920×1080@30 正式运行处理
-300/300 帧，端到端 mean/P95 为 31.832/34.190 ms，有效处理率 31.415 FPS。
-该数字是未锁频、带取帧/H2D/CUDA/TensorRT/D2H/NMS 的短时功能基线；功耗、温度、
-资源占用、丢帧和长稳态结论留给 Exp12。
-
-## 项目主线
-
-```text
-数据集审计
-→ YOLO11n 基线与结构消融
-→ PyTorch 模型冻结
-→ ONNX 导出与一致性验证
-→ TensorRT FP32 / FP16 / INT8
-→ TensorRT C++ Runtime
-→ CUDA 融合预处理
-→ 视频与摄像头端到端推理
-→ Jetson 性能、功耗、温度与稳定性测试
-→ Nsight Systems 瓶颈画像
-→ 内存、并发、GPU 后处理、Plugin 与混合精度优化
-→ 最终综合 Benchmark 与项目收尾
-```
-
-Exp16 Deployment Semantic Revalidation Gate与Exp17均已完成：Plugin语义通过但性能未满足采用门槛；
-Explicit Q/DQ恢复精度但Full/Mixed GPU性能均被证据拒绝。Exp15 CUB继续作为Runtime主线，FP16 Engine
-不变。后续冻结顺序为：Exp18仅在最终真实主线被Nsight证明enqueue-bound时实现
-device-side CUDA Graph，否则`SKIPPED_BY_EVIDENCE`；Exp19只比较baseline与`ACCEPTED`最终路线；Exp20
-完成发布材料后停止开发。Exp14 isolation audit仅为optional/post-resume。
+其中 `Host API Duration ≠ GPU Activity ≠ Critical Path`。优化必须在与目标部署一致的计时边界和正式 workload 下重新验证，不能用单个 kernel 或 API 指标替代系统结论。
 
 ## 能力证据口径
 
-- `IMPLEMENTED`：已有代码或工程闭环，不代表正确或进入主线；
-- `VERIFIED`：已有冻结输入下的正确性、生命周期或Profiling证据；
-- `ACCEPTED`：通过预冻结采用条件并进入当前主线；
-- `REJECTED`：实现或验证可以成立，但候选不进入主线。
+- `IMPLEMENTED`：已有代码或工程闭环，不代表正确或已进入主线。
+- `VERIFIED`：已有冻结输入下的正确性、生命周期或 profiling 证据。
+- `ACCEPTED`：通过预冻结条件并进入最终部署主线。
+- `REJECTED`：实现或验证成立，但候选不进入主线。
 
-单项能力可同时是`IMPLEMENTED + VERIFIED + REJECTED`。未完成或未验证能力不得写入简历成果；负向实验、
-旧门槛和失败现场不得删除或回写。所有后续工作继续遵守
-`Measure → Identify → Optimize → Verify → Re-profile → Accept/Reject`。
+单项能力可以同时是 `IMPLEMENTED + VERIFIED + REJECTED`。未完成、未验证或被证据拒绝的候选不得包装成简历中的性能成果。
 
-## 三端职责
+## 实验地图
 
-- Windows：项目总控、代码和文档审查、分支合并、关键产物中转；
-- AutoDL：RTX 3080 Ti 训练、评估、PyTorch 冻结、ONNX 导出与 ORT 验证；
-- Jetson Orin Nano Super：TensorRT、CUDA、C++、摄像头和板端 Benchmark。
+| 阶段 | 实验 | 状态 |
+|---|---|---|
+| 数据与模型 | Exp00～Exp05：范围、环境、数据、baseline、模型消融 | 完成；baseline `ACCEPTED` |
+| 模型部署 | Exp06～Exp08：ONNX、TensorRT FP32/FP16、INT8 | FP16 `ACCEPTED`；INT8 `REJECTED` |
+| Runtime | Exp09～Exp12：C++、CUDA preprocess、视频/相机、稳定性 | `PASS` |
+| Profiling 与优化 | Exp13～Exp18：Nsight、异步、GPU 后处理、Plugin、Q/DQ、Graph | 仅 Exp15 后处理 `ACCEPTED` |
+| 收尾 | Exp19～Exp20：最终 Benchmark、文档与求职材料 | `PASS` |
 
-Windows 上的保存或静态检查不能替代 AutoDL/Jetson 上的真实实验。
+逐实验状态和证据入口见 [实验索引](docs/experiment_index.md)，时间顺序、真实命令和学习复盘见 [项目全流程快速学习手册](docs/项目全流程快速学习手册.md)。
 
-## 实验管理
+## 仓库导航
 
-每个正式实验必须包含：
+```text
+configs/     训练、导出和部署配置
+cpp/         TensorRT C++ Runtime 与 CUDA 实现
+docs/        项目范围、逐实验总结、架构和求职材料
+results/     可提交的小型摘要、CSV、JSON 与哈希清单
+scripts/     三端实验和审计脚本
+tools/       数据、模型、ONNX 和结果处理工具
+```
 
-- 独立实验编号、分支和 Commit；
-- 不覆盖的时间戳运行目录；
-- 输入配置、环境、命令和返回码；
-- Smoke Test、正式结果、异常和最终决策；
-- 小型日志摘要、JSON/CSV、产物大小与 SHA256。
+- [ROADMAP](ROADMAP.md)：冻结路线和实验状态。
+- [项目范围](docs/00_project_scope.md)：目标、边界和验收原则。
+- [系统架构与数据流](docs/20_系统架构与数据流.md)：三端架构、最终数据流和计时范围。
+- [最终结果与能力证据矩阵](docs/20_最终结果与能力证据矩阵.md)：可引用结果与能力分层。
+- [项目讲解与简历材料](docs/20_项目讲解与简历材料.md)：30 秒/2 分钟/5 分钟讲解、简历条目和 STAR 案例。
+- [面试题库](docs/20_面试题库.md)：围绕模型、TensorRT、CUDA、profiling 和系统验证的问答。
+- [协作规范](AGENTS.md)：三端 Git、实验、产物和安全规则。
 
-详细协作规范见 `AGENTS.md`，实验状态见 `docs/experiment_index.md`，项目学习主线见
-`docs/项目全流程快速学习手册.md`。
+## 三端分工与复现原则
 
-## 仓库内容边界
+- Windows：总控、文档、审查、分支合并与小型证据管理。
+- AutoDL：训练、评估、PyTorch 冻结、ONNX 导出和 ORT 验证。
+- Jetson：TensorRT、CUDA、C++、摄像头与板端 Benchmark。
 
-仓库保存源代码、配置、测试、实验文档和小型指标文件；不直接保存数据集、
-模型权重、ONNX、TensorRT Engine、视频、完整训练输出或大型 Profiling 文件。
+仓库不提交数据集、模型权重、ONNX、TensorRT Engine、视频和大型 profiling 文件。跨机器产物通过独立通道传输，并用来源 Commit、大小和 SHA256 校验；TensorRT Engine 必须在目标 Jetson 上构建。
+
+## 环境摘要
+
+- AutoDL：RTX 3080 Ti、Python 3.12.3、PyTorch 2.8.0+cu128、Ultralytics 8.4.95。
+- Jetson：Orin Nano Super、Ubuntu 22.04 / L4T R36.4.3、CUDA 12.6、TensorRT 10.3、OpenCV 4.10、GStreamer 1.20。
 
 ## License
 
-项目许可证将在第三方依赖和代码复用范围核查完成后确定。
+项目许可证仍需在第三方依赖和代码复用范围完成核查后确定。在许可证明确前，请勿默认将仓库内容视为可自由再分发。
