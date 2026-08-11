@@ -874,3 +874,15 @@ P95/P99变化+0.044%/−1.075%，吞吐仍受30 FPS输入限制。D2H从235,200 
 V_Final动态54,000帧稳定性为30.003 wall FPS、33.984/34.833 ms P95/P99、VDD_IN mean 8.171 W、energy/frame
 0.2723 J、最高57.031°C；稳态RSS斜率0.208 MiB/min且SWAP无增长。初始RSS分析false positive已保留并按Exp12
 冻结的60秒稳态口径修复。固定时钟可选诊断因sudo权限未执行，不影响动态主结果。
+
+## 23. Exp20 发布收口与路线冻结（2026-08-11）
+
+Exp20状态`PASS`。仓库已形成唯一发布入口README、Mermaid三端与V_Final架构、最终结果与能力证据矩阵、
+30秒/2分钟/5分钟项目讲解、中英文简历条目、STAR案例和面试题库。所有对外数字来自Exp00～Exp19冻结证据，
+并继续区分GPU-only、kernel-only、post-capture与wall等计时范围。
+
+项目最终主线冻结为Exp02 YOLO11n baseline、Exp06静态FP32 ONNX、Exp07 TensorRT FP16 Engine、Exp09 C++
+Runtime、Exp10 CUDA fused preprocess和Exp15 CUB stable compaction；Exp14、Exp16、Exp17、Exp18的工程与正确性
+证据继续保留，但性能或主线采用维持`REJECTED`。Exp20后停止开发，不新增实验编号，不恢复被证据拒绝的候选，
+也不扩张YOLO结构、GPU NMS、NVMM、DeepStream、剪枝、蒸馏、TVM/MLIR/Triton等方向。后续仅在事实修正、
+依赖安全维护或用户明确批准新任务时恢复三端流程。

@@ -390,6 +390,7 @@ Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon
 Exp17 Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision
 Exp18 CUDA Graph Decision Gate、实现、正确性与性能裁决
 Exp19 Baseline 与 ACCEPTED 最终路线综合 Benchmark
+Exp20 README、架构图、结果表、学习路线、简历与面试材料
 ```
 
 当前模型决策：
@@ -477,7 +478,11 @@ GPU gap median下降93.4%。但三组动态调频paired/interleaved中wall FPS�
 
 Exp19已完成动态调频最终Benchmark。V0与V_Final保持冻结语义；文件wall FPS/post-capture mean中位改善
 3.638%/3.352%，相机post-capture mean中位改善1.768%。V_Final动态54,000帧稳定性PASS：wall 30.003 FPS、
-P95/P99 33.984/34.833 ms、最高57.031°C、稳态RSS斜率0.208 MiB/min。下一实验为Exp20项目收尾。
+P95/P99 33.984/34.833 ms、最高57.031°C、稳态RSS斜率0.208 MiB/min。
+
+Exp20已完成README、Mermaid架构、最终结果与能力证据矩阵、项目讲解、简历材料和面试题库，并完成总控文档
+一致性审计。项目开发到此停止；除事实修正、依赖安全维护或用户明确批准的新任务外，不得新增实验编号、
+恢复已拒绝候选或扩展技术路线。
 
 能力证据统一使用四层模型：`IMPLEMENTED`表示已有实现；`VERIFIED`表示已有冻结输入下的正确性、生命周期
 或Profiling证据；`ACCEPTED`表示通过预冻结采用条件并进入主线；`REJECTED`表示不进入主线。单项能力可同时
@@ -487,9 +492,9 @@ Codex 不得擅自重新选择模型主线。
 
 ---
 
-# 6. 下一阶段推荐顺序
+# 6. 冻结实验顺序与维护边界
 
-后续部署阶段必须按证据重新校准，不得机械沿用旧规划：
+Exp00～Exp20均已完成。下列顺序作为冻结的实验历史保留，不再表示待执行路线：
 
 ```text
 Exp06  PyTorch → ONNX 导出与一致性验证
@@ -520,7 +525,7 @@ Graph外。正确性和Profiling通过，但动态调频端到端采用Gate失�
 Exp19已完成，只比较baseline与已`ACCEPTED`路线。文件视频报告最大吞吐；30 FPS input-rate-bound相机重点报告
 `capture_wait_ms`、`post_capture_processing_ms`、`frame_total`和P95/P99，同时记录CPU/GPU、功耗、温度、
 RSS与energy/frame。动态调频是最终部署主轨，固定时钟只作低方差诊断；54,000帧/约30分钟稳定性仅对
-最终`V_Final`重跑并通过。Exp20完成文档、架构图、结果表、简历和面试材料后停止开发。
+最终`V_Final`重跑并通过。Exp20已完成文档、架构图、结果表、简历和面试材料，项目开发已停止。
 
 若用户另行指定编号，以用户最新指令为准。
 
@@ -1378,8 +1383,8 @@ BLOCKED
 5. 已完成实验；
 6. 当前部署主线；
 7. Windows、AutoDL、Jetson 三端职责；
-8. Exp13～Exp16 的分层证据、已完成的Revalidation Gate和当前Exp15 B主线；
-9. `docs/项目全流程快速学习手册.md` 中的当前计划和待确认事项。
+8. Exp13～Exp20 的分层证据、负向裁决和最终Exp15 CUB主线；
+9. `docs/项目全流程快速学习手册.md` 中的Exp20复盘和项目冻结状态。
 
 最后只输出检查结果和建议，不执行修改。
 ```
@@ -1403,7 +1408,7 @@ BLOCKED
 4. 数据集 YAML；
 5. Exp06 ONNX 文件及 SHA256 是否与冻结记录一致；
 6. Exp08 INT8 为何被 REJECT，且不得改写为运行时主线；
-7. Exp17 是否需要 AutoDL 侧建立 Explicit Q/DQ PTQ baseline（须先完成Exp08代码审计）。
+7. Exp17量化候选为何保持`REJECTED`，以及Exp20后为何默认不启动新的训练或导出。
 
 先给出执行计划和风险，不要直接开始。
 ```
@@ -1428,7 +1433,7 @@ Exp06～Exp12 总结和当前部署相关文档。
 5. TensorRT Engine 是否需要在本机重新构建；
 6. FP16 主线 Engine、哈希和验证结果是否可用；
 7. Exp08 INT8 REJECT 结论是否与记录一致；
-8. Exp13～Exp16结论是否一致，以及Exp16 Deployment Semantic Revalidation Gate的最终REJECT证据。
+8. Exp13～Exp19结论是否一致，以及Exp20后为何默认不执行新的板端构建或Benchmark。
 
 先输出检查结果，不执行构建。
 ```
@@ -1438,29 +1443,13 @@ Exp06～Exp12 总结和当前部署相关文档。
 # 27. 当前阶段的推荐协作链
 
 ```text
-ChatGPT
-负责实验设计、验收条件和结果解释
-        ↓
-AutoDL Codex
-维护冻结模型、ONNX 与数据侧参考结果
-        ↓
-GitHub 实验分支
-同步代码、配置和小型结果
-        ↓
 Windows Codex
-审查 diff、文档和 Git 历史
+维护README、文档一致性、Git历史和小型证据
         ↓
-main
-合并已验证内容
+保持Exp00～Exp20冻结发布状态
         ↓
-Jetson Codex
-以 Exp15 B 为当前Runtime主线，保留原Exp16与Revalidation Gate的REJECT并准备Exp17
-        ↓
-Windows Codex
-审查forensic匹配、219张指标、build variance和后续量化假设
-        ↓
-ChatGPT
-审查已完成的Revalidation Gate证据；保持Plugin主线REJECT，并准备Exp17
+AutoDL / Jetson
+默认不启动；仅在事实修正、安全维护或用户明确批准的新任务中按三端SOP恢复
 ```
 
 ---
