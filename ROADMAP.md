@@ -50,7 +50,7 @@
 | Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT |
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT |
 | Exp18 | CUDA Graph Decision Gate | REJECT |
-| Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED |
+| Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PASS |
 
 ## M5：项目发布
 
@@ -121,6 +121,10 @@ Exp18已完成。Decision Gate测得launch API median 1.577 ms、Graph候选GPU 
 Exp19只比较baseline与已`ACCEPTED`路线。文件视频用于最大吞吐；30 FPS相机重点报告capture wait、
 post-capture processing、frame total与P95/P99，同时记录CPU/GPU、功耗、温度、RSS和energy/frame。动态调频
 为最终部署主轨，固定时钟只作诊断；54,000帧稳定性只对最终`V_Final`重跑。Exp20完成后停止扩展。
+
+Exp19已完成：文件wall FPS/post-capture mean中位改善3.638%/3.352%，相机post-capture mean中位改善1.768%；
+V_Final动态54,000帧长稳态全部强制门槛PASS。固定时钟诊断因sudo交互权限记`BLOCKED_PERMISSION`，未改变
+动态主结果或设备governor。
 
 全仓统一使用`IMPLEMENTED / VERIFIED / ACCEPTED / REJECTED`能力证据模型；实验表中的`PASS/REJECT`仍保留
 历史裁决。未完成或未验证能力不得写入简历，旧负向结果、门槛和失败现场不得改写或删除。

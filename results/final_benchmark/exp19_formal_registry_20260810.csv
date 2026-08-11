@@ -1,0 +1,13 @@
+source,pair,variant,run_dir
+file,1,v0,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_v0_file_20260810_181443
+file,1,vfinal,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_vfinal_file_20260810_181447
+file,2,vfinal,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_vfinal_file_20260810_183545
+file,2,v0,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_v0_file_20260810_183548
+file,3,v0,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_v0_file_20260810_183626
+file,3,vfinal,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_vfinal_file_20260810_183630
+camera,1,vfinal,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_vfinal_camera_20260810_183705
+camera,1,v0,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_v0_camera_20260810_183813
+camera,2,v0,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_v0_camera_20260810_183915
+camera,2,vfinal,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_vfinal_camera_20260810_184018
+camera,3,vfinal,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_vfinal_camera_20260810_184121
+camera,3,v0,/home/nvidia/projects/jetson-ppe-deploy-opt/results/final_benchmark/exp19_formal_v0_camera_20260810_184223

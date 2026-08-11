@@ -864,3 +864,13 @@ Exp18已经完成，不再处于Priority 5待执行状态。最终主线上的De
 `IMPLEMENTED + VERIFIED + REJECTED`，不得写为`ACCEPTED`或简历部署成果；Exp19的V_Final继续使用Exp07 FP16
 Engine + Exp15 CUB stable compaction。该结果新增一条项目故事：减少Host launch和GPU bubble是真实局部收益，
 但局部时间线收益仍须接受动态端到端Gate，不能机械外推为Runtime加速。
+
+## 22. Exp19 真实结果校准（2026-08-10）
+
+Exp19状态`PASS`。比较仅包含V0同步raw-output基线与V_Final（Exp07 FP16、Exp10 CUDA preprocess、Exp15
+CUB）。文件wall FPS/post-capture mean中位改善3.638%/3.352%；相机post-capture mean中位改善1.768%，
+P95/P99变化+0.044%/−1.075%，吞吐仍受30 FPS输入限制。D2H从235,200 B降至263.84 B，但不单独解释收益。
+
+V_Final动态54,000帧稳定性为30.003 wall FPS、33.984/34.833 ms P95/P99、VDD_IN mean 8.171 W、energy/frame
+0.2723 J、最高57.031°C；稳态RSS斜率0.208 MiB/min且SWAP无增长。初始RSS分析false positive已保留并按Exp12
+冻结的60秒稳态口径修复。固定时钟可选诊断因sudo权限未执行，不影响动态主结果。

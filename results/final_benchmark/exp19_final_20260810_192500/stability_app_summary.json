@@ -1,0 +1,43 @@
+{
+  "result": "PASS",
+  "source_type": "camera",
+  "postprocess_mode": "cub",
+  "graph_stage_cuda_timings_available": true,
+  "graph_preprocess_host_scope": "H2D+kernel+sync",
+  "gpu_candidate_bytes": 28,
+  "raw_output_d2h_bytes_per_frame": 235200,
+  "source": "nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM),width=1920,height=1080,framerate=30/1,format=NV12 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink max-buffers=1 drop=true sync=false",
+  "engine": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+  "frame_width": 1920,
+  "frame_height": 1080,
+  "processed_frames": 54000,
+  "total_detections": 55599,
+  "warmup_iterations": 20,
+  "confidence_threshold": 0.250000000,
+  "nms_iou_threshold": 0.699999988,
+  "effective_fps": 31.234319551,
+  "pipeline_wall_seconds": 1799.826619398,
+  "pipeline_wall_fps": 30.002889955,
+  "timing_scope": "capture+H2D+CUDA_preprocess+TensorRT+D2H+NMS",
+  "timings_ms": {
+    "capture": {"mean": 18.399129939, "p50": 18.337984000, "p95": 20.368651200, "p99": 21.202870460, "min": 0.900433000, "max": 53.595376000},
+    "preprocess_host": {"mean": 2.025441890, "p50": 2.022649000, "p95": 2.090784050, "p99": 2.139410310, "min": 1.078170000, "max": 3.900937000},
+    "preprocess_cuda": {"mean": 1.987580716, "p50": 1.982496023, "p95": 2.048703909, "p99": 2.088896036, "min": 1.063840032, "max": 3.313375950},
+    "inference_host": {"mean": 11.530767378, "p50": 11.525736500, "p95": 11.566851500, "p99": 11.605462240, "min": 5.363491000, "max": 13.957014000},
+    "inference_cuda": {"mean": 11.392376777, "p50": 11.387935638, "p95": 11.428095818, "p99": 11.464736309, "min": 5.291808128, "max": 13.816896439},
+    "postprocess": {"mean": 0.005050625, "p50": 0.005024000, "p95": 0.005728000, "p99": 0.006081000, "min": 0.001472000, "max": 0.061892000},
+    "gpu_postprocess_cuda": {"mean": 0.054488068, "p50": 0.054496001, "p95": 0.056000002, "p99": 0.056575999, "min": 0.026144000, "max": 0.057920001},
+    "count_copy_cuda": {"mean": 0.009876101, "p50": 0.009760000, "p95": 0.013984000, "p99": 0.014848000, "min": 0.003808000, "max": 0.015456000},
+    "count_sync_host": {"mean": 6.636108460, "p50": 6.610306000, "p95": 7.150931450, "p99": 7.662630540, "min": 1.699420000, "max": 8.632615000},
+    "candidate_copy_cuda": {"mean": 0.021536549, "p50": 0.020608000, "p95": 0.028352000, "p99": 0.032607999, "min": 0.003616000, "max": 0.466847986},
+    "candidate_sync_host": {"mean": 0.008132558, "p50": 0.008161000, "p95": 0.009025000, "p99": 0.009761000, "min": 0.003200000, "max": 0.100327000},
+    "cpu_decode_filter": {"mean": 0.000000000, "p50": 0.000000000, "p95": 0.000000000, "p99": 0.000000000, "min": 0.000000000, "max": 0.000000000},
+    "cpu_candidate_scan": {"mean": 0.000526175, "p50": 0.000512000, "p95": 0.000608000, "p99": 0.000672000, "min": 0.000096000, "max": 0.028194000},
+    "cpu_nms": {"mean": 0.002678540, "p50": 0.002657000, "p95": 0.003168000, "p99": 0.003360000, "min": 0.000160000, "max": 0.059364000},
+    "end_to_end": {"mean": 32.016064840, "p50": 31.960481000, "p95": 33.983762500, "p99": 34.833364110, "min": 7.747749000, "max": 67.211977000}
+  },
+  "transfer": {
+    "candidate_count": {"mean": 9.508888889, "p50": 10.000000000, "p95": 10.000000000, "p99": 11.000000000, "min": 0.000000000, "max": 21.000000000},
+    "d2h_bytes_per_frame": {"mean": 270.248888889, "p50": 284.000000000, "p95": 284.000000000, "p99": 312.000000000, "min": 4.000000000, "max": 592.000000000}
+  }
+}
