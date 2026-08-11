@@ -1,0 +1,172 @@
+{
+  "result": "PASS",
+  "mode": "cub",
+  "processed_frames": 54000,
+  "detection_rows": 55599,
+  "detections_sha256": "e52dfd628e7fa343ee8042af28049bcc61ce9d95c268e4a2a97936308fc8eac6",
+  "mean_d2h_bytes": 270.248888889,
+  "d2h_reduction": 0.9988509826152678,
+  "summary": {
+    "result": "PASS",
+    "source_type": "camera",
+    "postprocess_mode": "cub",
+    "graph_stage_cuda_timings_available": true,
+    "graph_preprocess_host_scope": "H2D+kernel+sync",
+    "gpu_candidate_bytes": 28,
+    "raw_output_d2h_bytes_per_frame": 235200,
+    "source": "nvarguscamerasrc sensor-id=0 ! video/x-raw(memory:NVMM),width=1920,height=1080,framerate=30/1,format=NV12 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink max-buffers=1 drop=true sync=false",
+    "engine": "/home/nvidia/models/jetson-ppe/exp07/exp07_1_trt_fp32_fp16_formal_20260806_170501/yolo11n_baseline_exp07_b1_640_fp16.engine",
+    "frame_width": 1920,
+    "frame_height": 1080,
+    "processed_frames": 54000,
+    "total_detections": 55599,
+    "warmup_iterations": 20,
+    "confidence_threshold": 0.25,
+    "nms_iou_threshold": 0.699999988,
+    "effective_fps": 31.234319551,
+    "pipeline_wall_seconds": 1799.826619398,
+    "pipeline_wall_fps": 30.002889955,
+    "timing_scope": "capture+H2D+CUDA_preprocess+TensorRT+D2H+NMS",
+    "timings_ms": {
+      "capture": {
+        "mean": 18.399129939,
+        "p50": 18.337984,
+        "p95": 20.3686512,
+        "p99": 21.20287046,
+        "min": 0.900433,
+        "max": 53.595376
+      },
+      "preprocess_host": {
+        "mean": 2.02544189,
+        "p50": 2.022649,
+        "p95": 2.09078405,
+        "p99": 2.13941031,
+        "min": 1.07817,
+        "max": 3.900937
+      },
+      "preprocess_cuda": {
+        "mean": 1.987580716,
+        "p50": 1.982496023,
+        "p95": 2.048703909,
+        "p99": 2.088896036,
+        "min": 1.063840032,
+        "max": 3.31337595
+      },
+      "inference_host": {
+        "mean": 11.530767378,
+        "p50": 11.5257365,
+        "p95": 11.5668515,
+        "p99": 11.60546224,
+        "min": 5.363491,
+        "max": 13.957014
+      },
+      "inference_cuda": {
+        "mean": 11.392376777,
+        "p50": 11.387935638,
+        "p95": 11.428095818,
+        "p99": 11.464736309,
+        "min": 5.291808128,
+        "max": 13.816896439
+      },
+      "postprocess": {
+        "mean": 0.005050625,
+        "p50": 0.005024,
+        "p95": 0.005728,
+        "p99": 0.006081,
+        "min": 0.001472,
+        "max": 0.061892
+      },
+      "gpu_postprocess_cuda": {
+        "mean": 0.054488068,
+        "p50": 0.054496001,
+        "p95": 0.056000002,
+        "p99": 0.056575999,
+        "min": 0.026144,
+        "max": 0.057920001
+      },
+      "count_copy_cuda": {
+        "mean": 0.009876101,
+        "p50": 0.00976,
+        "p95": 0.013984,
+        "p99": 0.014848,
+        "min": 0.003808,
+        "max": 0.015456
+      },
+      "count_sync_host": {
+        "mean": 6.63610846,
+        "p50": 6.610306,
+        "p95": 7.15093145,
+        "p99": 7.66263054,
+        "min": 1.69942,
+        "max": 8.632615
+      },
+      "candidate_copy_cuda": {
+        "mean": 0.021536549,
+        "p50": 0.020608,
+        "p95": 0.028352,
+        "p99": 0.032607999,
+        "min": 0.003616,
+        "max": 0.466847986
+      },
+      "candidate_sync_host": {
+        "mean": 0.008132558,
+        "p50": 0.008161,
+        "p95": 0.009025,
+        "p99": 0.009761,
+        "min": 0.0032,
+        "max": 0.100327
+      },
+      "cpu_decode_filter": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "cpu_candidate_scan": {
+        "mean": 0.000526175,
+        "p50": 0.000512,
+        "p95": 0.000608,
+        "p99": 0.000672,
+        "min": 9.6e-05,
+        "max": 0.028194
+      },
+      "cpu_nms": {
+        "mean": 0.00267854,
+        "p50": 0.002657,
+        "p95": 0.003168,
+        "p99": 0.00336,
+        "min": 0.00016,
+        "max": 0.059364
+      },
+      "end_to_end": {
+        "mean": 32.01606484,
+        "p50": 31.960481,
+        "p95": 33.9837625,
+        "p99": 34.83336411,
+        "min": 7.747749,
+        "max": 67.211977
+      }
+    },
+    "transfer": {
+      "candidate_count": {
+        "mean": 9.508888889,
+        "p50": 10.0,
+        "p95": 10.0,
+        "p99": 11.0,
+        "min": 0.0,
+        "max": 21.0
+      },
+      "d2h_bytes_per_frame": {
+        "mean": 270.248888889,
+        "p50": 284.0,
+        "p95": 284.0,
+        "p99": 312.0,
+        "min": 4.0,
+        "max": 592.0
+      }
+    }
+  },
+  "errors": []
+}

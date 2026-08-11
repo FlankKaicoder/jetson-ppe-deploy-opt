@@ -389,6 +389,7 @@ Exp15 CUDA GPU Decode/Filter/Compaction 与 Nsight Compute
 Exp16 TensorRT IPluginV3 与 ONNX GraphSurgeon
 Exp17 Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision
 Exp18 CUDA Graph Decision Gate、实现、正确性与性能裁决
+Exp19 Baseline 与 ACCEPTED 最终路线综合 Benchmark
 ```
 
 当前模型决策：
@@ -472,7 +473,11 @@ Exp18在真实FP16+Exp15 CUB主线上通过Decision Gate后实现固定边界CUD
 最终检测均与Normal逐字节一致；节点级Nsight证明launch由67次/帧降至1次/帧，launch API median下降46.7%，
 GPU gap median下降93.4%。但三组动态调频paired/interleaved中wall FPS、E2E mean和P95均仅1/3有利，
 聚合中位变化为−0.780%/−1.081%/−1.092%，未满足采用门槛。因此Exp18为
-`IMPLEMENTED + VERIFIED + REJECTED`，Graph不进入主线。下一实验为Exp19最终综合Benchmark。
+`IMPLEMENTED + VERIFIED + REJECTED`，Graph不进入主线。
+
+Exp19已完成动态调频最终Benchmark。V0与V_Final保持冻结语义；文件wall FPS/post-capture mean中位改善
+3.638%/3.352%，相机post-capture mean中位改善1.768%。V_Final动态54,000帧稳定性PASS：wall 30.003 FPS、
+P95/P99 33.984/34.833 ms、最高57.031°C、稳态RSS斜率0.208 MiB/min。下一实验为Exp20项目收尾。
 
 能力证据统一使用四层模型：`IMPLEMENTED`表示已有实现；`VERIFIED`表示已有冻结输入下的正确性、生命周期
 或Profiling证据；`ACCEPTED`表示通过预冻结采用条件并进入主线；`REJECTED`表示不进入主线。单项能力可同时
@@ -512,10 +517,10 @@ Exp18已完成：Decision Gate允许实现，首版只捕获device-side
 `CUDA preprocess→TensorRT enqueueV3→GPU decode/filter→CUB compaction`，H2D和count/payload D2H保持
 Graph外。正确性和Profiling通过，但动态调频端到端采用Gate失败，故`REJECTED`且不得进入Exp19 V_Final。
 
-Exp19只比较baseline与已`ACCEPTED`路线。文件视频报告最大吞吐；30 FPS input-rate-bound相机重点报告
+Exp19已完成，只比较baseline与已`ACCEPTED`路线。文件视频报告最大吞吐；30 FPS input-rate-bound相机重点报告
 `capture_wait_ms`、`post_capture_processing_ms`、`frame_total`和P95/P99，同时记录CPU/GPU、功耗、温度、
 RSS与energy/frame。动态调频是最终部署主轨，固定时钟只作低方差诊断；54,000帧/约30分钟稳定性仅对
-最终`V_Final`重跑。Exp20完成文档、架构图、结果表、简历和面试材料后停止开发。
+最终`V_Final`重跑并通过。Exp20完成文档、架构图、结果表、简历和面试材料后停止开发。
 
 若用户另行指定编号，以用户最新指令为准。
 

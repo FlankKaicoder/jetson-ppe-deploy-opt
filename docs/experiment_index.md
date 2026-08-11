@@ -2,7 +2,7 @@
 
 ## 学习总入口
 
-`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp18 复盘、设备重连
+`项目全流程快速学习手册.md` 汇总整个项目的知识主线、Exp00～Exp19 复盘、设备重连
 SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追加计划，实验完成后再追加
 真实结果与学习复盘，不覆盖原计划。
 
@@ -28,7 +28,7 @@ SOP 和后续实验预先规划。后续每次实验都先在该文件末尾追�
 | Exp16 Gate | Deployment Semantic Revalidation（不新增实验编号） | REJECT | 见Exp16总结第10～11节 |
 | Exp17 | Explicit Q/DQ、INT8机制审计、粗粒度敏感性与 Mixed Precision | REJECT | `17_ExplicitQDQ_INT8机制审计与MixedPrecision总结.md` |
 | Exp18 | CUDA Graph Decision Gate | REJECT | `18_CUDA_Graph_Decision_Gate总结.md` |
-| Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PLANNED | 待审批 |
+| Exp19 | Baseline 与 ACCEPTED 最终路线综合 Benchmark | PASS | `19_最终综合Benchmark总结.md` |
 | Exp20 | 项目收尾、简历与面试材料 | PLANNED | 待创建 |
 
 Postprocess Gain Attribution Gate 已于2026-08-09完成，不新增 `Exp15.1` 编号。最终公平对照保持P0/P1
@@ -96,6 +96,12 @@ median下降93.4%。但动态调频三组paired/interleaved中wall FPS、E2E mea
   能力为`IMPLEMENTED + VERIFIED + REJECTED`，Exp15 CUB继续主线；
 - Exp19只比较baseline与`ACCEPTED`路线，动态调频为部署主轨，最终54,000帧只对`V_Final`重跑；
 - Exp20完成README、架构图、结果表、简历和面试材料后停止开发，不扩张新技术方向。
+
+## Exp19 最终裁决
+
+V0与V_Final冻结语义一致。文件wall FPS/post-capture mean中位改善3.638%/3.352%；相机post-capture mean中位
+改善1.768%，P95/P99变化+0.044%/−1.075%。V_Final动态54,000帧以30.003 wall FPS、33.984/34.833 ms
+P95/P99和57.031°C最高温度通过全部门槛。Exp19状态`PASS`，Exp15继续`ACCEPTED`，下一步Exp20收尾。
 
 ## 当前模型决策
 

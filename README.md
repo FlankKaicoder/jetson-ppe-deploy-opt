@@ -5,7 +5,7 @@ CUDA 推理优化项目。
 
 ## 当前状态
 
-截至 2026-08-10，Exp00～Exp18 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
+截至 2026-08-10，Exp00～Exp19 及 Postprocess Gain Attribution Gate 已完成。P2、部署可重参数化、轻量注意力和
 Focal 分类损失均完成公平消融，但未满足替换基线的综合验收条件。后续部署主线
 继续使用原始 YOLO11n baseline。Exp06 已完成 PyTorch → ONNX 导出与一致性
 验证；Exp07 已在 Jetson 完成 TensorRT FP32 / FP16 Engine 构建、单图与完整
@@ -67,6 +67,11 @@ Exp18在当前FP16+Exp15 CUB主线上重新Nsight后通过实现Decision Gate，
 由67次降至1次，launch API median下降46.7%，GPU gap median下降93.4%；但三组动态调频paired/interleaved
 中wall FPS、E2E mean和P95都仅1/3方向有利，聚合中位变化为−0.780%/−1.081%/−1.092%，未达到采用门槛。
 因此Exp18为`IMPLEMENTED + VERIFIED + REJECTED`，CUDA Graph不进入Runtime主线。
+
+Exp19完成动态调频最终Benchmark。文件V_Final相对V0的wall FPS/post-capture mean中位改善3.638%/3.352%；
+相机吞吐保持约30 FPS，post-capture mean中位改善1.768%，P95/P99变化+0.044%/−1.075%。V_Final完成
+54,000帧长稳态：wall 30.003 FPS、P95/P99 33.984/34.833 ms、VDD_IN mean 8.171 W、最高57.031°C，
+无SWAP增长或持续RSS泄漏证据。Exp19状态`PASS`。
 
 快速理解整个项目、复习每次实验的假设/结果/失败经验，以及查看下一实验的预先规划：
 
